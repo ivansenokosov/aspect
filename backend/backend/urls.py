@@ -8,7 +8,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',                 include('directories.urls',            namespace='directories')),
     path('userconfigs/',     include('userconfigs.urls',            namespace='userconfigs')),
-    path('login/',           include('users.urls',                  namespace='login')),
+    path('users/',           include('users.urls',                  namespace='users')),
 
     
     # path("__debug__/",       include("debug_toolbar.urls")),

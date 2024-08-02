@@ -1,25 +1,7 @@
-from fpdf import FPDF
-from django.http import HttpResponse
 from rest_framework import viewsets, permissions
 from userconfigs.serializers import *
 from userconfigs.models import *
 from rest_framework.response import Response
-
-
-def CreatePDF(request):
-    pdf = FPDF()
-    pdf.add_font('DejaVu', '', 'static/fonts/DejaVuSansCondensed.ttf', uni=True)
-    pdf.set_font('DejaVu', '', 8)
-    
-    pdf.add_page()
-    pdf.write(4, 'txt')
-    pdf.ln(5)
-
-    pdf.output("unicode.pdf", 'F')
-
-    response = HttpResponse(bytes(pdf.output()), content_type='application/pdf')
-    response['Content-Disposition'] = "attachment; filename=myfilename.pdf"
-    return response    
 
 
 #--------------------------- UserConfigs --------------------------------------

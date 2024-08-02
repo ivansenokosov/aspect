@@ -1,6 +1,8 @@
 from rest_framework import serializers
 from directories.models import *
 from django.contrib.auth.models import User
+from django.db.models.functions import Concat
+from django.db.models import CharField, Value as V
 
 class ManufactorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -87,11 +89,22 @@ class Type_of_itemsSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 class Inv_seriesSerializer(serializers.ModelSerializer):
+    # variants_of_control_str = serializers.SerializerMethodField() 
+
+    # def get_variants_of_control_str(self, obj):
+    #     variants = Inv_type_of_control.objects.all().filter(serie = obj.id).annotate(name = Concat('control', V(' ('), 'control', V(')'),  output_field=CharField()))
+    #     return 'qqq'#variants
+
     class Meta:
         model = Inv_series
         fields = '__all__'
 
 class Inv_type_of_controlSerializer(serializers.ModelSerializer):
+    control_str = serializers.SerializerMethodField()     
+
+    def get_control_str(self, obj):
+        return f'{obj.control.name}'  
+
     class Meta:
         model = Inv_type_of_control
         fields = '__all__'
@@ -230,6 +243,7 @@ class Inv_optionsSerializer(serializers.ModelSerializer):
     price                 = serializers.SerializerMethodField()         
     quantity              = serializers.SerializerMethodField()         
     waiting_period        = serializers.SerializerMethodField()         
+    option_type           = serializers.SerializerMethodField()         
 
     def get_price(self, obj):
         price = Prices.objects.filter(item = obj.item).order_by('date')[0]
@@ -240,7 +254,9 @@ class Inv_optionsSerializer(serializers.ModelSerializer):
 
     def get_waiting_period(self, obj):
         return f'{obj.item.waiting_period}'  
-
+    
+    def get_option_type(self, obj):
+        return f'{obj.option.name.strip()} '     
 
     class Meta:
         model = Inv_options

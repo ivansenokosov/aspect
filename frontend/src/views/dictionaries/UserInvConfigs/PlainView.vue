@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import {useRoute} from "vue-router";
   import { ref } from 'vue'
-  import type { IInvSerieData, IInvOptionData, IInvertorData, ISimpleData, IUserInvConfigData, IInvOption } from "@/interfaces";
+  import type { IInvSerieData, IInvOptionData, IInvertorData, ISimpleData, IUserInvConfigData, IInvOption, IInvAvalControlData } from "@/interfaces";
   import { useFetch } from "@/api/useFetch";
   import { useBaseUrl } from "@/stores/baseUrl";
   import DataTable from "primevue/datatable";
@@ -30,7 +30,11 @@
   const outputVoltage = ref<ISimpleData>({data:[], error: null, loading: true})
   const breakModule = ref<ISimpleData>({data:[], error: null, loading: true})
   const ambientTemperature = ref<ISimpleData>({data:[], error: null, loading: true})
+  const InvTypeOfControl = ref<IInvAvalControlData>({data:[], error: null, loading: true})
+  const invVariantOfControl = ref<ISimpleData>({data:[], error: null, loading: true})
   const signals = ref<any[]>([])
+  const invControl = ref<String>('') // Способы управления
+  const availableOptions = ref<String>('') // Доступные типы опций
 
   const optionsPrice = ref<Number>(0)
   const optionsJSON = ref<any[]>([])
@@ -56,8 +60,27 @@
     breakModule.value          = await useFetch('Inv_breake_module/'      + invertor.value.data.type_of_break_module.toString() + '/', {} );
     ambientTemperature.value   = await useFetch('Ambient_temperatures/'   + serie.value.data.ambient_temperature.toString() + '/', {} );
     signals.value              = await useFetch('Inv_spec_of_in_out/?serie=' + invertor.value.data.serie.toString() , {} );
+    InvTypeOfControl.value     = await useFetch('Inv_type_of_control', {} );
+    invVariantOfControl.value  = await useFetch('Variants_of_control', {} );
 
     optionsJSON.value = JSON.parse(invConfig.value.data.options);
+
+    // формирования способов управляния для серии
+    InvTypeOfControl.value.data = InvTypeOfControl.value.data.filter(item => item.serie === invertor.value.data.serie)
+    InvTypeOfControl.value.data.map( item => {
+      invVariantOfControl.value.data.map( variant => {
+        if (item.control === variant.id) {
+          invControl.value = invControl.value + variant.name + ', '
+        }
+      })
+    })
+    invControl.value = invControl.value.substring(0, invControl.value.length-2)
+
+    // доступные опции
+    const arrayUniqueByKey = [...new Map(options.value.data.map(item => [item['option_type'], item])).values()];
+    arrayUniqueByKey.map(item => availableOptions.value = availableOptions.value + item.option_type + ', ')
+    availableOptions.value = availableOptions.value.substring(0, availableOptions.value.length-2)
+
 
     options.value.data.map(item => {
       optionsJSON.value.map(selected => {
@@ -75,7 +98,7 @@
 </script>
 
 <template>
-  <h1 class="pt-5">Конфигурация</h1>
+  <h1 class="pt-5">Конфигурация преобразователя частоты</h1>
   <div v-if="options.loading || invertor.loading">
     Загружаю ...
   </div>
@@ -87,33 +110,32 @@
           <Button icon="pi pi-arrow-circle-left" label="В конфигурации" severity="info"/>          
         </RouterLink>
         <Button label="Скачать PDF" severity="help" icon="pi pi-download" @click="" class="ml-2"/>
-        <p class="text-sm mt-5">Преобразователь частоты</p>
-        <p class="text-3xl font-bold">{{ invertor.data.name }}</p>
+        <!-- <p class="text-sm mt-5">Преобразователь частоты</p> -->
+        <p class="text-3xl font-bold  mt-5">{{ invertor.data.name }}</p>
         <p class="text-sm">Серия: {{ serie.data.name }}</p>
-        <p class="text-sm pb-5">Призводитель: {{ invertor.data.manufactory_str }}</p>
+        <p class="text-sm pb-5">Призводитель: {{ invertor.data.manufactory_str }}/Аспект</p>
         
-        <img v-if="serie.data.photo" :src="`${baseUrl.baseUrl}${serie.data.photo}`" height="350">
-        <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
+        <div class="mt-5">
+          <img v-if="serie.data.photo" :src="`${baseUrl.baseUrl}${serie.data.photo}`" height="350">
+          <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
+        </div>
       </div>
 
-      <div class="col-5" >
+      <div class="col-5 mt-5">
         <img v-if="serie.data.schema" :src="`${baseUrl.baseUrl}${serie.data.schema}`" width="600">
         <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
       </div>
 
 
-
+      <div class="col-4" >
       <Tabs value="0">
         <TabList>
             <Tab value="0">Характеристики</Tab>
-            <Tab value="1">Входы/Выходы</Tab>
-            <Tab value="2">Доступные опции</Tab>
+            <Tab value="1">Входы/Выходы управления</Tab>
         </TabList>
         <TabPanels>
           <TabPanel value="0">
-            Характеристики
-
-      <!-- <div class="col-4" >
+     
         <div class="field grid">
           <label class="col-fixed font-semibold" style="width:200px">Мощность</label>
           <div class="col">
@@ -164,7 +186,7 @@
           <div class="col">
             <div>
                 <div class="mt-1" style="width: 100%"><Tag value="Метод" severity="warn" /> {{ invertor.data.type_of_control_str }}</div>
-                <div class="mt-1" style="width: 100%"><Tag value="Команды" severity="danger" /> {{  }}</div> 
+                <div class="mt-1" style="width: 100%"><Tag value="Способ" severity="danger" /> {{ invControl }}</div> 
               </div>
           </div>
         </div>            
@@ -220,6 +242,14 @@
           </div>
         </div>            
 
+        <Divider/>
+        <div class="field grid">
+          <label class="col-fixed font-semibold" style="width:200px">Доступные типы опций</label>
+          <div class="col">
+            {{ availableOptions }}
+          </div>
+        </div>            
+
 
         <Divider/>
         <div class="field grid">
@@ -228,15 +258,10 @@
             {{ serie.data.description }}
           </div>
         </div>            
-
-    </div> -->
-
-
       </TabPanel>
 
       <TabPanel value="1">
         <div class="field grid">
-          <label class="col-fixed font-semibold" style="width:200px">Входы/Выходы управления</label>
           <div class="col">
             <DataTable v-if="!signals.loading" :value="signals.data" stripedRows tableStyle="min-width: 40rem">
               <Column field="signal_str" header="Сигнал" headerStyle="width: 10%"></Column>
@@ -245,19 +270,15 @@
           </div>
         </div>            
       </TabPanel>
-
-      <TabPanel value="2">
-        Опции
-      </TabPanel>
-
     </TabPanels>
   </Tabs>
 
 
 
     </div>
+  </div>
 
-  <h1 class="mt-5">Опции ({{ optionsSelected.length }})</h1>
+  <h1 class="mt-5">Выбранные опции ({{ optionsSelected.length }})</h1>
 
   <DataTable v-if="!options.loading" :value="optionsSelected" stripedRows tableStyle="min-width: 50rem">
         <Column field="name" header="Наименование" headerStyle="width: 10%"></Column>

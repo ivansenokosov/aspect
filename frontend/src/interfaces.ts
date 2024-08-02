@@ -141,6 +141,7 @@ export interface IInvOption {
     price: string
     waiting_period: string
     quantity: string
+    option_type: string
 }
 
 export interface IInvOptionData {

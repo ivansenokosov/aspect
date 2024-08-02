@@ -31,7 +31,7 @@
     })
 
     const auth = async () => {
-        const url:string =  baseUrl.baseUrl + 'login/login' 
+        const url:string =  baseUrl.baseUrl + 'users/login' 
         const config = { headers: { 'content-type': 'application/json', }, };
         const formData = new FormData();       
 

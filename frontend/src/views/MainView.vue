@@ -26,7 +26,7 @@
       <SelectSimpleList url="Inv_input_voltage" title="Входное напряжение" v-model="invInputVolage"/>
     </div>
     <div class="col">
-      <SelectSimpleList url="Type_of_control" title="Тип управления" v-model="invTypeOfControl"/>
+      <SelectSimpleList url="Type_of_control" title="Метод управления" v-model="invTypeOfControl"/>
     </div>
     <div class="col">
       <SelectSimpleList url="Variants_of_control" title="Способ управления" v-model="invVariantOfControl"/>
