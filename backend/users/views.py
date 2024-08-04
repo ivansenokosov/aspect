@@ -3,63 +3,207 @@ from rest_framework.response import Response
 from rest_framework.exceptions import AuthenticationFailed
 from users.serializers import UserSerializer
 from django.contrib.auth.models import User
+
 from fpdf import FPDF
+from fpdf.fonts import FontFace
+from fpdf.enums import TableCellFillMode
 from django.http import HttpResponse
 
-
-# import datetime
-# import jwt
+from userconfigs.models import UserInvConfigs
+from directories.models import *
+import json
 
 class PDF(FPDF):
     def header(self):
-        # Logo
-        # self.image('media/inv_series/FCI.jpg', 10, 8, 33)
-        # Arial bold 15
-        self.set_font('Arial', 'B', 15)
-        # Move to the right
-        self.cell(80)
-        # Title
-        self.cell(30, 10, 'Title', 1, 0, 'C')
-        # Line break
-        self.ln(20)
+        self.image("static/aspect_logo.jpg", 10, 8, 33)
 
-    # Page footer
+
     def footer(self):
-        # Position at 1.5 cm from bottom
         self.set_y(-15)
-        # Arial italic 8
-        self.set_font('Arial', 'I', 8)
-        # Page number
-        self.cell(0, 10, 'Page ' + str(self.page_no()) + '/{nb}', 0, 0, 'C')
-
-
+        self.add_font("dejavu-sans", style="", fname="static/fonts/DejaVuSans.ttf")
+        self.set_font('dejavu-sans', '', 8)
+        self.set_text_color(128)
+        self.cell(0, 10, f"Страница {self.page_no()}", align="C")
 
 def CreatePDF(request):
-    pdf = FPDF()
-    pdf.add_page()    
-    pdf.add_font('DejaVu', '', 'static/fonts/DejaVuSansCondensed.ttf', uni=True)
-    pdf.set_font('DejaVu', '', 8)
-    
-    text = u"""
-    English: Hello World
-    Greek: Γειά σου κόσμος
-    Polish: Witaj świecie
-    Portuguese: Olá mundo
-    Russian: Здравствуй, Мир
-    Vietnamese: Xin chào thế giới
-    Arabic: مرحبا العالم
-    Hebrew: שלום עולם
-    """
+    if request.method == 'GET':
+        # id = request.GET['id']
+        id = 5
 
-    pdf.image(name = 'http://localhost:8000/media/inv_series/FCI.png', x=10, y=8, w=33)
+        userconfig = UserInvConfigs.objects.get(id = id)
+        invertor = Invertors.objects.get(id = userconfig.invertor.id)
 
-    for txt in text.split('\n'):
-        pdf.write(8, txt)
-        pdf.ln(8)
+        aval_controls = Inv_type_of_control.objects.all().filter(serie = invertor.serie.id)
+        aval_control_str = ''
+        for i in aval_controls:
+            aval_control_str += i.control.name + ', '
+
+        aval_type_of_options = Inv_options.objects.all().filter(series__icontains = str(invertor.serie.id)).values('option__name').distinct()
+
+        aval_type_of_options_str = ''
+        for i in aval_type_of_options:
+            aval_type_of_options_str += i['option__name'] + ', '
 
 
-    response = HttpResponse(bytes(pdf.output(dest='S').encode('latin-1')), content_type='application/pdf')
-    response['Content-Disposition'] = "attachment; filename=myfilename.pdf"
+    pdf = PDF()
+    pdf.add_page()
+    pdf.add_font("dejavu-sans", style="", fname="static/fonts/DejaVuSans.ttf")
+    pdf.add_font("dejavu-sans", style="b", fname="static/fonts/DejaVuSans-Bold.ttf")
+    pdf.add_font("dejavu-sans", style="i", fname="static/fonts/DejaVuSans-Oblique.ttf")
+    pdf.add_font("dejavu-sans", style="bi", fname="static/fonts/DejaVuSans-BoldOblique.ttf")
+    # Different type of the same font design.
+    pdf.add_font("dejavu-sans-narrow", style="", fname="static/fonts/DejaVuSansCondensed.ttf")
+    pdf.add_font("dejavu-sans-narrow", style="i", fname="static/fonts/DejaVuSansCondensed-Oblique.ttf")
+    pdf.set_font('dejavu-sans', '', 10)
+
+# -------- Предварительное ценовое предложение
+    pdf.cell(80)
+    pdf.cell(30, 30, "Предварительное ценовое предложение", border=0, align="C")
+    pdf.ln(30)
+
+    greyscale = 200
+
+    with pdf.table(cell_fill_color=greyscale, cell_fill_mode="ROWS") as table:
+        row = table.row()
+        row.cell('Тип оборудования')
+        row.cell('Преобразователь частоты')
+
+        row = table.row()
+        row.cell('Наименование')
+        row.cell(invertor.name)
+
+        row = table.row()
+        row.cell('Серия: ' + invertor.serie.name + '''
+                 
+                 
+
+
+
+
+
+                 ''')
+        row.cell(img='http://localhost:8000/' + invertor.serie.photo.url)
+
+        row = table.row()
+        row.cell('Мощность')
+        row.cell('Pg: ' + str(invertor.p_heavy_g) + ', Pp: ' +  str(invertor.p_pumps_p))
+
+        row = table.row()
+        row.cell('Перегрузочная способность')
+        row.cell('Режиим G:' + invertor.serie.type_of_overload.g_mode + '. Режим P: ' + invertor.serie.type_of_overload.p_mode + '. (не  чаще 1 раза в 10 мин)')
+
+        row = table.row()
+        row.cell('Диапазон напряжений на входе')
+        row.cell(invertor.input_voltage.name)
+
+        row = table.row()
+        row.cell('Диапазон напряжений на выходе')
+        row.cell(invertor.serie.output_voltage.name)
+
+        row = table.row()
+        row.cell('Метод управления')
+        row.cell(invertor.serie.type_of_control.name)
+
+        row = table.row()
+        row.cell('Способ управления')
+        row.cell(aval_control_str)
+
+        row = table.row()
+        row.cell('Точность регулирования частоты')
+        row.cell(invertor.serie.type_of_accuracy_freq.name)
+
+        row = table.row()
+        row.cell('Тип панели')
+        row.cell(invertor.serie.type_of_panel.name)
+
+        row = table.row()
+        row.cell('EMC дроссель')
+        row.cell(invertor.type_of_emc_drossel.name)
+
+        row = table.row()
+        row.cell('DC дроссель')
+        row.cell(invertor.type_of_dc_drossel.name)
+
+        row = table.row()
+        row.cell('Тормозной модуль')
+        row.cell(invertor.type_of_break_module.name)
+
+        row = table.row()
+        row.cell('Уровень защиты')
+        row.cell(invertor.serie.level_IP.name)
+
+        row = table.row()
+        row.cell('Температура окр. среды')
+        row.cell(invertor.serie.ambient_temperature.name)
+
+        row = table.row()
+        row.cell('Доступные опции')
+        row.cell(aval_type_of_options_str)
+
+        row = table.row()
+        row.cell('Дополнительное описание')
+        row.cell(invertor.serie.description)
+
+
+        row = table.row()
+        row.cell('Производитель')
+        row.cell(invertor.serie.manufactory.name + '/Аспект')
+
+# --------Входы/Выходы 
+    pdf.add_page()
+    pdf.cell(80)
+    pdf.cell(30, 30, "Входы/выходы управления", border=0, align="C")
+    pdf.ln(50)
+
+
+    input_output = Inv_spec_of_in_out.objects.filter(serie = invertor.serie.id)
+    with pdf.table(cell_fill_color=greyscale, cell_fill_mode="ROWS") as table:
+        row = table.row()
+        row.cell('Сигнал')
+        row.cell('Количество')
+        for signal in input_output:
+            row = table.row()
+            row.cell(signal.signal.name)
+            row.cell(str(signal.quantity))
+
+# ------ Выбранные опции
+    pdf.add_page()
+    pdf.cell(80)
+    pdf.cell(30, 30, "Выбранные опции", border=0, align="C")
+    pdf.ln(30)
+
+    selected_options_json = json.loads(userconfig.options)
+
+    with pdf.table(cell_fill_color=greyscale, cell_fill_mode="ROWS") as table:
+        row = table.row()
+        row.cell('Наименование')
+        row.cell('Описание')
+        row.cell('Доп.описание')
+        row.cell('Тип')
+        row.cell('Количество')
+        row.cell('Цена')
+        for i in selected_options_json:
+            option = Inv_options.objects.get(id = i)
+            row = table.row()
+            row.cell(option.name)
+            row.cell(option.full_title)
+            row.cell(option.short_title)
+            row.cell(option.option.name)
+            row.cell(str(option.item.quantity))
+            row.cell(str(option.price()))
+
+
+# ------ Схема
+    pdf.add_page()
+    pdf.cell(80)
+    pdf.cell(30, 30, "Схема", border=0, align="C")
+    pdf.ln(30)
+    schema_url = 'http://localhost:8000/' + invertor.serie.schema.url
+    pdf.image(schema_url, 10, 50, 180)
+
+
+    response = HttpResponse(bytes(pdf.output(dest='S')), content_type='application/pdf')
+    response['Content-Disposition'] = "attachment; filename=aspect.pdf"
     return response
 
 

@@ -372,6 +372,10 @@ class Inv_options(models.Model):
 
     def __str__(self):
         return f'{self.name}'
+    
+    def price(self):
+        p = Prices.objects.filter(item=self.item).first()
+        return p.price
 
 
     
