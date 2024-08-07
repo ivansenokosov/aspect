@@ -1,55 +1,42 @@
 <script setup lang="ts">
   import { ref } from 'vue' 
   import { useFetch } from '@/api/useFetch';
-  import type { IInvSerie, IInvSerieData, ISimpleData } from '@/interfaces.js';
+  import { RouterLink } from 'vue-router';
+  import { getValueFromDictionary } from '@/api/getValueFromDictionary';
+  import { FilterMatchMode } from '@primevue/core/api';
+  import type { ISimpleData, IInvertorData, IInvSerieData } from '@/interfaces.js';
+  
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
-  import { RouterLink, useRoute } from 'vue-router';
   import Button from 'primevue/button';
-  import InputText from 'primevue/inputtext';
   import Tag from 'primevue/tag';
-  const route = useRoute();
+  import InputText from 'primevue/inputtext';
+  import Select from 'primevue/select';
 
-  const props = defineProps(['url','title'])
   const data = ref<IInvertorData>({data:[], error: null, loading: true}) 
   const invDC = ref<ISimpleData>({data:[], error: null, loading: true})
   const invEMC = ref<ISimpleData>({data:[], error: null, loading: true})
   const invBreak = ref<ISimpleData>({data:[], error: null, loading: true})
+  const series = ref<IInvSerieData>({data:[], error: null, loading: true})
+  const seriesStr = ref<String[]>([])
+  const loading = ref<boolean>(true)
 
   async function loadData() {
     data.value = await useFetch('Invertors', {} );
     invDC.value = await useFetch('Inv_DC_drossel', {} );
     invEMC.value = await useFetch('Inv_EMC_drossel', {} );
     invBreak.value = await useFetch('Inv_breake_module', {} );
+    series.value = await useFetch('Inv_series', {} );
+
+    series.value.data.map(item => seriesStr.value.push(item.name))
+    loading.value = false
   }
 
-  function getDCname(id:number) {
-    const record = invDC.value.data.filter(item => item.id === id)[0]
-    if (record) {
-      return record.name
-    } else {
-      return 'не определено'
-    }
-  }
-
-  function getEMCname(id:number) {
-    const record = invEMC.value.data.filter(item => item.id === id)[0]
-    if (record) {
-      return record.name
-    } else {
-      return 'не определено'
-    }
-  }
-
-  function getBreakname(id:number) {
-    const record = invBreak.value.data.filter(item => item.id === id)[0]
-    if (record) {
-      return record.name
-    } else {
-      return 'не определено'
-    }    
-  }
-
+  const filters = ref({
+    global: { value: null, matchMode: FilterMatchMode.CONTAINS },    
+    name: { value: null, matchMode: FilterMatchMode.STARTS_WITH },
+    serie_str: { value: null, matchMode: FilterMatchMode.EQUALS },
+  });  
 
   loadData()
   
@@ -60,7 +47,7 @@
   <div v-if="data.error">
     <h2>Error: {{ data.error }}</h2>
   </div>
-  <div v-if="data.loading">
+  <div v-if="loading">
     <h2>Загружаю данные...</h2>
   </div>
   <div v-else>
@@ -74,25 +61,50 @@
         </RouterLink>
       </div>
     </div>
-    <div v-if="data.data.length > 0">
-      <DataTable :value="data.data" stripedRows tableStyle="min-width: 50rem" :loading="data.loading" paginator  :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]">
-        <Column field="name" header="Модель" sortable style="width: 15%"></Column>
-        <Column field="serie_str" header="Серия" sortable style="width: 10%"></Column>
+    <div v-if="data.data.length > 0 && series.data.length > 0">
+      <DataTable v-model:filters="filters" 
+                :value="data.data" 
+                stripedRows 
+                tableStyle="min-width: 50rem" 
+                :loading="data.loading" 
+                filterDisplay="row" 
+                paginator  
+                :rows="10" 
+                :rowsPerPageOptions="[5, 10, 20, 50]"
+                :globalFilterFields="['name', 'serie']"
+                >
+
+        <Column field="name" header="Модель" sortable style="width: 15%">
+          <template #body="{ data }">
+              {{ data.name }}
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+              <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Искать" />
+          </template>          
+        </Column>
+        <Column field="serie_str" header="Серия" sortable style="width: 10%">
+          <template #body="{ data }">
+            {{ data.serie_str }}
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+              <Select v-model="filterModel.value" @change="filterCallback()" :options="seriesStr" placeholder="Серия" style="min-width: 12rem" :showClear="true"/>
+          </template>
+        </Column>
         <Column field="input_voltage_str" header="Входное напряжение" width=""></Column>
         <Column field="size_str" header="Размер" width=""></Column>
         <Column header="DC дроссель" width="">
           <template #body="{ data }">
-            <span>{{ getDCname(data.type_of_dc_drossel) }}</span>
+            <span>{{ getValueFromDictionary(invDC.data, data.type_of_dc_drossel) }}</span>
           </template>          
         </Column>
         <Column header="EMC дроссель" width="">
           <template #body="{ data }">
-            <span>{{ getEMCname(data.type_of_emc_drossel) }}</span>
+            <span>{{ getValueFromDictionary(invEMC.data , data.type_of_emc_drossel) }}</span>
           </template>          
         </Column>
         <Column header="Тормозной модуль" width="">
           <template #body="{ data }">
-            <span>{{ getBreakname(data.type_of_break_module) }}</span>
+            <span>{{ getValueFromDictionary(invBreak.data, data.type_of_break_module) }}</span>
           </template>          
         </Column> 
 

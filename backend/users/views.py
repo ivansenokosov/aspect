@@ -5,8 +5,8 @@ from users.serializers import UserSerializer
 from django.contrib.auth.models import User
 
 from fpdf import FPDF
-from fpdf.fonts import FontFace
-from fpdf.enums import TableCellFillMode
+# from fpdf.fonts import FontFace
+# from fpdf.enums import TableCellFillMode
 from django.http import HttpResponse
 
 from userconfigs.models import UserInvConfigs
@@ -16,7 +16,10 @@ import json
 class PDF(FPDF):
     def header(self):
         self.image("static/aspect_logo.jpg", 10, 8, 33)
-
+        self.add_font("dejavu-sans", style="", fname="static/fonts/DejaVuSans.ttf")
+        self.set_font('dejavu-sans', '', 6)
+        self.ln(8)
+        self.write(5, '''ООО "АСПЕКТ". ул. Серафимы Дерябиной, дом 19/2 ‐ 91, Екатеринбург, Свердловская область, Россия, 620102, +7 (343) 204‐94‐50, info@ids‐drives.ru, ids‐drives.ru''')
 
     def footer(self):
         self.set_y(-15)
@@ -27,8 +30,8 @@ class PDF(FPDF):
 
 def CreatePDF(request):
     if request.method == 'GET':
-        # id = request.GET['id']
-        id = 5
+        id = int(request.GET['id'])
+        print(id)
 
         userconfig = UserInvConfigs.objects.get(id = id)
         invertor = Invertors.objects.get(id = userconfig.invertor.id)
@@ -44,6 +47,14 @@ def CreatePDF(request):
         for i in aval_type_of_options:
             aval_type_of_options_str += i['option__name'] + ', '
 
+        selected_options_json = json.loads(userconfig.options)
+
+        price = int(invertor.price())
+        option_price = 0
+        for i in selected_options_json:
+            option = Inv_options.objects.get(id = i)
+            option_price += int(option.price())
+
 
     pdf = PDF()
     pdf.add_page()
@@ -54,19 +65,30 @@ def CreatePDF(request):
     # Different type of the same font design.
     pdf.add_font("dejavu-sans-narrow", style="", fname="static/fonts/DejaVuSansCondensed.ttf")
     pdf.add_font("dejavu-sans-narrow", style="i", fname="static/fonts/DejaVuSansCondensed-Oblique.ttf")
-    pdf.set_font('dejavu-sans', '', 10)
 
 # -------- Предварительное ценовое предложение
-    pdf.cell(80)
-    pdf.cell(30, 30, "Предварительное ценовое предложение", border=0, align="C")
-    pdf.ln(30)
+    # pdf.cell(80)
+    # pdf.cell(30, 30, "Предварительное ценовое предложение", border=0, align="C")
+    pdf.ln(13)
+    pdf.set_font('dejavu-sans', 'B', 12)
+    pdf.write(7, "Предварительное ценовое предложение")
+    pdf.ln(13)
+    pdf.set_font('dejavu-sans', '', 9)
 
     greyscale = 200
 
-    with pdf.table(cell_fill_color=greyscale, cell_fill_mode="ROWS") as table:
+    with pdf.table(cell_fill_color=greyscale, cell_fill_mode="ROWS", borders_layout='NONE') as table:
         row = table.row()
         row.cell('Тип оборудования')
         row.cell('Преобразователь частоты')
+
+        row = table.row()
+        row.cell('Цена преобразователя (с НДС)')
+        row.cell(str(price) + ' руб.')
+
+        row = table.row()
+        row.cell('Цена выбранных опций (с НДС)')
+        row.cell(str(option_price) + ' руб.')
 
         row = table.row()
         row.cell('Наименование')
@@ -76,8 +98,6 @@ def CreatePDF(request):
         row.cell('Серия: ' + invertor.serie.name + '''
                  
                  
-
-
 
 
 
@@ -157,7 +177,7 @@ def CreatePDF(request):
 
 
     input_output = Inv_spec_of_in_out.objects.filter(serie = invertor.serie.id)
-    with pdf.table(cell_fill_color=greyscale, cell_fill_mode="ROWS") as table:
+    with pdf.table(cell_fill_color=greyscale, cell_fill_mode="ROWS", borders_layout='NONE') as table:
         row = table.row()
         row.cell('Сигнал')
         row.cell('Количество')
@@ -172,9 +192,7 @@ def CreatePDF(request):
     pdf.cell(30, 30, "Выбранные опции", border=0, align="C")
     pdf.ln(30)
 
-    selected_options_json = json.loads(userconfig.options)
-
-    with pdf.table(cell_fill_color=greyscale, cell_fill_mode="ROWS") as table:
+    with pdf.table(cell_fill_color=greyscale, cell_fill_mode="ROWS", borders_layout='NONE') as table:
         row = table.row()
         row.cell('Наименование')
         row.cell('Описание')
@@ -195,12 +213,19 @@ def CreatePDF(request):
 
 # ------ Схема
     pdf.add_page()
-    pdf.cell(80)
-    pdf.cell(30, 30, "Схема", border=0, align="C")
-    pdf.ln(30)
+    pdf.ln(15)
+    pdf.write(10,'Схема')
     schema_url = 'http://localhost:8000/' + invertor.serie.schema.url
     pdf.image(schema_url, 10, 50, 180)
 
+
+# ------ Документация
+    pdf.add_page()
+    pdf.ln(30)
+    pdf.write(10,'Документация')
+    pdf.ln(30)
+    schema_url = 'http://localhost:8000/media/link_to_doc.png'
+    pdf.image(schema_url, 10, 70, 40)
 
     response = HttpResponse(bytes(pdf.output(dest='S')), content_type='application/pdf')
     response['Content-Disposition'] = "attachment; filename=aspect.pdf"

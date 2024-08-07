@@ -11,7 +11,11 @@ class UserInvConfigsViewset(viewsets.ViewSet):
     serializer_class = UserInvConfigsSerializer
     
     def list(self, request):
-        queryset = UserInvConfigs.objects.all()
+        user_id = request.GET.get('user_id')
+        if user_id:
+            queryset = UserInvConfigs.objects.all().filter(user = user_id)
+        else:
+            queryset = UserInvConfigs.objects.all()
         serializer = self.serializer_class(queryset, many = True)
         return Response(serializer.data)
 

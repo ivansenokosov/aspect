@@ -352,6 +352,10 @@ class Invertors(models.Model):
         verbose_name = "Преобразователь частоты"
         verbose_name_plural = "Преобразователи частоты"
 
+    def price(self):
+        price = Prices.objects.filter(item = self.item).first()
+        return price.price
+
     def __str__(self):
         return f'{self.name}' 
 

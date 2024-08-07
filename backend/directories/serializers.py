@@ -305,3 +305,9 @@ class UserDictSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['id','first_name', 'last_name']
+
+class WaitingPeriodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Waiting_period
+        fields = '__all__'
+

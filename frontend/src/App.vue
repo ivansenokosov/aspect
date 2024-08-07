@@ -1,5 +1,7 @@
 <script setup lang="ts">
   import AppHeader from '@/components/AppHeader.vue'
+  import Divider from 'primevue/divider';
+  document.title = 'Акспект';
 </script>
 
 <template>
@@ -8,8 +10,12 @@
     <div class="content">
       <RouterView />
     </div>
+    <div class="footer mt-5">
+      <Divider/>
+       © 2024. ООО Аспект
+    </div>
   </div>
-</template>
+  </template>
 
 <style scoped>
   .container {

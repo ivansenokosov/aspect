@@ -16,6 +16,8 @@
   import Tab from 'primevue/tab';
   import TabPanels from 'primevue/tabpanels';
   import TabPanel from 'primevue/tabpanel';
+  import axios from "axios";
+  import { getValueFromDictionary } from "@/api/getValueFromDictionary";
 
   const route = useRoute()
   const baseUrl = useBaseUrl()
@@ -39,15 +41,19 @@
   const optionsPrice = ref<Number>(0)
   const optionsJSON = ref<any[]>([])
 
-  function getTypeOfOptionStr<String>(id: number, options: IInvOption[]) {
-    const record = options.filter(item => item.id === id)[0]
-    if (record) {
-      return record.name
-    } else {
-      return 'не определено'
-    }
+    async function savePDF() {
+    axios({
+      method: 'get',
+      url: baseUrl.baseUrl + 'users/invpdf?id=' + String(id.value),
+      responseType: 'arraybuffer'
+    }).then(function(response) {
+      let blob = new Blob([response.data], { type: 'application/pdf' })
+      let link = document.createElement('a')
+      link.href = window.URL.createObjectURL(blob)
+      link.download = 'aspect.pdf'
+      link.click()
+    })    
   }
-
 
   async function loadData() {
     id.value = route.query.id
@@ -109,7 +115,7 @@
         <RouterLink to="/config">
           <Button icon="pi pi-arrow-circle-left" label="В конфигурации" severity="info"/>          
         </RouterLink>
-        <Button label="Скачать PDF" severity="help" icon="pi pi-download" @click="" class="ml-2"/>
+        <Button label="Скачать PDF" severity="help" icon="pi pi-download" @click="savePDF" class="ml-2"/>
         <!-- <p class="text-sm mt-5">Преобразователь частоты</p> -->
         <p class="text-3xl font-bold  mt-5">{{ invertor.data.name }}</p>
         <p class="text-sm">Серия: {{ serie.data.name }}</p>
@@ -286,7 +292,7 @@
         <Column field="short_title" header="Доп. описание" headerStyle="width: 10%"></Column>
         <Column header="Тип" headerStyle="width: 10%">
           <template #body="{ data }">
-            <span>{{ getTypeOfOptionStr(data.option, typeOfOptions.data) }} </span>
+            <span>{{ getValueFromDictionary(typeOfOptions.data, data.option) }} </span>
           </template>
         </Column>
         

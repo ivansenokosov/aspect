@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, IInvertor, IInvSerieData, ISimpleDictionary } from '@/interfaces';
+    import type { ISimpleData, IInvertor, IInvSerieData, ISimpleDictionary, IItem, IItemData } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
@@ -10,9 +10,10 @@
     import FloatLabel from 'primevue/floatlabel';
     import Select from 'primevue/select';
     import Toast from 'primevue/toast';
+    import AutoComplete from 'primevue/autocomplete';
     import { useToast } from "primevue/usetoast";
 
-    const data            = ref<IInvertor>()
+    const data            = ref<IInvertor>([])
     const items           = ref<IItemData>({data:[], error: null, loading: true})
     const series          = ref<IInvSerieData>({data:[], error: null, loading: true})
     const invInputVoltage = ref<ISimpleData>({data:[], error: null, loading: true})
@@ -27,6 +28,7 @@
     const invInputVoltageData = ref<ISimpleDictionary>({name: '', id: 0})
     const invSizeData         = ref<ISimpleDictionary>({name: '', id: 0})
     const invSerieData        = ref<ISimpleDictionary>({name: '', id: 0})
+    const item                = ref<IItem>()
 
     const p_heavy_g           = ref<number>(0)
     const p_pumps_p           = ref<number>(0)
@@ -38,15 +40,17 @@
     const toast = useToast(); 
     const path = ref<string>('')      
 
+    const loading = ref<boolean>(true)
+
     const submission = async () => {
         saving.value = true
-        const url:string =  'Invertors/' + props.id + '/'
+        const url:string =  'Invertors/' 
         const config = { headers: { 'content-type': 'application/json', }, };
 
         const formData = new FormData();        
 
-        formData.append("item", data.value.data.item)
-        formData.append("name", data.value.data.name)
+        formData.append("item", item.value.id)
+        formData.append("name", data.value.name)
         formData.append("serie", invSerieData.value.id)
         formData.append("size", invSizeData.value.id)
         formData.append("type_of_emc_drossel", invEMCdata.value.id)
@@ -60,7 +64,7 @@
 
         const res = await AxiosInstance.post(url, formData, config)
           .then(function(response) {
-//          console.log(response);
+          console.log(response);
           toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
         }).catch(function(error) {
           console.log(error);
@@ -68,13 +72,20 @@
         saving.value = false
     }
 
+    const itemsDisplay = ref([]);
+    const search = (event) => {
+        itemsDisplay.value = event.query ? items.value.data.filter((item) => item.id.toString().includes(event.query.toString())) : items.value.data;
+    }    
+
     async function loadData() {
+        items.value           = await useFetch('Items', {});
         series.value          = await useFetch('Inv_series_dict', {});
         invInputVoltage.value = await useFetch('Inv_input_voltage', {});
         sizes.value           = await useFetch('Inv_sizes_dict', {});
         invBreakModule.value  = await useFetch('Inv_breake_module', {});
         invDC.value           = await useFetch('Inv_DC_drossel', {});
         invEMC.value          = await useFetch('Inv_EMC_drossel', {});
+        loading.value = false
     }
     
     loadData()
@@ -84,21 +95,21 @@
     <Toast />
 
     <h1 class="pt-5">Преобразователь частоты. Создание</h1>
-    <div v-if="invEMC.loading">
+    <div v-if="loading">
         loading ...
     </div>
     <div v-else class="pt-5">
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="item" v-model="data.data.item" class="w-full"/>
-                <label for="id">item</label>
+                <AutoComplete v-model="item" dropdown :suggestions="itemsDisplay" optionLabel="id" placeholder="item" @complete="search" class="w-full md:w-56" />
+                <label for="item">item</label>
             </FloatLabel>
         </div>
 
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.name" class="w-full"/>
+                <InputText id="title" v-model="data.name" class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>
@@ -174,7 +185,7 @@
             <RouterLink :to="`/dictionaries/Invertors/List`" rel="noopener">
                 <Button link label="Отменить" />
             </RouterLink>
-            <Button label="Сохранить" severity="success" icon="pi pi-check" iconPos="right" @click="submission" :loading="saving"/>
+            <Button label="Создать" severity="success" icon="pi pi-check" iconPos="right" @click="submission" :loading="saving"/>
         </div>
     </div>
 </template>

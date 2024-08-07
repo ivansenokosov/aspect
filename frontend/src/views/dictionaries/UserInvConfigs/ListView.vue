@@ -15,7 +15,9 @@
   import ProgressBar from 'primevue/progressbar';
   import { getValueFromDictionary } from '@/api/getValueFromDictionary';
   import moment from 'moment'
+  import { useUserStore } from '@/stores/user';
   
+  const user = useUserStore()
   const data = ref<IUserInvConfigData>({data:[], error: null, loading: true}) 
   const invertors = ref<ISimpleData>({data:[], error: null, loading: true}) 
   const options = ref<IInvOptionData>({data:[], error: null, loading: true}) 
@@ -25,7 +27,11 @@
   const toast = useToast();
 
   async function loadData() {
-    data.value = await useFetch('userconfigs/UserInvConfg/', {} );
+    if (user.userIsStaff) {
+      data.value = await useFetch('userconfigs/UserInvConfg/', {} ); // загружаем всё
+    } else {
+      data.value = await useFetch('userconfigs/UserInvConfg?user_id' + String(user.userId), {} ); // загружаем всё
+    }
     options.value = await useFetch('Inv_options', {} );
     invertors.value = await useFetch('Invertor_dict', {} );
     users.value = await useFetch('Users', {} );
@@ -105,7 +111,7 @@
     </div>
     <div v-if="data.data.length > 0">
       <DataTable :value="data.data" stripedRows tableStyle="min-width: 50rem" :loading="data.loading" paginator  :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]">
-        <Column header="Пользователь" sortable style="width: 15%">
+        <Column header="Пользователь" sortable style="width: 15%" v-if="user.userIsStaff">
           <template #body="{ data }" >
             {{ getUserName(users.data, data.user) }}
           </template>
@@ -125,11 +131,11 @@
               {{  moment(data.date).format('DD.MM.YYYY') }}
           </template>
         </Column>
-        <Column header="Состояние" width="">
+        <!-- <Column header="Состояние" width="">
           <template #body="{ data }">
               <ProgressBar :value="rnd()" :showValue="false" style="height: 6px"></ProgressBar>
           </template>
-        </Column>
+        </Column> -->
 
         <Column header="Действия"> 
           <template #body="slotProps">

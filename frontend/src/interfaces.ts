@@ -188,3 +188,17 @@ export interface IUserData {
     error: any
     loading: boolean
 }
+
+export interface IInvInputOuptput {
+    id : number
+    serie : number
+    signal : number
+    info: string
+    quantity: number
+}
+
+export interface IInvInputOuptputData {
+    data: IInvInputOuptput[]
+    error: any
+    loading: boolean
+}

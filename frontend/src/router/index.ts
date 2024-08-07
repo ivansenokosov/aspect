@@ -11,13 +11,15 @@ const checkAuth = (to: RouteLocationNormalized, from: RouteLocationNormalized, n
   }
 }
 
-
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
     {
       path: '/',
       name: 'home',
+      meta: {
+        title:'Аспект. Конфигуратор'
+      },
       component: () => import('../views/MainView.vue')
     },
 
@@ -463,6 +465,83 @@ const router = createRouter({
       component: () => import('../views/dictionaries/InvSeries/DeleteView.vue'),
       props: true        
     },    
+
+    // ------------------------- Опции инверторов -----------------
+    {
+      path: '/dictionaries/InvOptions/List',
+      name: 'InvOptionsList',
+      component: () => import('../views/dictionaries/InvOptions/ListView.vue')
+    },
+    {
+      path: '/dictionaries/InvOptions/Update/:id',
+      name: 'InvOptionsUpdate',
+      component: () => import('../views/dictionaries/InvOptions/UpdateView.vue'),
+      props: true        
+    },
+    {
+      path: '/dictionaries/InvOptions/Create',
+      name: 'InvOptionsCreate',
+      component: () => import('../views/dictionaries/InvOptions/CreateView.vue')
+    },
+    {
+      path: '/dictionaries/InvOptions/Delete/:id',
+      name: 'InvOptionsDelete',
+      component: () => import('../views/dictionaries/InvOptions/DeleteView.vue'),
+      props: true        
+    },    
+    // ------------------------- Items -----------------
+    {
+      path: '/dictionaries/Items/List',
+      name: 'ItemsList',
+      component: () => import('../views/dictionaries/Items/ListView.vue')
+    },
+    // ------------------------- Сроки ожидания -----------------
+    {
+      path: '/dictionaries/WaitingPeriod/List',
+      name: 'WaitingPeriodList',
+      component: () => import('../views/dictionaries/WaitingPeriod/ListView.vue')
+    },
+    {
+      path: '/dictionaries/WaitingPeriod/Update/:id',
+      name: 'WaitingPeriodUpdate',
+      component: () => import('../views/dictionaries/WaitingPeriod/UpdateView.vue'),
+      props: true        
+    },
+    {
+      path: '/dictionaries/WaitingPeriod/Create',
+      name: 'WaitingPeriodCreate',
+      component: () => import('../views/dictionaries/WaitingPeriod/CreateView.vue')
+    },
+    {
+      path: '/dictionaries/WaitingPeriod/Delete/:id',
+      name: 'WaitingPeriodDelete',
+      component: () => import('../views/dictionaries/WaitingPeriod/DeleteView.vue'),
+      props: true        
+    },    
+    // ------------------------- Управление Вход/выход -----------------
+    {
+      path: '/dictionaries/InputOutput/List',
+      name: 'InputOutputList',
+      component: () => import('../views/dictionaries/InputOutput/ListView.vue')
+    },
+    {
+      path: '/dictionaries/InputOutput/Update/:id',
+      name: 'InputOutputUpdate',
+      component: () => import('../views/dictionaries/InputOutput/UpdateView.vue'),
+      props: true        
+    },
+    {
+      path: '/dictionaries/InputOutput/Create',
+      name: 'InputOutputCreate',
+      component: () => import('../views/dictionaries/InputOutput/CreateView.vue')
+    },
+    {
+      path: '/dictionaries/InputOutput/Delete/:id',
+      name: 'InputOutputDelete',
+      component: () => import('../views/dictionaries/InputOutput/DeleteView.vue'),
+      props: true        
+    },    
+
   ]
 })
 

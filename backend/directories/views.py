@@ -903,7 +903,7 @@ class InvSizesDictViewset(viewsets.ModelViewSet):
 #--------------------------- Серии для комбо --------------------------------------
 class InvSeriesDictViewset(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
-    queryset = Inv_series.objects.all()
+    queryset = Inv_series.objects.all().order_by('name')
     serializer_class = InvSerieDict  
 
 #--------------------------- Перегрузки для комбо --------------------------------------
@@ -924,3 +924,8 @@ class UserDictViewset(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserDictSerializer    
  
+#--------------------------- Сроки ожидания --------------------------------------
+class WaitingPeriodViewset(viewsets.ModelViewSet):
+    permission_classes = [permissions.AllowAny]
+    queryset = Waiting_period.objects.all()
+    serializer_class = WaitingPeriodSerializer    

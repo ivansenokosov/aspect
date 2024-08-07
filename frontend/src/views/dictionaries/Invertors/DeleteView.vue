@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, IInvertorData, IInvSerieData, ISimpleDictionary } from '@/interfaces';
+    import type { ISimpleData, IInvSerieData, ISimpleDictionary } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
@@ -44,7 +44,7 @@
 
         AxiosInstance.delete(url,{})
                      .then((res) => {
-                        router.push('/dictionaries/' + path.value + '/List')
+                        router.push('dictionaries/Invertors/List')
                      })
     }
 

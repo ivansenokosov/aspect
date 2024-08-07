@@ -88,14 +88,14 @@ const menuItems = ref<IMenuItem[]>([
         label: 'Конфигурации',
         icon: 'pi pi-cog',
         route: '/config',
-        show: computed((): boolean => true),// isUser()),
+        show: computed((): boolean => isUser()),
         badge: 0,
         level: 1
     },
     {
         label: 'Справочники',
         icon: 'pi pi-search',
-        show: computed(():boolean => true), //isStuff()), 
+        show: computed(():boolean => isStuff()), 
         level: 1,
         items: [
             {
@@ -108,13 +108,13 @@ const menuItems = ref<IMenuItem[]>([
                 label: 'Опции для ПЧ',
                 icon: 'pi pi-bolt',
                 show: computed((): boolean => true),
-                route: '/'
+                route: '/dictionaries/InvOptions/List'
             },
             {
                 label: 'Элементы',
                 icon: 'pi pi-objects-column',
                 show: computed((): boolean => true),
-                route: '/'
+                route: '/dictionaries/Items/List'
            },
             {
                 separator: true
@@ -127,9 +127,9 @@ const menuItems = ref<IMenuItem[]>([
            },
            {
                 label: 'Входы/выходы',
-                icon: '',
+                icon: 'pi pi-book',
                 show: computed((): boolean => true),
-                route: '/'
+                route: '/dictionaries/InputOutput/List'
            },
            {
                 label: 'Общие',
@@ -147,6 +147,12 @@ const menuItems = ref<IMenuItem[]>([
                         icon: 'pi pi-book',
                         show: computed((): boolean => true),
                         route: '/dictionaries/TypeOfItems/List'
+                    },
+                    {
+                        label: 'Сроки ожидания',
+                        icon: 'pi pi-book',
+                        show: computed((): boolean => true),
+                        route: '/dictionaries/WaitingPeriod/List'
                     },
                        ]
            }, 
@@ -186,12 +192,12 @@ const menuItems = ref<IMenuItem[]>([
                         show: computed((): boolean => true),
                         route: '/dictionaries/InvDCDrossel/List'
                     },
-                    {
-                        label: 'Мощности',
-                        icon: '',
-                        show: computed((): boolean => true),
-                        route: '/'
-                    },
+                    // {
+                    //     label: 'Мощности',
+                    //     icon: '',
+                    //     show: computed((): boolean => true),
+                    //     route: '/'
+                    // },
                     {
                         label: 'Тормозные модули',
                         icon: 'pi pi-book',
@@ -323,7 +329,9 @@ const menuItems = ref<IMenuItem[]>([
         </template> 
         
         <template #end>
-            <span v-if="userStore.userId > 0" @click="() => { userStore.userId=0; userStore.userName = ''; userStore.userIsStaff = false}">
+            <div class="flex items-center align-items-center gap-2">
+                <div class="text-xl font-semibold pr-5">8 (800) 350-79-07</div>
+                <span v-if="userStore.userId > 0" @click="() => { userStore.userId=0; userStore.userName = ''; userStore.userIsStaff = false}">
                 <span class="flex align-items-center menu-exit">
                     <Button severity="contrast" class="flex align-items-center" >
                         <span class="pi pi-sign-in p-menuitem-icon"></span>
@@ -339,9 +347,13 @@ const menuItems = ref<IMenuItem[]>([
                     </Button>
                 </span>
             </span>
+            </div>
+
         </template>
 
     </Menubar>
+
+
     <Dialog v-model:visible="visible" modal header="Вход в личный кабинет" :style="{ width: '25rem' }">
             <div class="flex items-center gap-4 mb-4">
                 <InputGroup>

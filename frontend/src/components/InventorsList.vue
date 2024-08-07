@@ -16,6 +16,8 @@
   import Toast from 'primevue/toast';
   import { useToast } from "primevue/usetoast";
   import AxiosInstance from '@/api/axiosInstance';
+  import { getValueFromDictionary } from '@/api/getValueFromDictionary';
+  
 
   const props = defineProps(['invInputVolage','invTypeOfControl','invVariantOfControl','invEMC','invDC','invBreak','power','error'])
   const baseUrl = useBaseUrl()
@@ -54,40 +56,35 @@
     optionsDisplay.value = {...options.value}
   };
 
-  function getTypeOfOptionStr<String>(id: number) {
-    const record = typeOfOptions.value.data.filter(item => item.id === id)[0]
-    if (record) {
-      return record.name
-    } else {
-      return 'не определено'
-    }
-  }
-
   async function addUserInvConfig() {
-      saving.value = true
-      const url:string =  'userconfigs/UserInvConfg/' 
-      const config = { headers: { 'content-type': 'application/json', }, };
-      const selectedOptionsStr = ref<String>('')
+      if (user.UserID > 0) {
+        saving.value = true
+        const url:string =  'userconfigs/UserInvConfg/' 
+        const config = { headers: { 'content-type': 'application/json', }, };
+        const selectedOptionsStr = ref<String>('')
 
-      if (selectedOptions) {
-        selectedOptionsStr.value  = selectedOptions.value.map(a => a.id.toString())
+        if (selectedOptions) {
+          selectedOptionsStr.value  = selectedOptions.value.map(a => a.id.toString())
+        }
+
+        const formData = new FormData();        
+
+        formData.append("user", user.userId)
+        formData.append("invertor", product.value.id)
+        formData.append("options", JSON.stringify(selectedOptionsStr.value))
+        
+        const res = await AxiosInstance.post(url, formData, config)
+          .then(function(response) {
+            toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
+            console.log(response);
+        }).catch(function(error) {
+          console.log(error);
+        })
+        saving.value = false
+      } else {
+        noAuthVisible.value = true
       }
-
-      const formData = new FormData();        
-
-      formData.append("user", user.userId)
-      formData.append("invertor", product.value.id)
-      formData.append("options", JSON.stringify(selectedOptionsStr.value))
-      
-      const res = await AxiosInstance.post(url, formData, config)
-        .then(function(response) {
-          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
-          console.log(response);
-      }).catch(function(error) {
-        console.log(error);
-      })
-      saving.value = false
-  }
+    }
 
   watch(selectedTypeOFOptions, () => {
     if (selectedTypeOFOptions) {
@@ -107,6 +104,11 @@
     selectedOptions.value.map(item => optionsPrice.value = optionsPrice.value + Number(item.price))
   })
   //------- данные модала } 
+
+  //------- моддал с требованием авторизации {
+    const noAuthVisible = ref(false);
+  //------- моддал с требованием авторизации }
+  
 
   const product = ref<IInvertor>([{name: ''}]);
   const productDialog = ref(false);
@@ -293,8 +295,8 @@
         <Column field="full_title" header="Описание" headerStyle="width: 10%"></Column>
         <Column field="short_title" header="Доп. описание" headerStyle="width: 10%"></Column>
         <Column header="Тип" headerStyle="width: 10%">
-          <template #body="{ data }">
-            <span>{{ getTypeOfOptionStr(data.option) }} </span>
+          <template #body="{ data }" v-if="!typeOfOptions.loading">
+            <span>{{ getValueFromDictionary(typeOfOptions.data, data.option) }} </span>
           </template>
         </Column>
         
@@ -319,10 +321,18 @@
 
             <template #footer>
                 <Button label="Закрыть" severity="secondary" icon="pi pi-times" text @click="hideDialog" />
-                <Button label="Скачать PDF" severity="help"  v-if="user.userId > 0" icon="pi pi-download" @click="" />
-                <Button label="Сохранить в мои конфигурации" v-if="user.userId > 0" :loading="saving" icon="pi pi-save" @click="addUserInvConfig" />
+                <!-- <Button label="Скачать PDF" severity="help"  icon="pi pi-download" @click="savePDF" /> -->
+                <Button label="Сохранить в мои конфигурации" :loading="saving" icon="pi pi-save" @click="addUserInvConfig" />
             </template> 
         </Dialog>
+<!-- Модал нет авторизации -->
+        <Dialog v-model:visible="noAuthVisible" modal header="Войдите в личный кабинет" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">
+            <p class="m-0">
+                <p>Для использования этой функции войдите в личный кабинет.</p>
+                <p>Если у вас нет личного кабинета, свяжитесь с ..... </p>
+            </p>
+        </Dialog>
+
 
   </div>
 </template>
