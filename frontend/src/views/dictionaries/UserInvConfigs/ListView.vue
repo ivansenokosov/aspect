@@ -27,11 +27,13 @@
   const toast = useToast();
 
   async function loadData() {
+    let url:string
     if (user.userIsStaff) {
-      data.value = await useFetch('userconfigs/UserInvConfg/', {} ); // загружаем всё
+      url = 'userconfigs/UserInvConfg/'
     } else {
-      data.value = await useFetch('userconfigs/UserInvConfg?user_id' + String(user.userId), {} ); // загружаем всё
+      url = 'userconfigs/UserInvConfg?user_id=' + String(user.userId)
     }
+    data.value = await useFetch(url, {} ); // загружаем всё
     options.value = await useFetch('Inv_options', {} );
     invertors.value = await useFetch('Invertor_dict', {} );
     users.value = await useFetch('Users', {} );
@@ -94,6 +96,7 @@
 </script> 
 
 <template>
+  {{ user.userIsStaff }}
     <Toast />
     <ConfirmDialog></ConfirmDialog>
 

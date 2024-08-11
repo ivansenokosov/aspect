@@ -929,3 +929,45 @@ class WaitingPeriodViewset(viewsets.ModelViewSet):
     permission_classes = [permissions.AllowAny]
     queryset = Waiting_period.objects.all()
     serializer_class = WaitingPeriodSerializer    
+
+#--------------------------- Prices --------------------------------------
+class PricesViewset(viewsets.ViewSet):
+    permission_classes = [permissions.AllowAny]
+    queryset = Prices.objects.all()
+    serializer_class = PricesSerializer
+    
+    def list(self, request):
+        item = request.GET.get('item')
+        if item:
+            queryset = Prices.objects.all().filter(item = item).order_by('-date')
+        else:
+            queryset = Prices.objects.all().order_by('-date')
+        serializer = self.serializer_class(queryset, many = True)
+        return Response(serializer.data)
+    
+    def create(self, request):
+        serializer = self.serializer_class(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status = 400)
+
+    def retrieve(self, request, pk=None):
+        object = self.queryset.get(pk=pk)
+        serializer = self.serializer_class(object)
+        return Response(serializer.data)
+
+    def update(self, request, pk=None):
+        object = self.queryset.get(pk=pk)
+        serializer = self.serializer_class(object, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors, status = 400)        
+
+    def destroy(self, request, pk=None):
+        company = self.queryset.get(pk=pk)
+        company.delete()
+        return Response(status = 204) 

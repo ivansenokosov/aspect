@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { ref, watch, defineProps } from 'vue' 
+  import { useRouter } from 'vue-router'
   import type { IInvertorData, IInvertor, IInvAvalControlData,  IInvSerieData, IInvOptionData, IInvOption, ISimpleData, ISimpleDictionary } from '@/interfaces.js';
   import { useFetch } from '@/api/useFetch';
   import Tag from 'primevue/tag';
@@ -23,6 +24,7 @@
   const baseUrl = useBaseUrl()
   const user = useUserStore()
   const toast = useToast()  
+  const router = useRouter()
 
   const data = ref<IInvertorData>({data:[], error: null, loading: true})  // Все инверторы
   const dataDisplay = ref<IInvertor[]>([]) // Инверторы после фильтров
@@ -57,9 +59,9 @@
   };
 
   async function addUserInvConfig() {
-      if (user.UserID > 0) {
+      if (user.userId > 0) {
         saving.value = true
-        const url:string =  'userconfigs/UserInvConfg/' 
+        const url:string =  'userconfigs/UserInvConfg/'
         const config = { headers: { 'content-type': 'application/json', }, };
         const selectedOptionsStr = ref<String>('')
 
@@ -76,6 +78,7 @@
         const res = await AxiosInstance.post(url, formData, config)
           .then(function(response) {
             toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
+            router.push('inv_config/?id=' + response.data.id)
             console.log(response);
         }).catch(function(error) {
           console.log(error);

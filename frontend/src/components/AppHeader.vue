@@ -283,6 +283,14 @@ const menuItems = ref<IMenuItem[]>([
         ]
     },
     {
+        label: 'Upload',
+        icon: 'pi pi-upload',
+        route: '/upload',
+        show: computed((): boolean => true),
+        badge: 0,
+        level: 1
+    },
+    {
         label: 'Контакты',
         icon: 'pi pi-envelope',
         route: '/contacts',

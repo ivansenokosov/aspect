@@ -44,6 +44,14 @@ const router = createRouter({
     },
 
     {
+      path: '/upload',
+      name: 'upload',
+      component: () => import('../views/ParseXSLX.vue'),
+//      beforeEnter: checkAuth,
+    },
+
+
+    {
       path: '/auth',
       name: 'auth',
       component: () => import('../views/AuthView.vue')

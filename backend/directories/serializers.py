@@ -311,3 +311,7 @@ class WaitingPeriodSerializer(serializers.ModelSerializer):
         model = Waiting_period
         fields = '__all__'
 
+class PricesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Prices
+        fields = '__all__'

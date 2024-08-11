@@ -13,14 +13,12 @@ from userconfigs.models import UserInvConfigs
 from directories.models import *
 import json
 
-class PDF(FPDF):
-    def header(self):
-        self.image("static/aspect_logo.jpg", 10, 8, 33)
-        self.add_font("dejavu-sans", style="", fname="static/fonts/DejaVuSans.ttf")
-        self.set_font('dejavu-sans', '', 6)
-        self.ln(8)
-        self.write(5, '''ООО "АСПЕКТ". ул. Серафимы Дерябиной, дом 19/2 ‐ 91, Екатеринбург, Свердловская область, Россия, 620102, +7 (343) 204‐94‐50, info@ids‐drives.ru, ids‐drives.ru''')
+def ifnull(var, val):
+  if var is None:
+    return val
+  return var
 
+class PDF(FPDF):
     def footer(self):
         self.set_y(-15)
         self.add_font("dejavu-sans", style="", fname="static/fonts/DejaVuSans.ttf")
@@ -67,17 +65,39 @@ def CreatePDF(request):
     pdf.add_font("dejavu-sans-narrow", style="i", fname="static/fonts/DejaVuSansCondensed-Oblique.ttf")
 
 # -------- Предварительное ценовое предложение
-    # pdf.cell(80)
-    # pdf.cell(30, 30, "Предварительное ценовое предложение", border=0, align="C")
+    pdf.image("static/aspect_logo.jpg", 10, 8, 45)
+    pdf.add_font("dejavu-sans", style="", fname="static/fonts/DejaVuSans.ttf")
+    pdf.set_font('dejavu-sans', '', 6)
+    pdf.ln(8)
+    pdf.write(5, '''ООО "АСПЕКТ". ул. Серафимы Дерябиной, дом 19/2 ‐ 91, Екатеринбург, Свердловская область, Россия, 620102, +7 (343) 204‐94‐50, info@ids‐drives.ru, ids‐drives.ru''')
     pdf.ln(13)
     pdf.set_font('dejavu-sans', 'B', 12)
-    pdf.write(7, "Предварительное ценовое предложение")
+    pdf.write(7, "Предварительное ценовое предложение № " + str(userconfig.user.id) + '/'  + str(userconfig.id))
     pdf.ln(13)
     pdf.set_font('dejavu-sans', '', 9)
+
+    schema_url = 'http://localhost:8000/media/link_to_doc.png'
 
     greyscale = 200
 
     with pdf.table(cell_fill_color=greyscale, cell_fill_mode="ROWS", borders_layout='NONE') as table:
+        row = table.row()
+        row = table.row()
+
+        row = table.row()
+        row.cell(''' 
+
+
+
+
+
+
+
+
+
+''')
+        row.cell(img='http://localhost:8000/' + invertor.serie.photo.url)
+
         row = table.row()
         row.cell('Тип оборудования')
         row.cell('Преобразователь частоты')
@@ -95,14 +115,17 @@ def CreatePDF(request):
         row.cell(invertor.name)
 
         row = table.row()
-        row.cell('Серия: ' + invertor.serie.name + '''
+        row.cell('Серия')
+        row.cell(invertor.serie.name)
+
+        row = table.row()
+        row.cell('''Документация
                  
                  
-
-
-
+                 
                  ''')
-        row.cell(img='http://localhost:8000/' + invertor.serie.photo.url)
+        row.cell(img = schema_url)
+
 
         row = table.row()
         row.cell('Мощность')
@@ -110,7 +133,7 @@ def CreatePDF(request):
 
         row = table.row()
         row.cell('Перегрузочная способность')
-        row.cell('Режиим G:' + invertor.serie.type_of_overload.g_mode + '. Режим P: ' + invertor.serie.type_of_overload.p_mode + '. (не  чаще 1 раза в 10 мин)')
+        row.cell('Режиим G:' + ifnull(invertor.serie.type_of_overload.g_mode,'') + '. Режим P: ' + ifnull(invertor.serie.type_of_overload.p_mode,'') + '. (не  чаще 1 раза в 10 мин)')
 
         row = table.row()
         row.cell('Диапазон напряжений на входе')
@@ -216,16 +239,8 @@ def CreatePDF(request):
     pdf.ln(15)
     pdf.write(10,'Схема')
     schema_url = 'http://localhost:8000/' + invertor.serie.schema.url
-    pdf.image(schema_url, 10, 50, 180)
+    pdf.image(schema_url, 10, 50, 150)
 
-
-# ------ Документация
-    pdf.add_page()
-    pdf.ln(30)
-    pdf.write(10,'Документация')
-    pdf.ln(30)
-    schema_url = 'http://localhost:8000/media/link_to_doc.png'
-    pdf.image(schema_url, 10, 70, 40)
 
     response = HttpResponse(bytes(pdf.output(dest='S')), content_type='application/pdf')
     response['Content-Disposition'] = "attachment; filename=aspect.pdf"

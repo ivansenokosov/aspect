@@ -34,6 +34,7 @@ router.register('Inv_overload_dict', views.InvOverloadDictViewset, 'Inv_overload
 router.register('Invertor_dict', views.InvertorDictViewset, 'Invertor_dict')  # для комбо
 router.register('Users', views.UserDictViewset, 'Users')  # для комбо
 router.register('Waiting_period', views.WaitingPeriodViewset, 'Waiting_period')  
+router.register('Prices', views.PricesViewset, 'Prices')  
 
 
 urlpatterns = router.urls

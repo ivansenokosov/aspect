@@ -14,11 +14,10 @@
   const data = ref<IItemData>({data:[], error: null, loading: true}) // Элементы
   const typeOfItems = ref<ISimpleData>({data:[], error: null, loading: true}) // Типы элементов
   const waitingPeriod = ref<ISimpleData>({data:[], error: null, loading: true}) // Сроки ожидания
-
-
   const loading = ref<boolean>(true)
 
-  async function loadData() {
+
+    async function loadData() {
     data.value       = await useFetch('Items', {} );
     typeOfItems.value       = await useFetch('Type_of_items', {} );
     waitingPeriod.value       = await useFetch('Waiting_period', {} );
@@ -49,11 +48,11 @@
       <div class="col-10">
         <h1 class="pt-5">Справочник «Items»</h1>
       </div>
-      <!-- <div class="col-2 flex justify-content-end flex-wrap">
-        <RouterLink :to="`/dictionaries/InvOptions/Create/`" rel="noopener">
+      <div class="col-2 flex justify-content-end flex-wrap">
+  <!-- <RouterLink :to="`/dictionaries/InvOptions/Create/`" rel="noopener">
           <Button label="Создать" severity="info"></Button>
-        </RouterLink>
-      </div> -->
+        </RouterLink> -->
+      </div>
     </div>
     <div v-if="data.data.length > 0">
       <DataTable  

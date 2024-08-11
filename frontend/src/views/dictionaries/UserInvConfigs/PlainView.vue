@@ -113,7 +113,7 @@
 
       <div class="col-3 mt-5">
         <RouterLink to="/config">
-          <Button icon="pi pi-arrow-circle-left" label="В конфигурации" severity="info"/>          
+          <Button icon="pi pi-arrow-circle-left" label="Мои конфигурации" severity="info"/>          
         </RouterLink>
         <Button label="Скачать PDF" severity="help" icon="pi pi-download" @click="savePDF" class="ml-2"/>
         <!-- <p class="text-sm mt-5">Преобразователь частоты</p> -->
