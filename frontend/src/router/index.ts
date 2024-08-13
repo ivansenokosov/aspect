@@ -33,7 +33,7 @@ const router = createRouter({
       path: '/config',
       name: 'config',
       component: () => import('../views/dictionaries/UserInvConfigs/ListView.vue'),
-//      beforeEnter: checkAuth,
+      beforeEnter: checkAuth,
     },
 
     {
@@ -47,7 +47,7 @@ const router = createRouter({
       path: '/upload',
       name: 'upload',
       component: () => import('../views/ParseXSLX.vue'),
-//      beforeEnter: checkAuth,
+      beforeEnter: checkAuth,
     },
 
 

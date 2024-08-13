@@ -286,7 +286,7 @@ const menuItems = ref<IMenuItem[]>([
         label: 'Upload',
         icon: 'pi pi-upload',
         route: '/upload',
-        show: computed((): boolean => true),
+        show: computed((): boolean => isStuff()),
         badge: 0,
         level: 1
     },
@@ -363,6 +363,7 @@ const menuItems = ref<IMenuItem[]>([
 
 
     <Dialog v-model:visible="visible" modal header="Вход в личный кабинет" :style="{ width: '25rem' }">
+        <form @submit.prevent="auth">
             <div class="flex items-center gap-4 mb-4">
                 <InputGroup>
                     <InputGroupAddon>
@@ -384,6 +385,7 @@ const menuItems = ref<IMenuItem[]>([
                 <Button type="link" label="Закрыть" severity="secondary" @click="visible = false"></Button>
                 <Button type="button" label="Войти" v-if="login_form_enter_completed" @click="auth"></Button>
             </div>
+        </form>
         </Dialog>
 </template>
 

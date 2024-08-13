@@ -154,7 +154,7 @@ class InvertorsSerializer(serializers.ModelSerializer):
     # type_of_options       = serializers.SerializerMethodField()         
 
     def get_price(self, obj):
-        price = Prices.objects.filter(item = obj.item).order_by('date')[0]
+        price = Prices.objects.filter(item = obj.item).order_by('-id')[0]
         return f'{price.price}'  
 
     def get_currency(self, obj):

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import AppHeader from '@/components/AppHeader.vue'
   import Divider from 'primevue/divider';
-  document.title = 'Акспект';
+  document.title = 'Аспект';
 </script>
 
 <template>
