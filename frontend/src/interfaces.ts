@@ -169,6 +169,7 @@ export interface IUserInvConfig {
     options : string
     date : string
     user: number
+    staff_opened: boolean
 }
 
 export interface IUserInvConfigData {

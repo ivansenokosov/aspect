@@ -6,6 +6,7 @@
   import SelectSimpleButton from '@/components/SelectSimpleButton.vue';
   import InventorsList from '@/components/InventorsList.vue';
   import SelectPower from '@/components/SelectPower.vue';
+  import { getUnreadInvConfigs } from '@/api/getUneadInvConfigs';
 
 
   const invInputVolage = ref<ISimpleData[]>()
@@ -15,6 +16,8 @@
   const invDC = ref<ISimpleData[]>()
   const invBreak = ref<ISimpleData[]>()
   const invPower = ref<IPower>({power: '0', error: 10})
+
+  getUnreadInvConfigs()
 </script>
 
 <template>

@@ -7,6 +7,7 @@ class UserInvConfigs(models.Model):
     date = models.DateField(auto_now_add=True)
     invertor = models.ForeignKey(to = Invertors, on_delete=models.CASCADE)
     options = models.TextField(max_length = 4000, blank = True, null = True, unique = False)
+    staff_opened = models.BooleanField(default = False, null = True, blank = True)
 
     class Meta:
         db_table = 'd_user_inv_config'

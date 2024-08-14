@@ -5,6 +5,7 @@ import os
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
@@ -14,9 +15,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-goa!muyy@%b=y%0e#*cgd79qks_(*%29+=$w=!zapq-e73*z+@')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1','localhost']
+ALLOWED_HOSTS = ['0.0.0.0','127.0.0.1','localhost','192.168.1.5','192.168.1.5:8000','172.20.176.1']
 
 
 
@@ -121,15 +122,25 @@ USE_TZ = True
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-STATIC_URL = 'static/'
 
+
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATIC_URL = '/static/'
+STATIC_DIRS = [
+     os.path.join(BASE_DIR, 'static')
+]
+
+# STATIC_DIRS = [
+#      os.path.join(BASE_DIR, 'static')
+# ]
 STATICFILES_DIRS: list[Path] = [
     BASE_DIR / 'static'
 ]
 
 MEDIA_URL = 'media/'
 
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True

@@ -18,9 +18,14 @@
   import TabPanel from 'primevue/tabpanel';
   import axios from "axios";
   import { getValueFromDictionary } from "@/api/getValueFromDictionary";
+  import { useUserStore } from "@/stores/user";
+  import AxiosInstance from "@/api/axiosInstance";
+  import { getUnreadInvConfigs } from "@/api/getUneadInvConfigs";
 
   const route = useRoute()
   const baseUrl = useBaseUrl()
+  const user = useUserStore()
+
   const id = ref<Number>(0)
 
   const invConfig = ref<IUserInvConfigData>({data:[], error: null, loading: true})
@@ -41,7 +46,7 @@
   const optionsPrice = ref<Number>(0)
   const optionsJSON = ref<any[]>([])
 
-    async function savePDF() {
+  async function savePDF() {
     axios({
       method: 'get',
       url: baseUrl.baseUrl + 'users/invpdf?id=' + String(id.value),
@@ -54,6 +59,21 @@
       link.click()
     })    
   }
+
+  async function setRead() { // установка флага, что конфигурация просмотрена
+    const url:string =  'userconfigs/UserInvConfg/' + id.value.toString() + '/'
+    const config = { headers: { 'content-type': 'application/json', }, };
+    invConfig.value.data.staff_opened = true
+    const res = await AxiosInstance.put(url, invConfig.value.data, config)
+      .then(function(response) {
+      getUnreadInvConfigs()
+    }).catch(function(error) {
+      console.log(error);
+    })
+
+
+  }
+
 
   async function loadData() {
     id.value = route.query.id
@@ -97,14 +117,17 @@
     })
 
     optionsSelected.value.map(item => optionsPrice.value = optionsPrice.value + Number(item.price)) // Итого цена опций
+
+    if (invConfig.value.data.staff_opened === false && user.userIsStaff) { 
+      await setRead()
+    }
   }
 
   loadData()
-
 </script>
 
 <template>
-  <h1 class="pt-5">Конфигурация преобразователя частоты</h1>
+  <h1 class="pt-5">Конфигурация преобразователя частоты № {{ invConfig.data.user }}/{{ invConfig.data.id }}</h1>
   <div v-if="options.loading || invertor.loading">
     Загружаю ...
   </div>

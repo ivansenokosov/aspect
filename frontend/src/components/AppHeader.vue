@@ -13,11 +13,14 @@
     import axios from 'axios';
     import Message from 'primevue/message';
     import type { IMenuItem } from '@/interfaces';
+    import { useUnreadInvConfigs } from '@/stores/unreadInvConfig';
+    import { useLoginStore } from '@/stores/login';
 
     const userStore = useUserStore()
     const baseUrl = useBaseUrl()
+    const invUnread = useUnreadInvConfigs()
+    const loginModal = useLoginStore();
 
-    const visible = ref(false);
     const login = ref<String>('')
     const password = ref<String>('')
     const errormsg = ref<String>('')
@@ -45,7 +48,7 @@
                 userStore.userId = response.data.id
                 userStore.userName = response.data.first_name
                 userStore.userIsStaff = response.data.is_staff
-                visible.value = false
+                loginModal.visible = false
             } else {
                 errormsg.value = response.data.info
             }
@@ -73,8 +76,6 @@
         }
     }
 
-
-
 const menuItems = ref<IMenuItem[]>([
     {
         label: 'Главная',
@@ -89,7 +90,7 @@ const menuItems = ref<IMenuItem[]>([
         icon: 'pi pi-cog',
         route: '/config',
         show: computed((): boolean => isUser()),
-        badge: 0,
+        badge: computed(() : number => Number(invUnread.unreadInvConfigs)),
         level: 1
     },
     {
@@ -285,10 +286,17 @@ const menuItems = ref<IMenuItem[]>([
     {
         label: 'Upload',
         icon: 'pi pi-upload',
-        route: '/upload',
         show: computed((): boolean => isStuff()),
         badge: 0,
-        level: 1
+        level: 1,
+        items: [
+                    {
+                        label: 'Инстарт',
+                        icon: '',
+                        show: computed((): boolean => true),
+                        route: '/upload',
+                    },
+                       ]
     },
     {
         label: 'Контакты',
@@ -349,7 +357,7 @@ const menuItems = ref<IMenuItem[]>([
             </span>
             <span v-else>
                 <span class="flex align-items-center menu-exit">
-                    <Button  severity="contrast" class="flex align-items-center" @click="visible = true" >
+                    <Button  severity="contrast" class="flex align-items-center" @click="loginModal.visible = true" >
                         <span class="pi pi-sign-in p-menuitem-icon"></span>
                         <span class="ml-2 font-semibold text-lg"> Вход </span>
                     </Button>
@@ -362,7 +370,7 @@ const menuItems = ref<IMenuItem[]>([
     </Menubar>
 
 
-    <Dialog v-model:visible="visible" modal header="Вход в личный кабинет" :style="{ width: '25rem' }">
+    <Dialog v-model:visible="loginModal.visible" modal header="Вход в личный кабинет" :style="{ width: '25rem' }">
         <form @submit.prevent="auth">
             <div class="flex items-center gap-4 mb-4">
                 <InputGroup>
@@ -382,7 +390,7 @@ const menuItems = ref<IMenuItem[]>([
             </div>
             <Message v-if="errormsg" severity="error">{{ errormsg }}</Message>
             <div class="flex justify-end gap-2 pt-5">
-                <Button type="link" label="Закрыть" severity="secondary" @click="visible = false"></Button>
+                <Button type="link" label="Закрыть" severity="secondary" @click="loginModal.visible = false"></Button>
                 <Button type="button" label="Войти" v-if="login_form_enter_completed" @click="auth"></Button>
             </div>
         </form>

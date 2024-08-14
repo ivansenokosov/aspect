@@ -18,6 +18,7 @@
   import { useToast } from "primevue/usetoast";
   import AxiosInstance from '@/api/axiosInstance';
   import { getValueFromDictionary } from '@/api/getValueFromDictionary';
+  import { useLoginStore } from '@/stores/login';
   
 
   const props = defineProps(['invInputVolage','invTypeOfControl','invVariantOfControl','invEMC','invDC','invBreak','power','error'])
@@ -25,6 +26,7 @@
   const user = useUserStore()
   const toast = useToast()  
   const router = useRouter()
+  const loginModal = useLoginStore()
 
   const data = ref<IInvertorData>({data:[], error: null, loading: true})  // Все инверторы
   const dataDisplay = ref<IInvertor[]>([]) // Инверторы после фильтров
@@ -85,7 +87,8 @@
         })
         saving.value = false
       } else {
-        noAuthVisible.value = true
+        // noAuthVisible.value = true
+        loginModal.visible = true // если пользлватель не авторизован, открываем модал
       }
     }
 

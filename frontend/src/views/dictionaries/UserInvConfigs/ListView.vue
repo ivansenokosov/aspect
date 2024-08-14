@@ -29,11 +29,11 @@
   async function loadData() {
     let url:string
     if (user.userIsStaff) {
-      url = 'userconfigs/UserInvConfg/'
+      url = 'userconfigs/UserInvConfg/' // загружаем всё
     } else {
-      url = 'userconfigs/UserInvConfg?user_id=' + String(user.userId)
+      url = 'userconfigs/UserInvConfg?user_id=' + String(user.userId) // загружаем только конфигурации пользователя
     }
-    data.value = await useFetch(url, {} ); // загружаем всё
+    data.value = await useFetch(url, {} ); 
     options.value = await useFetch('Inv_options', {} );
     invertors.value = await useFetch('Invertor_dict', {} );
     users.value = await useFetch('Users', {} );
@@ -59,11 +59,6 @@
   }
  
   loadData()
-
-  function rnd<Number>(){
-    let r = (Math.random()*100).toFixed()
-    return Number(r)
-  }
 
   function confirm_delete (id:number) {
     confirm.require({
@@ -96,7 +91,6 @@
 </script> 
 
 <template>
-  {{ user.userIsStaff }}
     <Toast />
     <ConfirmDialog></ConfirmDialog>
 
@@ -113,7 +107,18 @@
       </div>
     </div>
     <div v-if="data.data.length > 0">
-      <DataTable :value="data.data" stripedRows tableStyle="min-width: 50rem" :loading="data.loading" paginator  :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]">
+      <DataTable :value="data.data" stripedRows tableStyle="min-width: 50rem" :loading="data.loading" paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]">
+        <Column header="" v-if="user.userIsStaff">
+          <template #body="{ data }" >
+            <Tag icon="pi pi-eye-slash" severity="danger" v-if="data.staff_opened == false"/>
+            <Tag icon="pi pi-eye" severity="info" v-else/>
+          </template>
+        </Column>
+        <Column header="Номер" sortable style="width: 15%" v-if="user.userIsStaff">
+          <template #body="{ data }" >
+            {{ data.user }}/{{ data.id }}
+          </template>
+        </Column>
         <Column header="Пользователь" sortable style="width: 15%" v-if="user.userIsStaff">
           <template #body="{ data }" >
             {{ getUserName(users.data, data.user) }}
@@ -144,7 +149,7 @@
           <template #body="slotProps">
             <div class="flex gap-2">
               <RouterLink :to="`/inv_config/?id=${slotProps.data.id}`">
-                <Button icon="pi pi-eye" severity="info" />
+                <Button icon="pi pi-folder-open" severity="info" />
               </RouterLink>
               <Button icon="pi pi-trash" severity="danger" @click="confirm_delete(slotProps.data.id)"/>
             </div>
