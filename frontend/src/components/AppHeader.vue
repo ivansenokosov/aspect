@@ -299,6 +299,39 @@ const menuItems = ref<IMenuItem[]>([
                        ]
     },
     {
+        label: 'Скидки',
+        icon: 'pi pi-upload',
+        show: computed((): boolean => true),
+        badge: 0,
+        level: 1,
+        items: [
+                    {
+                        label: 'Преобразователи частоты',
+                        icon: '',
+                        show: computed((): boolean => true),
+                        items: [
+                                    {
+                                        label: 'Группы',
+                                        icon: '',
+                                        show: computed((): boolean => true),
+                                        route: '/dictionaries/InvDiscountGroups/List',
+                                    },
+                                    {
+                                        label: 'На конфигурацию',
+                                        icon: '',
+                                        show: computed((): boolean => true),
+                                    },
+                                    {
+                                        label: 'Назначение',
+                                        icon: '',
+                                        show: computed((): boolean => true),
+                                        route: '/invDiscounts/UserInvDiscounts/List'
+                                    },
+                       ]
+                    },
+                       ]
+    },
+    {
         label: 'Контакты',
         icon: 'pi pi-envelope',
         route: '/contacts',
@@ -372,28 +405,30 @@ const menuItems = ref<IMenuItem[]>([
 
     <Dialog v-model:visible="loginModal.visible" modal header="Вход в личный кабинет" :style="{ width: '25rem' }">
         <form @submit.prevent="auth">
-            <div class="flex items-center gap-4 mb-4">
-                <InputGroup>
-                    <InputGroupAddon>
-                        <i class="pi pi-user"></i>
-                    </InputGroupAddon>
-                    <InputText v-model="login" placeholder="Логин" />
-                </InputGroup>
+            <div v-focustrap>
+                <div class="flex items-center gap-4 mb-4">
+                    <InputGroup>
+                        <InputGroupAddon>
+                            <i class="pi pi-user"></i>
+                        </InputGroupAddon>
+                        <InputText v-model="login" placeholder="Логин" autofocus/>
+                    </InputGroup>
+                </div>
+                <div class="flex items-center gap-4 mb-8">
+                    <InputGroup>
+                        <InputGroupAddon>
+                            <i class="pi pi-asterisk"></i>
+                        </InputGroupAddon>
+                        <Password v-model="password" :feedback="false" placeholder="Пароль"/>
+                    </InputGroup>            
+                </div>
+                <Message v-if="errormsg" severity="error">{{ errormsg }}</Message>
+                <div class="flex justify-end gap-2 pt-5">
+                    <Button type="link" label="Закрыть" severity="secondary" @click="loginModal.visible = false"></Button>
+                    <Button type="button" label="Войти" v-if="login_form_enter_completed" @click="auth"></Button>
+                </div>
             </div>
-            <div class="flex items-center gap-4 mb-8">
-                <InputGroup>
-                    <InputGroupAddon>
-                        <i class="pi pi-asterisk"></i>
-                    </InputGroupAddon>
-                    <Password v-model="password" :feedback="false" placeholder="Пароль"/>
-                </InputGroup>            
-            </div>
-            <Message v-if="errormsg" severity="error">{{ errormsg }}</Message>
-            <div class="flex justify-end gap-2 pt-5">
-                <Button type="link" label="Закрыть" severity="secondary" @click="loginModal.visible = false"></Button>
-                <Button type="button" label="Войти" v-if="login_form_enter_completed" @click="auth"></Button>
-            </div>
-        </form>
+       </form>
         </Dialog>
 </template>
 

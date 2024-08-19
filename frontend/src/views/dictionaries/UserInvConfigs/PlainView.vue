@@ -21,6 +21,7 @@
   import { useUserStore } from "@/stores/user";
   import AxiosInstance from "@/api/axiosInstance";
   import { getUnreadInvConfigs } from "@/api/getUneadInvConfigs";
+  import moment from 'moment'
 
   const route = useRoute()
   const baseUrl = useBaseUrl()
@@ -127,7 +128,7 @@
 </script>
 
 <template>
-  <h1 class="pt-5">Конфигурация преобразователя частоты № {{ invConfig.data.user }}/{{ invConfig.data.id }}</h1>
+  <h1 class="pt-5">Технико-коммерческое предложение № {{ invConfig.data.user }}/{{ invConfig.data.id }} от {{ moment(invConfig.data.date).format('DD.MM.YYYY') }}</h1>
   <div v-if="options.loading || invertor.loading">
     Загружаю ...
   </div>

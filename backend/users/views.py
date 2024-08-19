@@ -12,6 +12,8 @@ from django.http import HttpResponse
 from userconfigs.models import UserInvConfigs
 from directories.models import *
 import json
+from datetime import datetime as dt
+
 
 def ifnull(var, val):
   if var is None:
@@ -27,6 +29,7 @@ class PDF(FPDF):
         self.cell(0, 10, f"Страница {self.page_no()}", align="C")
 
 def CreatePDF(request):
+    baseUrl = 'http://192.168.1.5:8000/'
     if request.method == 'GET':
         id = int(request.GET['id'])
         print(id)
@@ -69,14 +72,15 @@ def CreatePDF(request):
     pdf.add_font("dejavu-sans", style="", fname="static/fonts/DejaVuSans.ttf")
     pdf.set_font('dejavu-sans', '', 6)
     pdf.ln(8)
-    pdf.write(5, '''ООО "АСПЕКТ". ул. Серафимы Дерябиной, дом 19/2 ‐ 91, Екатеринбург, Свердловская область, Россия, 620102, +7 (343) 204‐94‐50, info@ids‐drives.ru, ids‐drives.ru''')
+    pdf.write(5, '''ООО "АСПЕКТ". +7 (343) 204‐94‐50, info@ids‐drives.ru, ids‐drives.ru''')
     pdf.ln(13)
     pdf.set_font('dejavu-sans', 'B', 12)
-    pdf.write(7, "Предварительное ценовое предложение № " + str(userconfig.user.id) + '/'  + str(userconfig.id))
+    pdf.write(7, "Технико-коммерческое предложение № " + str(userconfig.user.id) + '/' + str(userconfig.id) + ' от ' + (userconfig.date).strftime('%d.%m.%Y'))
     pdf.ln(13)
     pdf.set_font('dejavu-sans', '', 9)
 
-    schema_url = 'http://localhost:8000/media/link_to_doc.png'
+    docs_url = baseUrl + 'media/link_to_doc.png'
+    photo_url = baseUrl + invertor.serie.photo.url
 
     greyscale = 200
 
@@ -96,7 +100,7 @@ def CreatePDF(request):
 
 
 ''')
-        row.cell(img='http://localhost:8000/' + invertor.serie.photo.url)
+        row.cell(img = photo_url)
 
         row = table.row()
         row.cell('Тип оборудования')
@@ -124,16 +128,25 @@ def CreatePDF(request):
                  
                  
                  ''')
-        row.cell(img = schema_url)
+        row.cell(img = docs_url)
 
 
         row = table.row()
         row.cell('Мощность')
-        row.cell('Pg: ' + str(invertor.p_heavy_g) + ', Pp: ' +  str(invertor.p_pumps_p))
+        row.cell('''Режим G: ''' + str(invertor.p_heavy_g) + ''' кВт
+Режим P: ''' +  str(invertor.p_pumps_p) + ' кВт')
+
+        row = table.row()
+        row.cell('Ток')
+        row.cell('''Режим G: ''' + str(invertor.current_g) + ''' А
+Режим P: ''' +  str(invertor.current_p) + ' А')
+
 
         row = table.row()
         row.cell('Перегрузочная способность')
-        row.cell('Режиим G:' + ifnull(invertor.serie.type_of_overload.g_mode,'') + '. Режим P: ' + ifnull(invertor.serie.type_of_overload.p_mode,'') + '. (не  чаще 1 раза в 10 мин)')
+        row.cell('''Режиим G: ''' + ifnull(invertor.serie.type_of_overload.g_mode,'') + '''
+Режим P: ''' + ifnull(invertor.serie.type_of_overload.p_mode,'') + '''
+(не  чаще 1 раза в 10 мин)''')
 
         row = table.row()
         row.cell('Диапазон напряжений на входе')
@@ -238,7 +251,7 @@ def CreatePDF(request):
     pdf.add_page()
     pdf.ln(15)
     pdf.write(10,'Схема')
-    schema_url = 'http://localhost:8000/' + invertor.serie.schema.url
+    schema_url = baseUrl + invertor.serie.schema.url
     pdf.image(schema_url, 10, 50, 150)
 
 

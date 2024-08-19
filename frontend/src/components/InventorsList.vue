@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref, watch, defineProps } from 'vue' 
   import { useRouter } from 'vue-router'
-  import type { IInvertorData, IInvertor, IInvAvalControlData,  IInvSerieData, IInvOptionData, IInvOption, ISimpleData, ISimpleDictionary } from '@/interfaces.js';
+  import type { IInvertorData, IInvertor, IInvAvalControlData,  IInvSerieData, IInvOptionData, IInvOption, ISimpleData, ISimpleDictionary, IUserDiscountData, IInvSerieDisountData, IInvOptionDisountData } from '@/interfaces.js';
   import { useFetch } from '@/api/useFetch';
   import Tag from 'primevue/tag';
   import DataTable from 'primevue/datatable';
@@ -19,7 +19,8 @@
   import AxiosInstance from '@/api/axiosInstance';
   import { getValueFromDictionary } from '@/api/getValueFromDictionary';
   import { useLoginStore } from '@/stores/login';
-  
+  import OverlayBadge from 'primevue/overlaybadge';  
+  import ProgressSpinner from 'primevue/progressspinner';
 
   const props = defineProps(['invInputVolage','invTypeOfControl','invVariantOfControl','invEMC','invDC','invBreak','power','error'])
   const baseUrl = useBaseUrl()
@@ -38,6 +39,9 @@
   const invDCStr = ref<string>('')
   const invBreakStr = ref<string>('')
   const invAvalControl = ref<IInvAvalControlData>({data:[], error: null, loading: true})  // способ управления для серии
+  const userInvDisount = ref<IUserDiscountData>({data:[], error: null, loading: true}) // скидка для пользователя
+  const serieDiscounts = ref<IInvSerieDisountData>({data:[], error: null, loading: true}) // скидка для серий
+  const optionDiscounts = ref<IInvOptionDisountData>({data:[], error: null, loading: true}) // скидка для опций
 
   //------- данные модала {
   const saving = ref<Boolean>(false)
@@ -49,14 +53,16 @@
   const selectedOptions = ref<IInvOption[]>([])
   const selectedTypeOFOptions = ref<ISimpleDictionary[]>([])
   const optionsPrice = ref<Number>(0)
+  const optionsPriceDiscount = ref<Number>(0)
   const typeOfOptionsStr = ref<String>('')
 
   const openProduct = async (prod) => {
     product.value = {...prod};
     productDialog.value = true;
     selectedOptions.value = []
-    serie.value   = await useFetch('Inv_series/' + prod.serie,{})//prod.serie,{})
-    options.value = await useFetch('Inv_options/?serie=' + prod.serie,{})//prod.serie,{})
+    serie.value   = await useFetch('Inv_series/' + prod.serie,{})
+    options.value = await useFetch('Inv_options/?serie=' + prod.serie,{})
+    await loadOptionDiscounts()
     optionsDisplay.value = {...options.value}
   };
 
@@ -103,11 +109,16 @@
   const hideDialog = () => {
     productDialog.value = false;
     submitted.value = false;
-};
+  };
 
   watch(selectedOptions, () => {
     optionsPrice.value = 0
+    optionsPriceDiscount.value = 0
     selectedOptions.value.map(item => optionsPrice.value = optionsPrice.value + Number(item.price))
+
+    if (user.userId>0) {
+       selectedOptions.value.map( item => optionsPriceDiscount.value += Number(getOptionPrice(item.price, item.option)) )
+    }
   })
   //------- данные модала } 
 
@@ -119,12 +130,29 @@
   const product = ref<IInvertor>([{name: ''}]);
   const productDialog = ref(false);
 
+  async function loadDiscounts() {
+    if (user.userId > 0) {
+      userInvDisount.value = await useFetch('discounts/UserInvDisount?user=' + user.userId, {} ); 
+      serieDiscounts.value = await useFetch('discounts/InvSerieDisount/?group=' + userInvDisount.value.data[0].group,{})
+    }
+  }
+
+  async function loadOptionDiscounts() {
+    if (user.userId > 0) {
+      optionDiscounts.value = await useFetch('discounts/InvOptionDisount/?group=' + userInvDisount.value.data[0].group,{})
+    }  
+  }
+
+
   async function loadData() {
     invAvalControl.value = await useFetch('Inv_type_of_control',{})
     typeOfOptions.value  = await useFetch('Type_of_options', {} );
     data.value           = await useFetch('Invertors', {} );
+    await loadDiscounts()      
     dataDisplay.value = data.value.data
   }
+
+  watch(() => [user.userId], async () => {  await loadDiscounts()  })
 
   watch(() => [props.invInputVolage, 
                props.invTypeOfControl,
@@ -171,6 +199,35 @@
                                                   ))
     })
 
+
+    function getDiscountSerie<String>(serie: number) {
+      const serieDiscount = serieDiscounts.value.data.filter(item => item.serie === serie) 
+      let discount:number = 0
+      if (serieDiscount.length>0) {
+        discount = serieDiscount[0].discount
+      }
+      return '-' + Number(discount).toFixed().toString() + '%'
+    }
+
+    function getDiscountOption<String>(option: number) {
+      const optionDiscount = optionDiscounts.value.data.filter(item => item.option === option) 
+      let discount:number = 0
+      if (optionDiscount.length>0) {
+        discount = optionDiscount[0].discount
+      }
+      return '-' + Number(discount).toFixed().toString() + '%'
+    }
+
+    function getInvPrice(price: number, serie: number) {
+      const serieDiscount = serieDiscounts.value.data.filter(item => item.serie === serie)[0].discount 
+      return price * (100-serieDiscount)/100
+    }
+
+    function getOptionPrice(price: number, option: number) {
+      const optionDiscount = optionDiscounts.value.data.filter(item => item.option === option)[0].discount 
+      return price * (100-optionDiscount)/100
+    }
+
     loadData()
   
 </script> 
@@ -181,13 +238,15 @@
     <h2>Error: {{ data.error }}</h2>
   </div>
   <div v-if="data.loading">
-    <h2>Загружаю данные...</h2>
+    <div class="card flex justify-center">
+        <ProgressSpinner style="width: 200px; height: 200px" strokeWidth="8" fill="transparent"
+            animationDuration="2s" aria-label="Custom ProgressSpinner" />
+    </div>
   </div>
   <div v-else>
     <h1 class="mt-5 pt-5">Преобразователи частоты ({{ dataDisplay.length }})</h1>
-    
     <div v-if="dataDisplay.length > 0">
-      <DataTable :value="dataDisplay" stripedRows tableStyle="min-width: 50rem"> 
+      <DataTable :value="dataDisplay" stripedRows tableStyle="min-width: 50rem" paginator :rows="20" :rowsPerPageOptions="[10, 20, 50]"> 
         <Column field="name" header="Модель" sortable headerStyle="width: 10em"></Column>
         <Column field="serie_str" header="Серия" sortable headerStyle="width: 3em"></Column>
         <Column header="Мощность" headerStyle="width: 6em">
@@ -218,13 +277,35 @@
         </Column>
         <Column header="Цена" headerStyle="width: 8em">
           <template #body="{ data }">
-            <span v-if="data.price>0" class="font-bold text-xl">{{ priceFormat(data.price) }} &#8381;</span>
-            <span v-else><Tag value="По запросу" severity="danger" /></span>
+            <span v-if = "data.price == 0" ><Tag value="По запросу" severity="danger" /></span>
+
+            <span v-else>
+
+              <div v-if="user.userId">
+
+                <OverlayBadge :value="getDiscountSerie(data.serie)" severity="warn" v-if="!serieDiscounts.loading && !userInvDisount.loading">
+                  <div class="surface-700 text-white font-bold text-xl line-through border-round m-2 flex align-items-center justify-content-center" style="min-width: 80px; min-height: 40px">
+                    {{ priceFormat(data.price) }} &#8381;
+                  </div>
+                </OverlayBadge>
+                <div class="bg-primary font-bold text-xl border-round m-2 flex align-items-center justify-content-center" style="min-width: 80px; min-height: 40px" v-if="serieDiscounts.loading == false && userInvDisount.loading == false">
+                  {{ priceFormat(getInvPrice(data.price, data.serie)) }} &#8381;
+                </div>
+
+              </div>
+              <div v-else>
+                <div class="font-bold text-xl border-round m-2 flex align-items-center justify-content-center">
+                    {{ priceFormat(data.price) }} &#8381;
+                </div>
+              </div>  
+
+
+            </span>
           </template>
         </Column>
         <Column header="" headerStyle="width: 5em">
           <template #body="{ data }">
-            <Button label="Выбрать" severity="info"  rounded class="mr-2" @click="openProduct(data)"/>
+            <Button label="Выбрать" severity="help"  rounded class="mr-2" @click="openProduct(data)"/>
           </template>
         </Column>
 
@@ -314,22 +395,68 @@
         </Column>
         <Column header="Цена" headerStyle="width: 10%">
           <template #body="{ data }">
-            <span class="font-bold text-xl">{{ priceFormat(data.price) }} &#8381;</span>
+            <span v-if = "data.price == 0" ><Tag value="По запросу" severity="danger" /></span>
+
+            <span v-else>
+
+              <div v-if="user.userId">
+
+                <OverlayBadge :value="getDiscountOption(data.option)" severity="warn" v-if="!serieDiscounts.loading && !userInvDisount.loading" class="mr-4">
+                  <div class="surface-700 text-white font-bold text-xl line-through border-round m-2 flex align-items-center justify-content-center" style="min-width: 80px; min-height: 40px">
+                    {{ priceFormat(data.price) }} &#8381;
+                  </div>
+                </OverlayBadge>
+
+                <div class="bg-primary font-bold text-xl border-round m-2 flex align-items-center justify-content-center mr-5" style="min-width: 80px; min-height: 40px" v-if="optionDiscounts.loading == false && userInvDisount.loading == false">
+                  {{ priceFormat(getOptionPrice(data.price, data.option)) }} &#8381;
+                </div>
+
+              </div>
+              <div v-else>
+                <div class="font-bold text-xl border-round m-2 flex align-items-center justify-content-center">
+                    {{ priceFormat(data.price) }} &#8381;
+                </div>
+              </div>  
+
+
+            </span>
           </template>
         </Column>
       </DataTable>
 
       <Divider/>
       <h1>Итого</h1>
-      <p class="font-semibold text-lg">Цена частотного преобразователя {{ product.name }}: <span class="font-bold text-xl"> {{ priceFormat(product.price) }} &#8381;</span></p>
-      <p class="font-semibold text-lg">Цена выбранных опций: <span class="font-bold text-xl"> {{ priceFormat(optionsPrice) }} &#8381;</span></p>
+      <p class="font-semibold text-lg">Цена частотного преобразователя {{ product.name }}: 
+        <span class="font-bold text-xl" v-if="!user.userId"> {{ priceFormat(product.price) }} &#8381;</span>
+        <span v-else>
+            <a class="font-bold text-xl line-through border-round m-2" style="min-width: 80px; min-height: 40px">
+              {{ priceFormat(product.price) }} &#8381;
+            </a>
+            <a class="bg-primary font-bold text-xl border-round p-2 " style="min-width: 80px; min-height: 40px" v-if="serieDiscounts.loading == false && userInvDisount.loading == false">
+              {{ priceFormat(getInvPrice(product.price, product.serie)) }} &#8381;
+            </a>
+         </span>
+      </p>
+
+      <p class="font-semibold text-lg">Цена выбранных опций: 
+        <span class="font-bold text-xl" v-if="!user.userId"> {{ priceFormat(optionsPrice) }} &#8381;</span>
+        <span  v-else> 
+          <a class="font-bold text-xl line-through border-round m-2" style="min-width: 80px; min-height: 40px">
+              {{ priceFormat(optionsPrice) }} &#8381;
+            </a>
+          <a class="bg-primary font-bold text-xl border-round p-2" style="min-width: 80px; min-height: 40px" v-if="serieDiscounts.loading == false && userInvDisount.loading == false">
+              {{ priceFormat(optionsPriceDiscount) }} &#8381;
+          </a>
+
+        </span>
+      </p>
 
 
             <template #footer>
                 <Button label="Закрыть" severity="secondary" icon="pi pi-times" text @click="hideDialog" />
-                <!-- <Button label="Скачать PDF" severity="help"  icon="pi pi-download" @click="savePDF" /> -->
-                <Button label="Сохранить в мои конфигурации" :loading="saving" icon="pi pi-save" @click="addUserInvConfig" />
-            </template> 
+                <Button label="Сохранить в мои конфигурации" :loading="saving" icon="pi pi-save" @click="addUserInvConfig" v-if="user.userId > 0"/>
+                <Button label="Для сохранения конфигурации выполните вход" severity="info" icon="pi pi-sign-in" @click="loginModal.visible = true" v-else/>
+                </template> 
         </Dialog>
 <!-- Модал нет авторизации -->
         <Dialog v-model:visible="noAuthVisible" modal header="Войдите в личный кабинет" :style="{ width: '50vw' }" :breakpoints="{ '1199px': '75vw', '575px': '90vw' }">

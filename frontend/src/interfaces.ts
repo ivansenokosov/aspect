@@ -203,3 +203,42 @@ export interface IInvInputOuptputData {
     error: any
     loading: boolean
 }
+
+
+// ------------------------------- Скидки ------------------------------- 
+
+export interface IInvSerieDisount {
+    group: number
+    serie: number
+    discount: number
+  }
+
+export interface IInvSerieDisountData {
+    data: IInvSerieDisount[]
+    error: any
+    loading: true
+  }
+
+export interface IInvOptionDisount {
+    option: number
+    serie: number
+    discount: number
+  }
+
+export interface IInvOptionDisountData {
+    data: IInvOptionDisount[]
+    error: any
+    loading: true
+  }
+
+export interface IUserDiscount {
+    id: number
+    user: number
+    group: number
+  }
+
+export interface IUserDiscountData {
+    data: IUserDiscount[]
+    error: any
+    loading: boolean
+  }

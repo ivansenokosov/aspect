@@ -113,7 +113,7 @@
         })
 
         // ------- чтобы не плодить сущности, проверяем есть ли в таблице Price за эту дату запись с такой же ценой
-        const itemPrice = item.data[columnPriceIndex.value].replace(' ','').replace(' ','').replace(' ','')
+        const itemPrice = item.data[columnPriceIndex.value].replace(' ','').replace(' ','').replace(' ','').replace('₽','')
         const priceUrl = 'Prices?item=' + item.id 
         const priceData = AxiosInstance.get(priceUrl)
         .then(function(response) {
@@ -302,7 +302,7 @@
                     </Column>
                     <Column header="Цена">
                       <template #body="{data}">
-                        <span class="font-bold text-xl">{{ data.data[columnPriceIndex] }} &#8381;</span>
+                        <span class="font-bold text-xl">{{ data.data[columnPriceIndex] }}</span>
                       </template>      
                     </Column>
                     <Column header="Количество">
@@ -365,7 +365,7 @@
               </Column>
               <Column header="Цена">
                 <template #body="{data}">
-                  <span class="font-bold text-xl">{{ data.data[columnPriceIndex] }} &#8381;</span>
+                  <span class="font-bold text-xl">{{ data.data[columnPriceIndex] }}</span>
                 </template>      
               </Column>
               <Column header="Количество">

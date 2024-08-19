@@ -1,11 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw, RouteLocationNormalized, NavigationGuardNext } from 'vue-router'
 import { useUserStore } from '@/stores/user'
+import { useLoginStore } from '@/stores/login'
+
 
 const checkAuth = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const userStore = useUserStore()
+  const loginModal = useLoginStore()
   if (!userStore.userId) {
-    next({name: 'auth'}) // Если пользователь не авторизован, то отправляеи на страницу авторизации
+    loginModal.visible = true
   } else {
     next() // Пусть идёт, куда хотел
   }
@@ -549,6 +552,99 @@ const router = createRouter({
       component: () => import('../views/dictionaries/InputOutput/DeleteView.vue'),
       props: true        
     },    
+    // -----------------------------------------------------------------------------------------------------------
+    // ------------------------------------------ Скидки ---------------------------------------------------------
+    // -----------------------------------------------------------------------------------------------------------
+
+    // ------------------------- Группы скидок -----------------
+    {
+      path: '/dictionaries/InvDiscountGroups/List',
+      name: 'invDiscountGroupList',
+      component: () => import('../views/dictionaries/InvDiscountGroups/ListView.vue')
+    },
+    {
+      path: '/dictionaries/InvDiscountGroups/Update/:id',
+      name: 'invDiscountGroupUpdate',
+      component: () => import('../views/dictionaries/InvDiscountGroups/UpdateView.vue'),
+      props: true        
+    },
+    {
+      path: '/dictionaries/InvDiscountGroups/Create',
+      name: 'invDiscountGroupCreate',
+      component: () => import('../views/dictionaries/InvDiscountGroups/CreateView.vue')
+    },
+    {
+      path: '/dictionaries/InvDiscountGroups/Delete/:id',
+      name: 'invDiscountGroupDelete',
+      component: () => import('../views/dictionaries/InvDiscountGroups/DeleteView.vue'),
+      props: true        
+    },    
+
+    // ------------------------- Скидки на серии ПЧ -----------------
+    // {
+    //   path: '/invDiscounts/SerieDiscounts/List',
+    //   name: 'invDiscountSerieList',
+    //   component: () => import('../views/invDiscounts/SerieDiscounts/ListView.vue')
+    // },
+    // {
+    //   path: '/invDiscounts/SerieDiscounts/Update/:id',
+    //   name: 'invDiscountSerieUpdate',
+    //   component: () => import('../views/invDiscounts/SerieDiscounts/UpdateView.vue'),
+    //   props: true        
+    // },
+    // {
+    //   path: '/invDiscounts/SerieDiscounts/Create',
+    //   name: 'invDiscountSerieCreate',
+    //   component: () => import('../views/invDiscounts/SerieDiscounts/CreateView.vue')
+    // },
+    // {
+    //   path: '/invDiscounts/SerieDiscounts/Delete/:id',
+    //   name: 'invDiscountSerieDelete',
+    //   component: () => import('../views/invDiscounts/SerieDiscounts/DeleteView.vue'),
+    //   props: true        
+    // },    
+
+    // ------------------------- Скидки на опции ПЧ -----------------
+    // {
+    //   path: '/invDiscounts/OptionsDiscounts/List',
+    //   name: 'invDiscountOptionList',
+    //   component: () => import('../views/invDiscounts/OptionsDiscounts/ListView.vue')
+    // },
+    // {
+    //   path: '/invDiscounts/OptionsDiscounts/Update/:id',
+    //   name: 'invDiscountOptionUpdate',
+    //   component: () => import('../views/invDiscounts/OptionsDiscounts/UpdateView.vue'),
+    //   props: true        
+    // },
+    // {
+    //   path: '/invDiscounts/OptionsDiscounts/Create',
+    //   name: 'invDiscountOptionCreate',
+    //   component: () => import('../views/invDiscounts/OptionsDiscounts/CreateView.vue')
+    // },
+    // {
+    //   path: '/invDiscounts/OptionsDiscounts/Delete/:id',
+    //   name: 'invDiscountOptionDelete',
+    //   component: () => import('../views/invDiscounts/OptionsDiscounts/DeleteView.vue'),
+    //   props: true        
+    // },    
+
+    // ------------------------- Пользователи и скидки -----------------
+    {
+      path: '/invDiscounts/UserInvDiscounts/List',
+      name: 'invDiscountUserList',
+      component: () => import('../views/invDiscounts/UserInvDiscounts/ListView.vue')
+    },
+    {
+      path: '/invDiscounts/UserInvDiscounts/Update/:id',
+      name: 'invDiscountUserUpdate',
+      component: () => import('../views/invDiscounts/UserInvDiscounts/UpdateView.vue'),
+      props: true        
+    },
+    {
+      path: '/invDiscounts/UserInvDiscounts/Create',
+      name: 'invDiscountUserCreate',
+      component: () => import('../views/invDiscounts/UserInvDiscounts/CreateView.vue')
+    },
 
   ]
 })

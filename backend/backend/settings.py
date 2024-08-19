@@ -17,7 +17,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-goa!muyy@%b=y%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0','127.0.0.1','localhost','192.168.1.5','192.168.1.5:8000','172.20.176.1']
+ALLOWED_HOSTS = ['0.0.0.0','127.0.0.1','localhost','192.168.1.5']
 
 
 
@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'directories',
     'users',
     'userconfigs',
+    'discounts',
 
 ]
 

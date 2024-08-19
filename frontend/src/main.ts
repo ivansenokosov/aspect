@@ -8,6 +8,8 @@ import PrimeVue from 'primevue/config';
 import Aura from '@primevue/themes/aura';
 import ToastService from 'primevue/toastservice';
 import ConfirmationService from 'primevue/confirmationservice';
+import FocusTrap from 'primevue/focustrap';
+
 
 import App from './App.vue'
 import router from './router'
@@ -25,5 +27,6 @@ app.use(PrimeVue, {
 });
 app.use(ToastService);
 app.use(ConfirmationService);
+app.directive('focustrap', FocusTrap);
 app.mount('#app')
 

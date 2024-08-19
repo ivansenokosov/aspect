@@ -16,12 +16,16 @@
   import { getValueFromDictionary } from '@/api/getValueFromDictionary';
   import moment from 'moment'
   import { useUserStore } from '@/stores/user';
-  
+  import { FilterMatchMode } from '@primevue/core/api';
+  import Checkbox from 'primevue/checkbox';
+  import Select from 'primevue/select';
+
   const user = useUserStore()
   const data = ref<IUserInvConfigData>({data:[], error: null, loading: true}) 
   const invertors = ref<ISimpleData>({data:[], error: null, loading: true}) 
   const options = ref<IInvOptionData>({data:[], error: null, loading: true}) 
   const users = ref<IUserData>({data:[], error: null, loading: true}) 
+  const userNames = ref<string[]>([]) 
 
   const confirm = useConfirm();
   const toast = useToast();
@@ -37,6 +41,7 @@
     options.value = await useFetch('Inv_options', {} );
     invertors.value = await useFetch('Invertor_dict', {} );
     users.value = await useFetch('Users', {} );
+    users.value.data.map(item => userNames.value.push(item.first_name))
   }
 
   function getOptionNames<String>(selectedOptions:String) {
@@ -88,6 +93,11 @@
     });
   };
 
+  const filters = ref({
+    user: { value: null, matchMode: FilterMatchMode.EQUALS },
+    staff_opened: { value: null, matchMode: FilterMatchMode.EQUALS }    
+  });
+
 </script> 
 
 <template>
@@ -103,28 +113,44 @@
   <div v-else>
     <div class="grid">
       <div class="col-10">
-        <h1 class="pt-5">Конфигурации</h1>
+        <h1 class="pt-5">Конфигурации преобразователей частоты</h1>
       </div>
     </div>
     <div v-if="data.data.length > 0">
-      <DataTable :value="data.data" stripedRows tableStyle="min-width: 50rem" :loading="data.loading" paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]">
-        <Column header="" v-if="user.userIsStaff">
+      <DataTable :value="data.data" 
+                  stripedRows 
+                  tableStyle="min-width: 50rem" 
+                  removableSort 
+                  :loading="data.loading" 
+                  paginator 
+                  :rows="10" 
+                  :rowsPerPageOptions="[5, 10, 20, 50]"
+                  
+                  v-model:filters="filters"
+                  filterDisplay="row"
+                  >
+        <Column header="" field="staff_opened" v-if="user.userIsStaff" style="width: 5%">
           <template #body="{ data }" >
-            <Tag icon="pi pi-eye-slash" severity="danger" v-if="data.staff_opened == false"/>
-            <Tag icon="pi pi-eye" severity="info" v-else/>
+            <i class="text-green-500 pi" :class="{ 'pi-eye text-green-500': data.staff_opened, 'pi-eye-slash text-red-400': !data.staff_opened }"></i>
           </template>
+          <template #filter="{ filterModel, filterCallback }">
+              <Checkbox v-model="filterModel.value" :indeterminate="filterModel.value === null" binary @change="filterCallback()" />
+          </template>          
         </Column>
         <Column header="Номер" sortable style="width: 15%" v-if="user.userIsStaff">
           <template #body="{ data }" >
             {{ data.user }}/{{ data.id }}
           </template>
         </Column>
-        <Column header="Пользователь" sortable style="width: 15%" v-if="user.userIsStaff">
+        <Column header="Заказчик" field="user" sortable style="width: 15%" v-if="user.userIsStaff">
           <template #body="{ data }" >
             {{ getUserName(users.data, data.user) }}
           </template>
+          <template #filter="{ filterModel, filterCallback }">
+              <Select v-model="filterModel.value" @change="filterCallback()" :options="userNames" placeholder="Выбрать..." style="min-width: 12rem" :showClear="true"/>
+          </template>          
         </Column>
-        <Column header="Преобразователь частоты" sortable style="width: 10%">
+        <Column header="Преобразователь частоты" field="invertor" sortable style="width: 10%">
           <template #body="{ data }" >
             {{ getValueFromDictionary(invertors.data, data.invertor) }}
           </template>
@@ -134,7 +160,7 @@
               <div v-html="getOptionNames(data.options)"></div>
           </template>
         </Column>
-        <Column header="Дата конфигурации" width="">
+        <Column header="Дата конфигурации" field="date" sortable width="">
           <template #body="{ data }">
               {{  moment(data.date).format('DD.MM.YYYY') }}
           </template>
