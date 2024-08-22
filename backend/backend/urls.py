@@ -10,6 +10,7 @@ urlpatterns = [
     path('userconfigs/',     include('userconfigs.urls',            namespace='userconfigs')),
     path('users/',           include('users.urls',                  namespace='users')),
     path('discounts/',       include('discounts.urls',              namespace='discounts')),
+    path('logs/',            include('logs.urls',                   namespace='logs')),
 
     
     # path("__debug__/",       include("debug_toolbar.urls")),

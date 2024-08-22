@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 
 # производитель
 # загружен
@@ -409,3 +409,34 @@ class Prices(models.Model):
 
     def __str__(self):
         return f'{self.item.id}' 
+    
+
+class Companies(models.Model):
+    name = models.CharField(max_length=500, blank=False, null = False, verbose_name='Наименование')
+    inn = models.CharField(max_length=20, blank=True, null = True, verbose_name='ИНН')
+    address = models.CharField(max_length=500, blank=True, null = True, verbose_name='Адрес')
+    agreement = models.CharField(max_length=100, blank=True, null = True, verbose_name='Договор')
+    info = models.CharField(max_length=500, blank=True, null = True, verbose_name='Примечание')
+    phone = models.CharField(max_length=20, blank=True, null = True, verbose_name='Телефон')
+    email = models.EmailField(null = True, blank = True)
+    logo = models.ImageField(upload_to="logos", blank=True, null=True, verbose_name="Логотип")
+
+    class Meta:
+        db_table = 'd_companies'
+        verbose_name = "Организация"
+        verbose_name_plural = "Организации"
+
+    def __str__(self):
+        return f'{self.name}' 
+    
+class CompanyUsers(models.Model):
+    company = models.ForeignKey(to = Companies, on_delete=models.CASCADE)
+    user = models.ForeignKey(to = User, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'd_companyusers'
+        verbose_name = "Пользователи организации"
+        verbose_name_plural = "Пользователи организации"
+
+    def __str__(self):
+        return f'{self.user.id}' 

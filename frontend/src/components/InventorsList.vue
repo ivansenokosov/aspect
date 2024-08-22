@@ -3,6 +3,12 @@
   import { useRouter } from 'vue-router'
   import type { IInvertorData, IInvertor, IInvAvalControlData,  IInvSerieData, IInvOptionData, IInvOption, ISimpleData, ISimpleDictionary, IUserDiscountData, IInvSerieDisountData, IInvOptionDisountData } from '@/interfaces.js';
   import { useFetch } from '@/api/useFetch';
+  import { useBaseUrl } from '@/stores/baseUrl'
+  import { priceFormat } from '@/api/priceFormat';
+  import { useUserStore } from '@/stores/user';
+  import { useToast } from "primevue/usetoast";
+  import { getValueFromDictionary } from '@/api/getValueFromDictionary';
+  import { useLoginStore } from '@/stores/login';
   import Tag from 'primevue/tag';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
@@ -10,17 +16,13 @@
   import Dialog from 'primevue/dialog';
   import Divider from 'primevue/divider';
   import Fieldset from 'primevue/fieldset';
-  import { useBaseUrl } from '@/stores/baseUrl'
-  import { priceFormat } from '@/api/priceFormat';
   import SelectSimpleList from './SelectSimpleList.vue';
-  import { useUserStore } from '@/stores/user';
   import Toast from 'primevue/toast';
-  import { useToast } from "primevue/usetoast";
   import AxiosInstance from '@/api/axiosInstance';
-  import { getValueFromDictionary } from '@/api/getValueFromDictionary';
-  import { useLoginStore } from '@/stores/login';
   import OverlayBadge from 'primevue/overlaybadge';  
   import ProgressSpinner from 'primevue/progressspinner';
+  import Select from 'primevue/select';
+  import SelectButton from 'primevue/selectbutton';
 
   const props = defineProps(['invInputVolage','invTypeOfControl','invVariantOfControl','invEMC','invDC','invBreak','power','error'])
   const baseUrl = useBaseUrl()
@@ -28,6 +30,10 @@
   const toast = useToast()  
   const router = useRouter()
   const loginModal = useLoginStore()
+
+  const discontGroups        = ref<ISimpleData>({data:[], error: null, loading: true})  // Группы скидок. Отопбаржается только для аспекта
+  const discontGroupSelected = ref<ISimpleDictionary>()  // Выбранная группа скидок. Отопбаржается только для аспекта
+  const discontGroupId       = ref<number>(0)            // Id Выбранной группа скидок. Отопбаржается только для аспекта
 
   const data = ref<IInvertorData>({data:[], error: null, loading: true})  // Все инверторы
   const dataDisplay = ref<IInvertor[]>([]) // Инверторы после фильтров
@@ -133,13 +139,13 @@
   async function loadDiscounts() {
     if (user.userId > 0) {
       userInvDisount.value = await useFetch('discounts/UserInvDisount?user=' + user.userId, {} ); 
-      serieDiscounts.value = await useFetch('discounts/InvSerieDisount/?group=' + userInvDisount.value.data[0].group,{})
+      discontGroupId.value = userInvDisount.value.data[0].group
     }
   }
 
   async function loadOptionDiscounts() {
     if (user.userId > 0) {
-      optionDiscounts.value = await useFetch('discounts/InvOptionDisount/?group=' + userInvDisount.value.data[0].group,{})
+      optionDiscounts.value = await useFetch('discounts/InvOptionDisount/?group=' + discontGroupId.value,{})
     }  
   }
 
@@ -148,11 +154,22 @@
     invAvalControl.value = await useFetch('Inv_type_of_control',{})
     typeOfOptions.value  = await useFetch('Type_of_options', {} );
     data.value           = await useFetch('Invertors', {} );
+    discontGroups.value  = await useFetch('discounts/InvDisountGroup', {})
     await loadDiscounts()      
     dataDisplay.value = data.value.data
   }
 
   watch(() => [user.userId], async () => {  await loadDiscounts()  })
+
+  watch(discontGroupId, async () => {  
+    serieDiscounts.value = await useFetch('discounts/InvSerieDisount/?group=' + discontGroupId.value,{})
+  })
+
+  watch(discontGroupSelected, () => {  
+    if (discontGroupSelected.value) {
+      discontGroupId.value = discontGroupSelected.value.id
+    }  
+  })
 
   watch(() => [props.invInputVolage, 
                props.invTypeOfControl,
@@ -244,6 +261,10 @@
     </div>
   </div>
   <div v-else>
+    <div v-if="user.userIsStaff" class="mt-5">
+      <h3 class="font-bold">Группа скидок</h3>
+      <SelectButton v-model="discontGroupSelected" class="bg-primary" :options="discontGroups.data" optionLabel="name"/>
+    </div>
     <h1 class="mt-5 pt-5">Преобразователи частоты ({{ dataDisplay.length }})</h1>
     <div v-if="dataDisplay.length > 0">
       <DataTable :value="dataDisplay" stripedRows tableStyle="min-width: 50rem" paginator :rows="20" :rowsPerPageOptions="[10, 20, 50]"> 

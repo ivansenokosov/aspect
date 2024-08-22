@@ -6,7 +6,12 @@ class UserInvConfigs(models.Model):
     user = models.ForeignKey(to = User, on_delete=models.CASCADE)
     date = models.DateField(auto_now_add=True)
     invertor = models.ForeignKey(to = Invertors, on_delete=models.CASCADE)
-    options = models.TextField(max_length = 4000, blank = True, null = True, unique = False)
+    invertor_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    invertor_discount = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
+
+    options = models.TextField(max_length = 4000, blank = True, null = True, unique = False) 
+    options_prices = models.TextField(max_length = 4000, blank = True, null = True, unique = False) 
+    options_disccounts = models.TextField(max_length = 4000, blank = True, null = True, unique = False) 
     staff_opened = models.BooleanField(default = False, null = True, blank = True)
 
     class Meta:

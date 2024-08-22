@@ -50,7 +50,7 @@
 
     async function loadData() {
         data.value            = await useFetch('discounts/UserInvDisount/' + props.id + '/', {});
-        users.value           = await useFetch('Users', {});
+        users.value           = await useFetch('UsersDict', {});
         groups.value          = await useFetch('discounts/InvDisountGroup', {});
 
         group.value = groups.value.data.filter(item => item.id === data.value.data.group)[0]

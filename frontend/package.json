@@ -22,11 +22,13 @@
     "primeflex": "^3.3.1",
     "primeicons": "^7.0.0",
     "primevue": "^4.0.0",
+    "universal-cookie": "^7.2.0",
     "vue": "^3.4.29",
     "vue-axios": "^3.5.2",
     "vue-json-excel3": "^1.0.25",
     "vue-router": "^4.3.3",
     "vue-xlsx": "^0.2.1",
+    "vue3-cookies": "^1.0.6",
     "vue3-xlsx": "^1.1.2"
   },
   "devDependencies": {

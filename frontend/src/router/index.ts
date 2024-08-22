@@ -552,6 +552,79 @@ const router = createRouter({
       component: () => import('../views/dictionaries/InputOutput/DeleteView.vue'),
       props: true        
     },    
+
+    // ------------------------- Действия логирования -----------------
+    {
+      path: '/dictionaries/Actions/List',
+      name: 'ActionsList',
+      component: () => import('../views/dictionaries/Actions/ListView.vue')
+    },
+    {
+      path: '/dictionaries/Actions/Update/:id',
+      name: 'ActionsUpdate',
+      component: () => import('../views/dictionaries/Actions/UpdateView.vue'),
+      props: true        
+    },
+    {
+      path: '/dictionaries/Actions/Create',
+      name: 'ActionsCreate',
+      component: () => import('../views/dictionaries/Actions/CreateView.vue')
+    },
+    {
+      path: '/dictionaries/Actions/Delete/:id',
+      name: 'ActionsDelete',
+      component: () => import('../views/dictionaries/Actions/DeleteView.vue'),
+      props: true        
+    },    
+
+    // ------------------------- Организации -----------------
+    {
+      path: '/dictionaries/Companies/List',
+      name: 'CompaniesList',
+      component: () => import('../views/dictionaries/Companies/ListView.vue')
+    },
+    {
+      path: '/dictionaries/Companies/Update/:id',
+      name: 'CompaniesUpdate',
+      component: () => import('../views/dictionaries/Companies/UpdateView.vue'),
+      props: true        
+    },
+    {
+      path: '/dictionaries/Companies/Create',
+      name: 'CompaniesCreate',
+      component: () => import('../views/dictionaries/Companies/CreateView.vue')
+    },
+    {
+      path: '/dictionaries/Companies/Delete/:id',
+      name: 'CompaniesDelete',
+      component: () => import('../views/dictionaries/Companies/DeleteView.vue'),
+      props: true        
+    },    
+
+    // ------------------------- Пользователи -----------------
+    {
+      path: '/dictionaries/Users/List',
+      name: 'UsersList',
+      component: () => import('../views/dictionaries/User/ListView.vue')
+    },
+    {
+      path: '/dictionaries/Users/Update/:id',
+      name: 'UsersUpdate',
+      component: () => import('../views/dictionaries/User/UpdateView.vue'),
+      props: true        
+    },
+    {
+      path: '/dictionaries/Users/Create',
+      name: 'UsersCreate',
+      component: () => import('../views/dictionaries/User/CreateView.vue')
+    },
+    {
+      path: '/dictionaries/Users/Delete/:id',
+      name: 'UsersDelete',
+      component: () => import('../views/dictionaries/User/DeleteView.vue'),
+      props: true        
+    },    
+
     // -----------------------------------------------------------------------------------------------------------
     // ------------------------------------------ Скидки ---------------------------------------------------------
     // -----------------------------------------------------------------------------------------------------------
@@ -579,54 +652,6 @@ const router = createRouter({
       component: () => import('../views/dictionaries/InvDiscountGroups/DeleteView.vue'),
       props: true        
     },    
-
-    // ------------------------- Скидки на серии ПЧ -----------------
-    // {
-    //   path: '/invDiscounts/SerieDiscounts/List',
-    //   name: 'invDiscountSerieList',
-    //   component: () => import('../views/invDiscounts/SerieDiscounts/ListView.vue')
-    // },
-    // {
-    //   path: '/invDiscounts/SerieDiscounts/Update/:id',
-    //   name: 'invDiscountSerieUpdate',
-    //   component: () => import('../views/invDiscounts/SerieDiscounts/UpdateView.vue'),
-    //   props: true        
-    // },
-    // {
-    //   path: '/invDiscounts/SerieDiscounts/Create',
-    //   name: 'invDiscountSerieCreate',
-    //   component: () => import('../views/invDiscounts/SerieDiscounts/CreateView.vue')
-    // },
-    // {
-    //   path: '/invDiscounts/SerieDiscounts/Delete/:id',
-    //   name: 'invDiscountSerieDelete',
-    //   component: () => import('../views/invDiscounts/SerieDiscounts/DeleteView.vue'),
-    //   props: true        
-    // },    
-
-    // ------------------------- Скидки на опции ПЧ -----------------
-    // {
-    //   path: '/invDiscounts/OptionsDiscounts/List',
-    //   name: 'invDiscountOptionList',
-    //   component: () => import('../views/invDiscounts/OptionsDiscounts/ListView.vue')
-    // },
-    // {
-    //   path: '/invDiscounts/OptionsDiscounts/Update/:id',
-    //   name: 'invDiscountOptionUpdate',
-    //   component: () => import('../views/invDiscounts/OptionsDiscounts/UpdateView.vue'),
-    //   props: true        
-    // },
-    // {
-    //   path: '/invDiscounts/OptionsDiscounts/Create',
-    //   name: 'invDiscountOptionCreate',
-    //   component: () => import('../views/invDiscounts/OptionsDiscounts/CreateView.vue')
-    // },
-    // {
-    //   path: '/invDiscounts/OptionsDiscounts/Delete/:id',
-    //   name: 'invDiscountOptionDelete',
-    //   component: () => import('../views/invDiscounts/OptionsDiscounts/DeleteView.vue'),
-    //   props: true        
-    // },    
 
     // ------------------------- Пользователи и скидки -----------------
     {

@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'users',
     'userconfigs',
     'discounts',
+    'logs',
 
 ]
 

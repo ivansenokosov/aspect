@@ -315,3 +315,13 @@ class PricesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Prices
         fields = '__all__'
+
+class CompaniesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Companies
+        fields = '__all__'
+
+class CompanyUsersSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CompanyUsers
+        fields = '__all__'

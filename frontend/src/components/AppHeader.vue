@@ -45,9 +45,8 @@
         const res = await axios.post(url, formData, config)
         .then(function(response) {
             if (response.data.status === 1) {
-                userStore.userId = response.data.id
-                userStore.userName = response.data.first_name
-                userStore.userIsStaff = response.data.is_staff
+                console.log()
+                userStore.setValues(response.data.id, response.data.first_name, response.data.is_staff, response.data.is_superuser)
                 loginModal.visible = false
             } else {
                 errormsg.value = response.data.info
@@ -76,6 +75,15 @@
         }
     }
 
+    function isSuperadmin<Boolean>() {
+        if (userStore.userId > 0 && userStore.userIsSuperadmin == true) {
+            return true
+        } else {
+            return false
+        }
+    }
+
+
 const menuItems = ref<IMenuItem[]>([
     {
         label: 'Главная',
@@ -100,97 +108,114 @@ const menuItems = ref<IMenuItem[]>([
         level: 1,
         items: [
             {
-                label: 'Преобразователи частоты',
-                icon: 'pi pi-arrow-right-arrow-left',
+                label: 'Пользователи',
+                icon: 'pi pi-user',
                 show: computed((): boolean => true),
-                route: '/dictionaries/Invertors/List'
+                route: '/dictionaries/Users/List'
             },
             {
-                label: 'Опции для ПЧ',
-                icon: 'pi pi-bolt',
+                label: 'Органиазции',
+                icon: 'pi pi-building',
                 show: computed((): boolean => true),
-                route: '/dictionaries/InvOptions/List'
+                route: '/dictionaries/Companies/List'
             },
             {
-                label: 'Элементы',
-                icon: 'pi pi-objects-column',
-                show: computed((): boolean => true),
-                route: '/dictionaries/Items/List'
-           },
-            {
-                separator: true
-            },
-            {
-                label: 'Серии ПЧ',
-                icon: 'pi pi-pencil',
-                show: computed((): boolean => true),
-                route: '/dictionaries/InvSeries/List'
-           },
-           {
-                label: 'Входы/выходы',
-                icon: 'pi pi-book',
-                show: computed((): boolean => true),
-                route: '/dictionaries/InputOutput/List'
-           },
-           {
                 label: 'Общие',
                 icon: 'pi pi-book',
-                show: computed((): boolean => true),
+                show: computed((): boolean => isSuperadmin()),
                 items: [
                     {
                         label: 'Производители',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/Manufactory/List'
                     },
                     {
                         label: 'Типы элементов',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/TypeOfItems/List'
                     },
                     {
                         label: 'Сроки ожидания',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/WaitingPeriod/List'
+                    },
+                    {
+                        label: 'Действия журналированя',
+                        icon: 'pi pi-book',
+                        show: computed((): boolean => isSuperadmin()),
+                        route: '/dictionaries/Actions/List'
                     },
                        ]
            }, 
-
             {
-                label: 'Конфигуратор',
-                icon: 'pi pi-cog',
-                show: computed((): boolean => true),
+                label: 'Преобразователи частоты',
+                icon: 'pi pi-bolt',
+                show: computed((): boolean => isSuperadmin()),
                 items: [
-                    {
+                        {
+                            label: 'Преобразователи частоты',
+                            icon: 'pi pi-bolt',
+                            show: computed((): boolean => isSuperadmin()),
+                            route: '/dictionaries/Invertors/List'
+                        },
+                        {
+                            label: 'Опции для ПЧ',
+                            icon: 'pi pi-book',
+                            show: computed((): boolean => isSuperadmin()),
+                            route: '/dictionaries/InvOptions/List'
+                        },
+                        {
+                            label: 'Элементы',
+                            icon: 'pi pi-objects-column',
+                            show: computed((): boolean => isSuperadmin()),
+                            route: '/dictionaries/Items/List'
+                        },
+                        {
+                            label: 'Серии ПЧ',
+                            icon: 'pi pi-book',
+                            show: computed((): boolean => isSuperadmin()),
+                                route: '/dictionaries/InvSeries/List'
+                        },
+                        {
+                            label: 'Входы/выходы',
+                            icon: 'pi pi-book',
+                            show: computed((): boolean => isSuperadmin()),
+                            route: '/dictionaries/InputOutput/List'
+                        },
+                        {
+                            separator: true
+                        },
+                        {
                         label: 'Входные напряжения',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/InvInputVoltage/List'
                     },
                     {
                         label: 'Типы управления',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/TypeOfControl/List'
                     },
                     {
                         label: 'Способы управления',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/VariantsOfControl/List'
                     },
                     {
                         label: 'Дроссели ЕМС',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/InvEMCDrossel/List'
                     },
                     {
                         label: 'DC фильтры',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/InvDCDrossel/List'
                     },
                     // {
@@ -202,85 +227,80 @@ const menuItems = ref<IMenuItem[]>([
                     {
                         label: 'Тормозные модули',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/InvBreakeModule/List'
-                    },
-                    
-                ]
-            },
-            {
-                label: 'Справочники серий ПЧ',
-                icon: 'pi pi-book',
-                items: [
+                    },                        
                     {
                         label: 'Входные напряжения',
                         icon: '',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/'
                     },
                     {
                         label: 'Выходные напряжения',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/InvOutputVoltage/List'
                     },
                     {
                         label: 'Вид опции',
                         icon: '',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/'
                     },
                     {
                         label: 'Способы управления для серии',
                         icon: '',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/'
                     },
                     {
                         label: 'Уровни защиты',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/LevelIP/List'
                     },
                     {
                         label: 'Перегрузки (переделать)',
                         icon: '',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/InvTypeOfOverload/List'
                     },
                     {
                         label: 'Панели',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/InvTypeOfPanels/List'
                     },
                     {
                         label: 'Допустимые температуры окружающей среды',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/AmbientTemperatures/List'
                     },
                     {
                         label: 'Точность регулирования частоты',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/InvAccurancyFrenq/List'
                     },
                     {
                         label: 'Размеры (переделать)',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/InvSizes/List'
                     },
                     {
                         label: 'Сигналы',
                         icon: 'pi pi-book',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/InvTypeOfSignals/List'
-                    },
-
+                    },                    
                 ]
-            }
+            },
+
+
+
         ]
     },
     {
@@ -293,15 +313,15 @@ const menuItems = ref<IMenuItem[]>([
                     {
                         label: 'Инстарт',
                         icon: '',
-                        show: computed((): boolean => true),
+                        show: computed((): boolean => isStuff()),
                         route: '/upload',
                     },
                        ]
     },
     {
         label: 'Скидки',
-        icon: 'pi pi-upload',
-        show: computed((): boolean => true),
+        icon: 'pi pi-percentage',
+        show: computed((): boolean => isSuperadmin()),
         badge: 0,
         level: 1,
         items: [
@@ -313,18 +333,13 @@ const menuItems = ref<IMenuItem[]>([
                                     {
                                         label: 'Группы',
                                         icon: '',
-                                        show: computed((): boolean => true),
+                                        show: computed((): boolean => isSuperadmin()),
                                         route: '/dictionaries/InvDiscountGroups/List',
-                                    },
-                                    {
-                                        label: 'На конфигурацию',
-                                        icon: '',
-                                        show: computed((): boolean => true),
                                     },
                                     {
                                         label: 'Назначение',
                                         icon: '',
-                                        show: computed((): boolean => true),
+                                        show: computed((): boolean => isSuperadmin()),
                                         route: '/invDiscounts/UserInvDiscounts/List'
                                     },
                        ]
@@ -380,7 +395,7 @@ const menuItems = ref<IMenuItem[]>([
         <template #end>
             <div class="flex items-center align-items-center gap-2">
                 <div class="text-xl font-semibold pr-5">8 (800) 350-79-07</div>
-                <span v-if="userStore.userId > 0" @click="() => { userStore.userId=0; userStore.userName = ''; userStore.userIsStaff = false}">
+                <span v-if="userStore.userId > 0" @click="() => { userStore.logout()}">
                 <span class="flex align-items-center menu-exit">
                     <Button severity="contrast" class="flex align-items-center" >
                         <span class="pi pi-sign-in p-menuitem-icon"></span>

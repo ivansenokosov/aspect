@@ -19,6 +19,7 @@
   import { FilterMatchMode } from '@primevue/core/api';
   import Checkbox from 'primevue/checkbox';
   import Select from 'primevue/select';
+  import InputText from 'primevue/inputtext';
 
   const user = useUserStore()
   const data = ref<IUserInvConfigData>({data:[], error: null, loading: true}) 
@@ -40,7 +41,7 @@
     data.value = await useFetch(url, {} ); 
     options.value = await useFetch('Inv_options', {} );
     invertors.value = await useFetch('Invertor_dict', {} );
-    users.value = await useFetch('Users', {} );
+    users.value = await useFetch('UsersDict', {} );
     users.value.data.map(item => userNames.value.push(item.first_name))
   }
 
@@ -95,7 +96,8 @@
 
   const filters = ref({
     user: { value: null, matchMode: FilterMatchMode.EQUALS },
-    staff_opened: { value: null, matchMode: FilterMatchMode.EQUALS }    
+    staff_opened: { value: null, matchMode: FilterMatchMode.EQUALS },
+    id: { value: null, matchMode: FilterMatchMode.CONTAINS  }    
   });
 
 </script> 
@@ -137,10 +139,13 @@
               <Checkbox v-model="filterModel.value" :indeterminate="filterModel.value === null" binary @change="filterCallback()" />
           </template>          
         </Column>
-        <Column header="Номер" sortable style="width: 15%" v-if="user.userIsStaff">
+        <Column header="Номер" field="id" sortable style="width: 15%" v-if="user.userIsStaff">
           <template #body="{ data }" >
             {{ data.user }}/{{ data.id }}
           </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Искать..." />
+          </template>        
         </Column>
         <Column header="Заказчик" field="user" sortable style="width: 15%" v-if="user.userIsStaff">
           <template #body="{ data }" >

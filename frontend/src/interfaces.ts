@@ -180,8 +180,14 @@ export interface IUserInvConfigData {
 
 export interface IUser {
     id : number
+    username?: string
+    password?: string
     first_name : string
-    last_name : string
+    last_name?: string
+    email?: string
+    is_staff?: boolean
+    is_active?: boolean
+    is_superuser?: boolean
 }
 
 export interface IUserData {
@@ -242,3 +248,34 @@ export interface IUserDiscountData {
     error: any
     loading: boolean
   }
+
+// ------------------------------- Организации ------------------------------- 
+export interface ICompany {
+    id?: number
+    name:string
+    inn:string
+    address:string
+    agreement:string
+    info:string
+    phone:string
+    email:string
+    logo?:string    
+}
+
+export interface ICompanyData {
+    data: ICompany[]
+    error: any
+    loading: boolean
+}
+
+export interface ICompanyUsers {
+    id?     : number
+    company : number
+    user    : number
+}
+
+export interface ICompanyUsersData {
+    data: ICompanyUsers[]
+    error: any
+    loading: boolean
+}

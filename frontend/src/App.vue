@@ -1,7 +1,11 @@
 <script setup lang="ts">
+  import { useUserStore } from './stores/user';
   import AppHeader from '@/components/AppHeader.vue'
   import Divider from 'primevue/divider';
   document.title = 'Аспект';
+
+  const user = useUserStore()
+  user.setRefValues()
 </script>
 
 <template>

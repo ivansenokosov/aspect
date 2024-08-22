@@ -44,7 +44,7 @@
     }
 
     async function loadData() {
-        users.value           = await useFetch('Users', {});
+        users.value           = await useFetch('UsersDict', {});
         groups.value          = await useFetch('discounts/InvDisountGroup', {});
         loading.value = false
     }

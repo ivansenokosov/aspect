@@ -45,3 +45,10 @@ class UserInvConfigsViewset(viewsets.ViewSet):
         company = self.queryset.get(pk=pk)
         company.delete()
         return Response(status = 204) 
+    
+
+#--------------------------- Сколько конфигураций не открыто     --------------------------------------
+class InvConfigUnreadViewset(viewsets.ModelViewSet):
+    permission_classes = [permissions.AllowAny]
+    queryset = UserInvConfigs.objects.all().filter(staff_opened = False)
+    serializer_class = CountUnreadSerializer  
