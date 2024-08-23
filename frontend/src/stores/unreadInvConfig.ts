@@ -1,8 +1,22 @@
-import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { defineStore } from 'pinia'
+import { useBaseUrl } from './baseUrl'
 
 export const useUnreadInvConfigs = defineStore('unreadInvConfigs', () => {
   const unreadInvConfigs = ref<Number>(1)
-  
-  return { unreadInvConfigs }
+  const baseUrl = useBaseUrl()
+
+  async function count() {
+    const data = ref(null);
+    
+    try {
+      const res = await fetch(baseUrl.baseUrl + 'userconfigs/CountUnread', {});
+      data.value = await res.json();
+    } catch (e) {
+      console.log(e);
+    } 
+    unreadInvConfigs.value = data.value.length
+    console.log(unreadInvConfigs.value)
+  }  
+  return { unreadInvConfigs, count }
 })

@@ -13,13 +13,18 @@
     import axios from 'axios';
     import Message from 'primevue/message';
     import type { IMenuItem } from '@/interfaces';
-    import { useUnreadInvConfigs } from '@/stores/unreadInvConfig';
     import { useLoginStore } from '@/stores/login';
+    import { useUnreadInvConfigs } from '@/stores/unreadInvConfig';
+    // import { saveLog } from '@/api/log';
+
 
     const userStore = useUserStore()
     const baseUrl = useBaseUrl()
     const invUnread = useUnreadInvConfigs()
     const loginModal = useLoginStore();
+
+
+    invUnread.count()
 
     const login = ref<String>('')
     const password = ref<String>('')
@@ -47,6 +52,7 @@
             if (response.data.status === 1) {
                 console.log()
                 userStore.setValues(response.data.id, response.data.first_name, response.data.is_staff, response.data.is_superuser)
+                // saveLog(1,'')
                 loginModal.visible = false
             } else {
                 errormsg.value = response.data.info
@@ -147,6 +153,12 @@ const menuItems = ref<IMenuItem[]>([
                         icon: 'pi pi-book',
                         show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/Actions/List'
+                    },
+                    {
+                        label: 'Журнал',
+                        icon: 'pi pi-book',
+                        show: computed((): boolean => isSuperadmin()),
+                        route: '/logs'
                     },
                        ]
            }, 
@@ -395,7 +407,10 @@ const menuItems = ref<IMenuItem[]>([
         <template #end>
             <div class="flex items-center align-items-center gap-2">
                 <div class="text-xl font-semibold pr-5">8 (800) 350-79-07</div>
-                <span v-if="userStore.userId > 0" @click="() => { userStore.logout()}">
+                <span v-if="userStore.userId > 0" @click="() => { 
+                                                                    // saveLog(2,'')
+                                                                    userStore.logout()
+                                                                }">
                 <span class="flex align-items-center menu-exit">
                     <Button severity="contrast" class="flex align-items-center" >
                         <span class="pi pi-sign-in p-menuitem-icon"></span>

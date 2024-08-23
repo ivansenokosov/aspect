@@ -21,8 +21,8 @@
   import AxiosInstance from '@/api/axiosInstance';
   import OverlayBadge from 'primevue/overlaybadge';  
   import ProgressSpinner from 'primevue/progressspinner';
-  import Select from 'primevue/select';
   import SelectButton from 'primevue/selectbutton';
+  import { saveLog } from '@/api/log';
 
   const props = defineProps(['invInputVolage','invTypeOfControl','invVariantOfControl','invEMC','invDC','invBreak','power','error'])
   const baseUrl = useBaseUrl()
@@ -66,6 +66,9 @@
     product.value = {...prod};
     productDialog.value = true;
     selectedOptions.value = []
+
+    saveLog(3,String(prod.serie))
+
     serie.value   = await useFetch('Inv_series/' + prod.serie,{})
     options.value = await useFetch('Inv_options/?serie=' + prod.serie,{})
     await loadOptionDiscounts()
@@ -78,22 +81,32 @@
         const url:string =  'userconfigs/UserInvConfg/'
         const config = { headers: { 'content-type': 'application/json', }, };
         const selectedOptionsStr = ref<String>('')
+        const selectedOptionsPricesStr = ref<String>('')
+        const selectedOptionsDiscountStr = ref<String>('')
 
         if (selectedOptions) {
-          selectedOptionsStr.value  = selectedOptions.value.map(a => a.id.toString())
+          selectedOptionsStr.value         = selectedOptions.value.map(a => a.id.toString())
+          selectedOptionsPricesStr.value   = selectedOptions.value.map(a => a.price)
+          selectedOptionsDiscountStr.value = selectedOptions.value.map(a => getDiscountOption(a.option))
         }
 
         const formData = new FormData();        
 
-        formData.append("user", user.userId)
-        formData.append("invertor", product.value.id)
-        formData.append("options", JSON.stringify(selectedOptionsStr.value))
+        formData.append("user",               user.userId)
+        formData.append("invertor",           product.value.id)
+        formData.append("invertor_price",     product.value.price)
+        formData.append("invertor_discount",  getDiscountSerie(product.value.serie) )
+        formData.append("options",            JSON.stringify(selectedOptionsStr.value))
+        formData.append("options_prices",     JSON.stringify(selectedOptionsPricesStr.value))
+        formData.append("options_disccounts", JSON.stringify(selectedOptionsDiscountStr.value))
         
         const res = await AxiosInstance.post(url, formData, config)
           .then(function(response) {
+
+            saveLog(4, String(response.data.id))
             toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
             router.push('inv_config/?id=' + response.data.id)
-            console.log(response);
+            // console.log(response);
         }).catch(function(error) {
           console.log(error);
         })
@@ -223,7 +236,7 @@
       if (serieDiscount.length>0) {
         discount = serieDiscount[0].discount
       }
-      return '-' + Number(discount).toFixed().toString() + '%'
+      return Number(discount).toFixed().toString()
     }
 
     function getDiscountOption<String>(option: number) {
@@ -232,7 +245,7 @@
       if (optionDiscount.length>0) {
         discount = optionDiscount[0].discount
       }
-      return '-' + Number(discount).toFixed().toString() + '%'
+      return Number(discount).toFixed().toString()
     }
 
     function getInvPrice(price: number, serie: number) {
@@ -304,7 +317,7 @@
 
               <div v-if="user.userId">
 
-                <OverlayBadge :value="getDiscountSerie(data.serie)" severity="warn" v-if="!serieDiscounts.loading && !userInvDisount.loading">
+                <OverlayBadge :value="`- ${getDiscountSerie(data.serie)} %`" severity="warn" v-if="!serieDiscounts.loading && !userInvDisount.loading">
                   <div class="surface-700 text-white font-bold text-xl line-through border-round m-2 flex align-items-center justify-content-center" style="min-width: 80px; min-height: 40px">
                     {{ priceFormat(data.price) }} &#8381;
                   </div>
@@ -422,7 +435,7 @@
 
               <div v-if="user.userId">
 
-                <OverlayBadge :value="getDiscountOption(data.option)" severity="warn" v-if="!serieDiscounts.loading && !userInvDisount.loading" class="mr-4">
+                <OverlayBadge :value="`- ${getDiscountOption(data.option)} %`" severity="warn" v-if="!serieDiscounts.loading && !userInvDisount.loading" class="mr-4">
                   <div class="surface-700 text-white font-bold text-xl line-through border-round m-2 flex align-items-center justify-content-center" style="min-width: 80px; min-height: 40px">
                     {{ priceFormat(data.price) }} &#8381;
                   </div>

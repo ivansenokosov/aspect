@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ICompany, ICompanyData, IUserData, ICompanyUsersData, ICompanyUsers } from '@/interfaces';
+    import type { ICompany, ICompanyData, IUserData, ICompanyUsersData, ICompanyUsers, ISimpleData, ISimpleDictionary, IUserDiscountData } from '@/interfaces';
     import Button from 'primevue/button';
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';
@@ -12,14 +12,20 @@
     import Checkbox from 'primevue/checkbox';
     import Password from 'primevue/password';
     import AutoComplete from 'primevue/autocomplete';
+    import Select from 'primevue/select';
 
-    const baseUrl      = useBaseUrl()
-    const data         = ref<IUserData>({data:[], error: null, loading: true})
-    const companies    = ref<ICompanyData>({data:[], error: null, loading: true})
-    const companyUsers = ref<ICompanyUsersData>({data:[], error: null, loading: true})
-    const companyUser  = ref<ICompanyUsers>()
-    const filtered     = ref<ICompanyUsers[]>([])
-    const company      = ref<ICompany>()
+    const baseUrl          = useBaseUrl()
+    const data             = ref<IUserData>({data:[], error: null, loading: true})
+    const companies        = ref<ICompanyData>({data:[], error: null, loading: true})
+    const companyUsers     = ref<ICompanyUsersData>({data:[], error: null, loading: true})
+    const companyUser      = ref<ICompanyUsers>()
+    const filtered         = ref<ICompanyUsers[]>([])
+    const company          = ref<ICompany>()
+    const groups           = ref<ISimpleData>({data:[], error: null, loading: true}) 
+    const group            = ref<ISimpleDictionary>()
+    const userInvDiscounts = ref<IUserDiscountData>({data:[], error: null, loading: true}) 
+
+
     const props        = defineProps(['id'])
     const saving       = ref<boolean>(false)
     const toast        = useToast(); 
@@ -34,7 +40,7 @@
 
         const res = await AxiosInstance.put(url, data.value.data, config)
           .then(function(response) {
-          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
+          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные пользователя обновлены', life: 3000 });
         }).catch(function(error) {
           console.log(error);
         })
@@ -61,6 +67,37 @@
                                             })
         }
 
+        //-------------------- Сохраняем группу скидок
+        const url2:string =  'discounts/UserInvDisount'
+        const formData = new FormData();        
+        formData.append("user",  Number(props.id))
+        formData.append("group", group.value.id)
+
+        if (userInvDiscounts.value.data.length>0) { 
+            // ------------------ обновляем группу скидок
+            const res2 = await AxiosInstance.put(url2 + '/' +  userInvDiscounts.value.data[0].id + '/', formData, config)
+                                            .then(function(response) {
+                                                console.log(response);
+                                                toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные группы скидок обновлены', life: 3000 });
+                                             })
+                                            .catch(function(error) {
+                                                console.log(error);
+                                            })
+        } else { 
+            // ------------------ добавляем группу скидок
+            const res2 = await AxiosInstance.post(url2 + '/', formData, config)
+                                            .then(function(response) {
+                                                toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные группы скидок добавлены', life: 3000 });
+                                                console.log(response);
+                                              })
+                                            .catch(function(error) {
+                                                console.log(error);
+                                              })
+
+        }
+
+
+
         saving.value = false
     }
 
@@ -72,6 +109,13 @@
         filtered.value = companyUsers.value.data.filter(item => item.user === Number(props.id))
         if (filtered.value.length > 0) { 
             company.value = companies.value.data.filter(item => item.id === filtered.value[0].company)[0]
+        }
+
+        // Загражаем то, что нужно для группы скидок
+        groups.value            = await useFetch('discounts/InvDisountGroup', {});
+        userInvDiscounts.value  = await useFetch('discounts/UserInvDisount?user=' + props.id, {});
+        if (userInvDiscounts.value.data.length > 0) {
+            group.value = groups.value.data.filter(item => item.id === userInvDiscounts.value.data[0].group)[0]
         }
 
         loading.value         = false
@@ -147,7 +191,12 @@
             </FloatLabel>
         </div>
 
-
+        <div class="field pt-5"> 
+            <FloatLabel>
+                <Select v-model="group" :options="groups.data" optionLabel="name" placeholder="Группа" class="w-full md:w-56" />
+                <label for="group">Группа</label>
+            </FloatLabel>
+        </div>        
 
 
         <div class="flex flex-wrap justify-center gap-4 pt-5">

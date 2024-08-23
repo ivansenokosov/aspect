@@ -3,23 +3,41 @@
   import { useFetch } from '@/api/useFetch';
   import { RouterLink } from 'vue-router';
   import { FilterMatchMode } from '@primevue/core/api';
-  import type { ICompanyData, ICompanyUsersData, IUserData, ICompanyUsers, ICompany } from '@/interfaces.js';
+  import type { ICompanyData, ICompanyUsersData, IUserData, ICompanyUsers, ICompany, ISimpleData, IUserDiscountData, ISimpleDictionary, IUserDiscount } from '@/interfaces.js';
   
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import Button from 'primevue/button';
   import InputText from 'primevue/inputtext';
   
-  const data          = ref<IUserData>({data:[], error: null, loading: true}) 
-  const companies     = ref<ICompanyData>({data:[], error: null, loading: true}) 
-  const companyUsers  = ref<ICompanyUsersData>({data:[], error: null, loading: true}) 
+  const data           = ref<IUserData>({data:[], error: null, loading: true}) 
+  const companies      = ref<ICompanyData>({data:[], error: null, loading: true}) 
+  const companyUsers   = ref<ICompanyUsersData>({data:[], error: null, loading: true}) 
+  const discountGroups = ref<ISimpleData>({data:[], error: null, loading: true}) 
+  const userInvDiscounts = ref<IUserDiscountData>({data:[], error: null, loading: true}) 
+
 
   const loading       = ref<boolean>(true)
 
+function getDiscountGroupNameByUserId(discountGroups: ISimpleDictionary[], IUserDiscountData: IUserDiscount[], userId: number) {
+  const discountGroup = IUserDiscountData.filter(item => item.user === userId)
+  if (discountGroup.length>0) {
+    const groupName = discountGroups.filter(item => item.id === discountGroup[0].group)
+    if (groupName.length>0) {
+      return groupName[0].name
+    }
+  }
+
+  return ''
+}
+
   async function loadData() {
-    data.value            = await useFetch('Users', {} );
-    companies.value       = await useFetch('Companies', {});
-    companyUsers.value    = await useFetch('CompanyUsers', {});
+    data.value              = await useFetch('Users', {} );
+    companies.value         = await useFetch('Companies', {});
+    companyUsers.value      = await useFetch('CompanyUsers', {});
+    discountGroups.value    = await useFetch('discounts/InvDisountGroup', {});
+    userInvDiscounts.value  = await useFetch('discounts/UserInvDisount', {});
+
     loading.value         = false        
   }
 
@@ -85,6 +103,11 @@
         </Column>
         <Column field="first_name"       header="Имя"     sortable style="width: 10%"></Column>
         <!-- <Column field="second_name"      header="second_name"   sortable style="width: 10%"></Column> -->
+        <Column header="Организация"             style="width: 10%" v-if="!companies.loading && !companyUsers.loading">
+          <template #body="{ data }" >
+            {{ getCompanyName(data.id) }}
+          </template>
+        </Column>
         <Column field="email"            header="email" sortable style="width: 10%"></Column>
         <Column field="is_staff"         header="Сотрудник" sortable style="width: 10%">
           <template #body="{ data }" >
@@ -101,9 +124,11 @@
             <i class="text-green-500 pi" :class="{ 'pi-check text-green-500': data.is_superuser, 'pi-times text-red-400': !data.is_superuser }"></i>
           </template>
         </Column>
-        <Column header="Организация"             style="width: 10%" v-if="!companies.loading && !companyUsers.loading">
+        <Column header="Группа скидок"             style="width: 10%">
           <template #body="{ data }" >
-            {{ getCompanyName(data.id) }}
+            <span v-if="getDiscountGroupNameByUserId(discountGroups.data, userInvDiscounts.data, data.id)">{{ getDiscountGroupNameByUserId(discountGroups.data, userInvDiscounts.data, data.id) }}</span>
+            <span v-else class="bg-red-500">Группа скидок не задана</span>
+            
           </template>
         </Column>
 

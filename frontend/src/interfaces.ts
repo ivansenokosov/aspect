@@ -139,6 +139,7 @@ export interface IInvOption {
     series : number
     option : number 
     price: string
+    discount?: string
     waiting_period: string
     quantity: string
     option_type: string
@@ -166,10 +167,15 @@ export interface IItemData {
 export interface IUserInvConfig {
     id : number
     invertor : number
+    invertor_price : string
+    invertor_discount : string
     options : string
+    options_prices : string
+    options_disccounts : string
     date : string
     user: number
     staff_opened: boolean
+    info: string
 }
 
 export interface IUserInvConfigData {
@@ -191,7 +197,7 @@ export interface IUser {
 }
 
 export interface IUserData {
-    data: IUserInvConfig[]
+    data: IUser[]
     error: any
     loading: boolean
 }
@@ -277,5 +283,22 @@ export interface ICompanyUsers {
 export interface ICompanyUsersData {
     data: ICompanyUsers[]
     error: any
+    loading: boolean
+}
+
+
+// ------------------------------- Журналироание ------------------------------- 
+
+export interface ILog {
+    id    ?: number
+    date  ?: string
+    action : number
+    user   : number
+    params : string
+}
+
+export interface ILogData {
+    data   : ILog[]
+    error  : any
     loading: boolean
 }

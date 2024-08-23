@@ -31,11 +31,16 @@ const router = createRouter({
       name: 'contacts',
       component: () => import('../views/ContactsView.vue')
     },
-
     {
       path: '/config',
       name: 'config',
       component: () => import('../views/dictionaries/UserInvConfigs/ListView.vue'),
+      beforeEnter: checkAuth,
+    },
+    {
+      path: '/logs',
+      name: 'logs',
+      component: () => import('../views/LogsView.vue'),
       beforeEnter: checkAuth,
     },
 

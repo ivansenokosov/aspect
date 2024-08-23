@@ -16,7 +16,7 @@ class Logs(models.Model):
     date   = models.DateTimeField(auto_now_add=True)
     action = models.ForeignKey(to = Actions, on_delete=models.CASCADE)
     user   = models.ForeignKey(to = User, on_delete=models.CASCADE)
-    params = models.CharField(max_length=500, blank = False, null = False, unique=False)
+    params = models.CharField(max_length=500, blank = True, null = True, unique = False)
 
     class Meta:
         db_table = 'd_logs'

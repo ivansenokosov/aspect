@@ -8,6 +8,7 @@ class UserInvConfigs(models.Model):
     invertor = models.ForeignKey(to = Invertors, on_delete=models.CASCADE)
     invertor_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     invertor_discount = models.DecimalField(max_digits=6, decimal_places=2, default=0.00)
+    info = models.CharField(max_length = 4000, blank = True, null = True, unique = False)
 
     options = models.TextField(max_length = 4000, blank = True, null = True, unique = False) 
     options_prices = models.TextField(max_length = 4000, blank = True, null = True, unique = False) 

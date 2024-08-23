@@ -1,13 +1,11 @@
 <script setup lang="ts">
   import {ref} from 'vue'
   import type { ISimpleData, IPower } from '@/interfaces';
+  import { saveLog } from '@/api/log';
 
   import SelectSimpleList from '@/components/SelectSimpleList.vue';
-  import SelectSimpleButton from '@/components/SelectSimpleButton.vue';
   import InventorsList from '@/components/InventorsList.vue';
   import SelectPower from '@/components/SelectPower.vue';
-  import { getUnreadInvConfigs } from '@/api/getUneadInvConfigs';
-
 
   const invInputVolage = ref<ISimpleData[]>()
   const invTypeOfControl = ref<ISimpleData[]>()
@@ -17,7 +15,7 @@
   const invBreak = ref<ISimpleData[]>()
   const invPower = ref<IPower>({power: '0', error: 10})
 
-  getUnreadInvConfigs()
+  saveLog(7, '')
 </script>
 
 <template>
@@ -57,7 +55,5 @@
   :power="invPower.power" 
   :error="invPower.error"
   />    
-
-  <!-- <InventorsList :power="invPower.power" :error="invPower.error"/>     -->
 
 </template>

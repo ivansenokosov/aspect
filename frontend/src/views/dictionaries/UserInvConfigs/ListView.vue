@@ -1,32 +1,33 @@
 <script setup lang="ts">
   import { ref } from 'vue' 
   import { useFetch } from '@/api/useFetch';
-  import type { ISimpleData, IInvOptionData, IUserInvConfigData, IUserData } from '@/interfaces.js';
+  import { type ISimpleData, type IInvOptionData, type IUserInvConfigData, type IUserData, ICompanyUsersData, ICompanyData } from '@/interfaces.js';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import { RouterLink } from 'vue-router';
   import Button from 'primevue/button';
-  import Tag from 'primevue/tag';
   import { useConfirm } from "primevue/useconfirm";
   import { useToast } from "primevue/usetoast";
   import ConfirmDialog from 'primevue/confirmdialog';
   import Toast from 'primevue/toast';
   import AxiosInstance from '@/api/axiosInstance';
-  import ProgressBar from 'primevue/progressbar';
   import { getValueFromDictionary } from '@/api/getValueFromDictionary';
   import moment from 'moment'
   import { useUserStore } from '@/stores/user';
   import { FilterMatchMode } from '@primevue/core/api';
   import Checkbox from 'primevue/checkbox';
-  import Select from 'primevue/select';
   import InputText from 'primevue/inputtext';
+  import { saveLog } from '@/api/log';
 
-  const user = useUserStore()
-  const data = ref<IUserInvConfigData>({data:[], error: null, loading: true}) 
-  const invertors = ref<ISimpleData>({data:[], error: null, loading: true}) 
-  const options = ref<IInvOptionData>({data:[], error: null, loading: true}) 
-  const users = ref<IUserData>({data:[], error: null, loading: true}) 
-  const userNames = ref<string[]>([]) 
+  const user         = useUserStore()
+  const data         = ref<IUserInvConfigData>({data:[], error: null, loading: true}) 
+  const invertors    = ref<ISimpleData>({data:[], error: null, loading: true}) 
+  const options      = ref<IInvOptionData>({data:[], error: null, loading: true}) 
+  const users        = ref<IUserData>({data:[], error: null, loading: true}) 
+  const companyUsers = ref<ICompanyUsersData>({data:[], error: null, loading: true}) 
+  const companies    = ref<ICompanyData>({data:[], error: null, loading: true}) 
+  const userNames    = ref<string[]>([]) 
+  const loading      = ref<boolean>(true)
 
   const confirm = useConfirm();
   const toast = useToast();
@@ -38,11 +39,18 @@
     } else {
       url = 'userconfigs/UserInvConfg?user_id=' + String(user.userId) // загружаем только конфигурации пользователя
     }
-    data.value = await useFetch(url, {} ); 
-    options.value = await useFetch('Inv_options', {} );
-    invertors.value = await useFetch('Invertor_dict', {} );
-    users.value = await useFetch('UsersDict', {} );
+    data.value            = await useFetch(url, {} ); 
+    options.value         = await useFetch('Inv_options', {} );
+    invertors.value       = await useFetch('Invertor_dict', {} );
+    users.value           = await useFetch('UsersDict', {} );
+    companyUsers.value    = await useFetch('CompanyUsers', {} );
+    companies.value       = await useFetch('Companies', {} );
+
     users.value.data.map(item => userNames.value.push(item.first_name))
+
+    saveLog(8, '')
+
+    loading.value = false
   }
 
   function getOptionNames<String>(selectedOptions:String) {
@@ -55,13 +63,14 @@
     return(result)
   }
 
-  function getUserName<String>(dictionary: any[], id: number) {
-    const record = dictionary.filter(item => item.id === Number(id))[0]
-    if (record) {
-      return record.first_name
-    } else {
-      return 'не определено'
-    }    
+  function getCompanyName<String>(userId: number) {
+    const record = companyUsers.value.data.filter(item => item.user === userId)
+    const user = users.value.data.filter (item => item.id === userId)
+    if (record.length > 0) {
+      const company = companies.value.data.filter(item => item.id === record[0].company)
+      return '<a class="font-bold">' + company[0].name + '</a><p>' + user[0].first_name + '</p><p>' + company[0].phone + '</p>'
+    }
+    return ''
   }
  
   loadData()
@@ -95,7 +104,6 @@
   };
 
   const filters = ref({
-    user: { value: null, matchMode: FilterMatchMode.EQUALS },
     staff_opened: { value: null, matchMode: FilterMatchMode.EQUALS },
     id: { value: null, matchMode: FilterMatchMode.CONTAINS  }    
   });
@@ -109,13 +117,13 @@
   <div v-if="data.error">
     <h2>Error: {{ data.error }}</h2>
   </div>
-  <div v-if="data.loading || options.loading">
+  <div v-if="loading">
     <h2>Загружаю данные...</h2>
   </div>
   <div v-else>
     <div class="grid">
       <div class="col-10">
-        <h1 class="pt-5">Конфигурации преобразователей частоты</h1>
+        <h1 class="pt-5">Конфигурации преобразователей частоты ({{ data.data.length }})</h1>
       </div>
     </div>
     <div v-if="data.data.length > 0">
@@ -147,13 +155,10 @@
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Искать..." />
           </template>        
         </Column>
-        <Column header="Заказчик" field="user" sortable style="width: 15%" v-if="user.userIsStaff">
-          <template #body="{ data }" >
-            {{ getUserName(users.data, data.user) }}
+        <Column header="Заказчик"  sortable style="width: 15%" v-if="user.userIsStaff">
+          <template #body="{ data }">
+            <div v-html="getCompanyName(data.user)"></div>
           </template>
-          <template #filter="{ filterModel, filterCallback }">
-              <Select v-model="filterModel.value" @change="filterCallback()" :options="userNames" placeholder="Выбрать..." style="min-width: 12rem" :showClear="true"/>
-          </template>          
         </Column>
         <Column header="Преобразователь частоты" field="invertor" sortable style="width: 10%">
           <template #body="{ data }" >
@@ -170,11 +175,9 @@
               {{  moment(data.date).format('DD.MM.YYYY') }}
           </template>
         </Column>
-        <!-- <Column header="Состояние" width="">
-          <template #body="{ data }">
-              <ProgressBar :value="rnd()" :showValue="false" style="height: 6px"></ProgressBar>
-          </template>
-        </Column> -->
+        <Column header="Комментарий" field="info" sortable width="">
+        </Column>
+
 
         <Column header="Действия"> 
           <template #body="slotProps">

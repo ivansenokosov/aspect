@@ -10,7 +10,6 @@
   import Button from "primevue/button";
   import { priceFormat } from "@/api/priceFormat";
   import Divider from "primevue/divider";
-  import { RouterLink } from "vue-router";
   import Tabs from 'primevue/tabs';
   import TabList from 'primevue/tablist';
   import Tab from 'primevue/tab';
@@ -20,12 +19,19 @@
   import { getValueFromDictionary } from "@/api/getValueFromDictionary";
   import { useUserStore } from "@/stores/user";
   import AxiosInstance from "@/api/axiosInstance";
-  import { getUnreadInvConfigs } from "@/api/getUneadInvConfigs";
   import moment from 'moment'
+  import OverlayBadge from "primevue/overlaybadge";
+  import Textarea from "primevue/textarea";
+  import FloatLabel from "primevue/floatlabel";
+  import Toast from 'primevue/toast';
+  import { useToast } from "primevue/usetoast";
+  import { saveLog } from "@/api/log";
+
 
   const route = useRoute()
   const baseUrl = useBaseUrl()
   const user = useUserStore()
+  const toast = useToast()
 
   const id = ref<Number>(0)
 
@@ -45,12 +51,22 @@
   const availableOptions = ref<String>('') // Доступные типы опций
 
   const optionsPrice = ref<Number>(0)
+  const optionsDiscountPrice = ref<Number>(0)
   const optionsJSON = ref<any[]>([])
+  const pricesJSON = ref<any[]>([])
+  const discountsJSON = ref<any[]>([])
+  const saving = ref<boolean>(false)
 
-  async function savePDF() {
+
+  async function savePDF(print_price: number) {
+    const pdfurl = baseUrl.baseUrl + 'users/invpdf?id=' + String(id.value) + '&print_price=' + String(print_price)
+
+    if (print_price == 1) { saveLog(5, '') } else { saveLog(6, '') }   
+    // console.log(pdfurl)
+
     axios({
       method: 'get',
-      url: baseUrl.baseUrl + 'users/invpdf?id=' + String(id.value),
+      url: pdfurl,
       responseType: 'arraybuffer'
     }).then(function(response) {
       let blob = new Blob([response.data], { type: 'application/pdf' })
@@ -61,13 +77,28 @@
     })    
   }
 
+  const submission = async () => {
+        saving.value = true
+        const url:string =  'userconfigs/UserInvConfg/' + id.value + '/'
+        const config = { headers: { 'content-type': 'application/json', }, };
+
+        const res = await AxiosInstance.put(url, invConfig.value.data, config)
+          .then(function(response) {
+            toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
+            // console.log(response);
+        }).catch(function(error) {
+          console.log(error);
+        })
+        saving.value = false
+    }
+
+
   async function setRead() { // установка флага, что конфигурация просмотрена
     const url:string =  'userconfigs/UserInvConfg/' + id.value.toString() + '/'
     const config = { headers: { 'content-type': 'application/json', }, };
     invConfig.value.data.staff_opened = true
     const res = await AxiosInstance.put(url, invConfig.value.data, config)
       .then(function(response) {
-      getUnreadInvConfigs()
     }).catch(function(error) {
       console.log(error);
     })
@@ -77,6 +108,8 @@
 
 
   async function loadData() {
+    saveLog(9, '')
+
     id.value = route.query.id
     invConfig.value   = await useFetch('userconfigs/UserInvConfg/' + id.value.toString() + '/', {})
     invertor.value    = await useFetch('Invertors/' + invConfig.value.data.invertor + '/', {})
@@ -91,6 +124,8 @@
     invVariantOfControl.value  = await useFetch('Variants_of_control', {} );
 
     optionsJSON.value = JSON.parse(invConfig.value.data.options);
+    pricesJSON.value = JSON.parse(invConfig.value.data.options_prices);
+    discountsJSON.value = JSON.parse(invConfig.value.data.options_disccounts);
 
     // формирования способов управляния для серии
     InvTypeOfControl.value.data = InvTypeOfControl.value.data.filter(item => item.serie === invertor.value.data.serie)
@@ -99,7 +134,7 @@
         if (item.control === variant.id) {
           invControl.value = invControl.value + variant.name + ', '
         }
-      })
+      }) 
     })
     invControl.value = invControl.value.substring(0, invControl.value.length-2)
 
@@ -108,38 +143,60 @@
     arrayUniqueByKey.map(item => availableOptions.value = availableOptions.value + item.option_type + ', ')
     availableOptions.value = availableOptions.value.substring(0, availableOptions.value.length-2)
 
-
+    let i = 0
     options.value.data.map(item => {
-      optionsJSON.value.map(selected => {
+      optionsJSON.value.map((selected, index) => {
         if (item.id == selected) {
           optionsSelected.value.push(item)
+          optionsSelected.value[i].price = pricesJSON.value[index]
+          optionsSelected.value[i].discount = discountsJSON.value[index]
+          i++
         }
       })
     })
 
-    optionsSelected.value.map(item => optionsPrice.value = optionsPrice.value + Number(item.price)) // Итого цена опций
+    optionsSelected.value.map(item => { 
+      optionsPrice.value += Number(item.price)
+      optionsDiscountPrice.value += getOptionPrice(item.price, item.discount)
+    }) // Итого цена опций
 
     if (invConfig.value.data.staff_opened === false && user.userIsStaff) { 
       await setRead()
     }
   }
 
+  function getOptionPrice(price: string, discount: string) {
+    return Number(price) * (100-Number(discount))/100
+  }
+
+
   loadData()
 </script>
 
 <template>
+  <Toast/>
   <h1 class="pt-5">Технико-коммерческое предложение № {{ invConfig.data.user }}/{{ invConfig.data.id }} от {{ moment(invConfig.data.date).format('DD.MM.YYYY') }}</h1>
   <div v-if="options.loading || invertor.loading">
     Загружаю ...
   </div>
   <div v-else>
+    <div class="field pt-5">
+        <FloatLabel>
+            <Textarea id="info" v-model="invConfig.data.info" class="w-full"/>
+            <label for="info">Комментарий</label>
+        </FloatLabel>
+    </div>
+
     <div  class="grid">
+      
 
       <div class="col-3 mt-5">
-        <RouterLink to="/config">
+        <!-- <RouterLink to="/config">
           <Button icon="pi pi-arrow-circle-left" label="Мои конфигурации" severity="info"/>          
-        </RouterLink>
-        <Button label="Скачать PDF" severity="help" icon="pi pi-download" @click="savePDF" class="ml-2"/>
+        </RouterLink> -->
+        <Button label="PDF" severity="help" icon="pi pi-download" @click="savePDF(1)" class="ml-2"/>
+        <Button label="PDF без цен" severity="secondary" icon="pi pi-download" @click="savePDF(0)" class="ml-2"/>
+        <Button label="Сохранить" severity="primary" icon="pi pi-save" @click="submission" class="ml-2"/>
         <!-- <p class="text-sm mt-5">Преобразователь частоты</p> -->
         <p class="text-3xl font-bold  mt-5">{{ invertor.data.name }}</p>
         <p class="text-sm">Серия: {{ serie.data.name }}</p>
@@ -320,7 +377,7 @@
           </template>
         </Column>
         
-        <Column header="Количество" headerStyle="width: 10%">
+        <Column header="Доступное количество" headerStyle="width: 10%">
           <template #body="{ data }">
             <div class="font-bold text-xl w-full">{{ data.quantity }}</div>
             <div v-if="data.quantity<=0" class="font-bold text-xl w-full"><Tag :value="data.waiting_period" severity="warn" /></div>
@@ -328,16 +385,44 @@
         </Column>
         <Column header="Цена" headerStyle="width: 10%">
           <template #body="{ data }">
-            <span class="font-bold text-xl">{{ priceFormat(data.price) }} &#8381;</span>
+            <OverlayBadge :value="`- ${Number(data.discount).toFixed()} %`" severity="warn" class="mr-4">
+              <div class="surface-700 text-white font-bold text-xl line-through border-round m-2 flex align-items-center justify-content-center" style="min-width: 80px; min-height: 40px">
+                {{ priceFormat(data.price) }} &#8381;
+              </div>
+            </OverlayBadge>
+
+            <div class="bg-primary font-bold text-xl border-round m-2 flex align-items-center justify-content-center mr-5" style="min-width: 80px; min-height: 40px">
+              {{ priceFormat(getOptionPrice(data.price, data.discount)) }} &#8381;
+            </div>
           </template>
         </Column>
       </DataTable>
 
       <Divider/>
       <h1>Итого</h1>
-      <p class="font-semibold text-lg">Цена частотного преобразователя {{ invertor.data.name }}: <span class="font-bold text-xl"> {{ priceFormat(invertor.data.price) }} &#8381;</span></p>
-      <p class="font-semibold text-lg">Цена выбранных опций: <span class="font-bold text-xl"> {{ priceFormat(optionsPrice) }} &#8381;</span></p> 
+      <p class="font-semibold text-lg">Цена частотного преобразователя {{ invertor.data.name }}: 
+        <a class="font-bold text-xl line-through border-round m-2" style="min-width: 80px; min-height: 40px">
+          {{ priceFormat(invConfig.data.invertor_price) }} &#8381;
+        </a>
+        <a class="bg-primary font-bold text-xl border-round p-2 " style="min-width: 80px; min-height: 40px">
+          {{ priceFormat(getOptionPrice(invConfig.data.invertor_price, invConfig.data.invertor_discount)) }} &#8381;
+        </a>
+      </p>
+
+        
+        
+      <p class="font-semibold text-lg">Цена выбранных опций: 
+        <a class="font-bold text-xl line-through border-round m-2" style="min-width: 80px; min-height: 40px">
+          {{ priceFormat(optionsPrice) }} &#8381;
+        </a>
+        <a class="bg-primary font-bold text-xl border-round p-2 " style="min-width: 80px; min-height: 40px">
+          {{ priceFormat(optionsDiscountPrice) }} &#8381;
+        </a>
+      </p> 
     </div>
+
+     
+
 
 </template>
 

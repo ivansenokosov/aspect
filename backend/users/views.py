@@ -20,6 +20,9 @@ def ifnull(var, val):
     return val
   return var
 
+def calcPrice(price, discount):
+    return round(float(price) - float(price)/100 * float(discount))
+
 class PDF(FPDF):
     def footer(self):
         self.set_y(-15)
@@ -32,7 +35,7 @@ def CreatePDF(request):
     baseUrl = 'http://192.168.1.5:8000/'
     if request.method == 'GET':
         id = int(request.GET['id'])
-        print(id)
+        print_price = int(request.GET['print_price'])
 
         userconfig = UserInvConfigs.objects.get(id = id)
         invertor = Invertors.objects.get(id = userconfig.invertor.id)
@@ -49,12 +52,15 @@ def CreatePDF(request):
             aval_type_of_options_str += i['option__name'] + ', '
 
         selected_options_json = json.loads(userconfig.options)
+        selected_options_price_json = json.loads(userconfig.options_prices)
+        selected_options_discount_json = json.loads(userconfig.options_disccounts)
 
-        price = int(invertor.price())
+        
+        price = int(calcPrice(userconfig.invertor_price, userconfig.invertor_discount))
         option_price = 0
-        for i in selected_options_json:
-            option = Inv_options.objects.get(id = i)
-            option_price += int(option.price())
+        for i in range(0, len(selected_options_price_json)):
+            print(i, selected_options_price_json[i], selected_options_discount_json[i])
+            option_price += int(calcPrice(selected_options_price_json[i], selected_options_discount_json[i]))
 
 
     pdf = PDF()
@@ -106,13 +112,14 @@ def CreatePDF(request):
         row.cell('Тип оборудования')
         row.cell('Преобразователь частоты')
 
-        row = table.row()
-        row.cell('Цена преобразователя (с НДС)')
-        row.cell(str(price) + ' руб.')
+        if print_price == 1:
+            row = table.row()
+            row.cell('Цена преобразователя (с НДС)')
+            row.cell(str(price) + ' руб.')
 
-        row = table.row()
-        row.cell('Цена выбранных опций (с НДС)')
-        row.cell(str(option_price) + ' руб.')
+            row = table.row()
+            row.cell('Цена выбранных опций (с НДС)')
+            row.cell(str(option_price) + ' руб.')
 
         row = table.row()
         row.cell('Наименование')
@@ -234,17 +241,20 @@ def CreatePDF(request):
         row.cell('Описание')
         row.cell('Доп.описание')
         row.cell('Тип')
-        row.cell('Количество')
-        row.cell('Цена')
-        for i in selected_options_json:
-            option = Inv_options.objects.get(id = i)
+#        row.cell('Количество')
+        if print_price:
+            row.cell('Цена')
+
+        for i in range(0, len(selected_options_json)):
+            option = Inv_options.objects.get(id = selected_options_json[i])
             row = table.row()
-            row.cell(option.name)
+            row.cell(option.name)   
             row.cell(option.full_title)
             row.cell(option.short_title)
             row.cell(option.option.name)
-            row.cell(str(option.item.quantity))
-            row.cell(str(option.price()))
+ #           row.cell(str(option.item.quantity))
+            if print_price:
+                row.cell(str(calcPrice(selected_options_price_json[i], selected_options_discount_json[i])))
 
 
 # ------ Схема
