@@ -33,7 +33,12 @@ class UserSerializer(serializers.ModelSerializer):
         instance.is_staff=validated_data['is_staff']
         instance.is_active=validated_data['is_active']
         instance.is_superuser=validated_data['is_superuser']
-        
-        instance.set_password(validated_data['password'])
+
+        prefix = validated_data['password'][0:6]
+        if prefix=='pbkdf2':
+            instance.password = validated_data['password']  # Если это уже хеш, то сохраняем, как есть
+        else:
+            instance.set_password(validated_data['password']) # Если это пароль, то делаем из него 
+
         instance.save()
         return instance

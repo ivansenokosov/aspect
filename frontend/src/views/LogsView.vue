@@ -123,7 +123,7 @@
         chartOptions1.value = setChartOptions1();
         chartData1.value    = setChartData1();
 
-        selectedUser.value = users.value.data[0]
+        // selectedUser.value = users.value.data[0]  // установка начального выбранного пользователя
 
         actions.value.data.map((action, index) => { stacked.value.push([]) })  // Создаём пустые стеки
 
@@ -140,7 +140,11 @@
                 date += 1000 * 60 * 60 * 24
                 let count : number = 0
                 logs.value.data.map( log => {
-                    if (log.user == selectedUser.value.id && moment(log.date).format('DD.MM.YYYY') == moment(date).format('DD.MM.YYYY') && log.action == action.id) {
+                    if (((selectedUser.value && log.user == selectedUser.value.id) || !selectedUser.value) && 
+                        moment(log.date).format('DD.MM.YYYY') == moment(date).format('DD.MM.YYYY') && 
+                        log.action == action.id) 
+                    {
+
                         count++
                     }
                 })
@@ -166,8 +170,8 @@
         <Tabs value="0">
             <TabList>
                 <Tab value="0">Таблица</Tab>
-                <Tab value="1">График 1</Tab>
-                <Tab value="2">График 2</Tab>
+                <Tab value="1">Сводная</Tab>
+                <Tab value="2">По датам</Tab>
             </TabList>
             <TabPanels>
                 <TabPanel value="0">
@@ -207,9 +211,9 @@
                     <Chart type="bar" :data="chartData1" :options="chartOptions1" />
                 </TabPanel>
                 <TabPanel value="2">
-                    <div class="field mt-5">                    
+                    <div class="field mt-5">        
                         <FloatLabel>
-                            <Select v-model="selectedUser" :options="users.data" optionLabel="username" placeholder="Пользователь..." class="w-full md:w-56" />
+                            <Select v-model="selectedUser" :options="users.data" showClear optionLabel="username" placeholder="Пользователь..." class="w-full md:w-56" />
                             <label for="username">Пользователь</label>
                         </FloatLabel>
                     </div>

@@ -126,6 +126,13 @@ const menuItems = ref<IMenuItem[]>([
                 route: '/dictionaries/Companies/List'
             },
             {
+                label: 'Журнал',
+                icon: 'pi pi-book',
+                show: computed((): boolean => isSuperadmin()),
+                route: '/logs'
+            },
+
+            {
                 label: 'Общие',
                 icon: 'pi pi-book',
                 show: computed((): boolean => isSuperadmin()),
@@ -153,12 +160,6 @@ const menuItems = ref<IMenuItem[]>([
                         icon: 'pi pi-book',
                         show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/Actions/List'
-                    },
-                    {
-                        label: 'Журнал',
-                        icon: 'pi pi-book',
-                        show: computed((): boolean => isSuperadmin()),
-                        route: '/logs'
                     },
                        ]
            }, 

@@ -146,6 +146,7 @@
         </div>
 
         <div class="field pt-5">
+            {{ data.data.password }}
             <FloatLabel>
                 <Password id="password" v-model="data.data.password" class="w-full"/>
                 <label for="password">Пароль</label>
