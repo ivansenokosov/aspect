@@ -8,8 +8,10 @@
     import FloatLabel from 'primevue/floatlabel';
     import Checkbox from 'primevue/checkbox';
     import Password from 'primevue/password';
+    import { useUserStore } from '@/stores/user';
 
     const router = useRouter()
+    const user   = useUserStore()
     const data   = ref<IUser>({username:'', password:'', first_name:'', last_name:'', email:'', is_active:true, is_staff:false, is_superuser: false})
     const saving = ref<boolean>(false)
 
@@ -68,19 +70,19 @@
                     <label for="is_active" class="ml-2">Активный</label>
             </div>
 
-            <div class="flex items-center">
-                    <Checkbox v-model="data.is_staff" :binary="true"  inputId="is_staff"/>
+            <div class="flex items-center"  v-if="user.userIsSuperadmin">
+                    <Checkbox v-model="data.is_staff" :binary="true" inputId="is_staff"/>
                     <label for="is_staff" class="ml-2">Сотрудник</label>
             </div>
 
-            <div class="flex items-center">
-                    <Checkbox v-model="data.is_superuser" :binary="true"  inputId="is_superuser"/>
+            <div class="flex items-center" v-if="user.userIsSuperadmin">
+                    <Checkbox v-model="data.is_superuser" :binary="true"  inputId="is_superuser" />
                     <label for="is_superuser" class="ml-2">Суперадмин</label>
             </div>
         </div>
 
         <div class="flex flex-wrap justify-center gap-4 pt-5">
-            <RouterLink :to="`/dictionaries/Invertors/List`" rel="noopener">
+            <RouterLink :to="`/dictionaries/Users/List`" rel="noopener">
                 <Button link label="Отменить" />
             </RouterLink>
             <Button label="Создать" severity="success" icon="pi pi-check" iconPos="right" @click="submission" :loading="saving"/>

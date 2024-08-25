@@ -32,7 +32,6 @@ class PDF(FPDF):
         self.cell(0, 10, f"Страница {self.page_no()}", align="C")
 
 def CreatePDF(request):
-    baseUrl = 'http://192.168.1.5:8000/'
     if request.method == 'GET':
         id = int(request.GET['id'])
         print_price = int(request.GET['print_price'])
@@ -85,8 +84,10 @@ def CreatePDF(request):
     pdf.ln(13)
     pdf.set_font('dejavu-sans', '', 9)
 
-    docs_url = baseUrl + 'media/link_to_doc.png'
-    photo_url = baseUrl + invertor.serie.photo.url
+    docs_url = 'media/link_to_doc.png'
+    photo_url = invertor.serie.photo.url[1:len(invertor.serie.photo.url)]
+
+
 
     greyscale = 200
 
@@ -261,7 +262,7 @@ def CreatePDF(request):
     pdf.add_page()
     pdf.ln(15)
     pdf.write(10,'Схема')
-    schema_url = baseUrl + invertor.serie.schema.url
+    schema_url = invertor.serie.schema.url[1:len(invertor.serie.schema.url)]
     pdf.image(schema_url, 10, 50, 150)
 
 
@@ -302,6 +303,14 @@ class LoginView(APIView):
                 'info': 'Пароль неверный',
             }
             return response
+        
+        if not user.is_active:
+            response.data = {
+                'status': 4,
+                'info': 'Пользователь заблокирован',
+            }
+            return response
+
 
 #            print('пароль неверный')
 #           raise AuthenticationFailed('Incorrect password!')
@@ -313,6 +322,7 @@ class LoginView(APIView):
             'first_name': user.first_name,
             'last_name': user.last_name,
             'is_staff': user.is_staff,
+            'is_active': user.is_active,
             'is_superuser': user.is_superuser
         }
         return response

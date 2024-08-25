@@ -303,13 +303,13 @@
         </Column>
         <Column field="type_of_control_str"      header="Управление" headerStyle="width: 10em"></Column>
         <Column field="type_of_panel_str"        header="Панель" headerStyle="width: 10em"></Column>
-        <Column header="Количество" headerStyle="width: 5em">
+        <Column header="Количество" field="quantity" sortable headerStyle="width: 5em">
           <template #body="{ data }">
             <div class="font-bold text-xl w-full">{{ data.quantity }}</div>
             <div v-if="data.quantity<=0" class="font-bold text-xl w-full"><Tag :value="data.waiting_period" severity="warn" /></div>
           </template>
         </Column>
-        <Column header="Цена" headerStyle="width: 8em">
+        <Column header="Цена" field="price" sortable headerStyle="width: 8em">
           <template #body="{ data }">
             <span v-if = "data.price == 0" ><Tag value="По запросу" severity="danger" /></span>
 

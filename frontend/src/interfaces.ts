@@ -185,7 +185,7 @@ export interface IUserInvConfigData {
 }
 
 export interface IUser {
-    id : number
+    id ?: number
     username?: string
     password?: string
     first_name : string

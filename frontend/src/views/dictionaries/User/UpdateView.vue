@@ -9,12 +9,14 @@
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
     import { useBaseUrl } from '@/stores/baseUrl';
+    import { useUserStore } from '@/stores/user';
     import Checkbox from 'primevue/checkbox';
     import Password from 'primevue/password';
     import AutoComplete from 'primevue/autocomplete';
     import Select from 'primevue/select';
 
     const baseUrl          = useBaseUrl()
+    const user             = useUserStore()
     const data             = ref<IUserData>({data:[], error: null, loading: true})
     const companies        = ref<ICompanyData>({data:[], error: null, loading: true})
     const companyUsers     = ref<ICompanyUsersData>({data:[], error: null, loading: true})
@@ -46,56 +48,60 @@
         })
 
         // проверяем наличие записи в CompanyUsers для этого пользователя
-        filtered.value = companyUsers.value.data.filter(item => item.user === Number(props.id))
-        companyUser.value = {user: props.id, company: company.value.id}
+        if (company.value) {
+            filtered.value = companyUsers.value.data.filter(item => item.user === Number(props.id))
+            companyUser.value = {user: props.id, company: company.value.id}
 
-        if (filtered.value.length > 0) { // нашли, обновляем
-            const res = await AxiosInstance.put('CompanyUsers/' + filtered.value[0].id + '/', companyUser.value, config)
-                                           .then(function(response) {
-                                                // console.log(response)
-                                               })
+            if (filtered.value.length > 0) { // нашли, обновляем
+                const res = await AxiosInstance.put('CompanyUsers/' + filtered.value[0].id + '/', companyUser.value, config)
+                                            .then(function(response) {
+                                                    // console.log(response)
+                                                })
+                                                .catch(function(error) {
+                                                    console.log(error);
+                                                })
+            } else { // не нашли, добавлям
+                const res = await AxiosInstance.post('CompanyUsers/', companyUser.value, config)
+                                            .then(function(response) {
+                                                    // console.log(response)
+                                            })
                                             .catch(function(error) {
-                                                console.log(error);
-                                            })
-        } else { // не нашли, добавлям
-            const res = await AxiosInstance.post('CompanyUsers/', companyUser.value, config)
-                                           .then(function(response) {
-                                                // console.log(response)
-                                           })
-                                           .catch(function(error) {
-                                                console.log(error);
-                                            })
+                                                    console.log(error);
+                                                })
+            }
+
         }
 
         //-------------------- Сохраняем группу скидок
-        const url2:string =  'discounts/UserInvDisount'
-        const formData = new FormData();        
-        formData.append("user",  Number(props.id))
-        formData.append("group", group.value.id)
+        if (group.value) {
+            const url2:string =  'discounts/UserInvDisount'
+            const formData = new FormData();        
+            formData.append("user",  Number(props.id))
+            formData.append("group", group.value.id)
 
-        if (userInvDiscounts.value.data.length>0) { 
-            // ------------------ обновляем группу скидок
-            const res2 = await AxiosInstance.put(url2 + '/' +  userInvDiscounts.value.data[0].id + '/', formData, config)
-                                            .then(function(response) {
-                                                console.log(response);
-                                                toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные группы скидок обновлены', life: 3000 });
-                                             })
-                                            .catch(function(error) {
-                                                console.log(error);
-                                            })
-        } else { 
-            // ------------------ добавляем группу скидок
-            const res2 = await AxiosInstance.post(url2 + '/', formData, config)
-                                            .then(function(response) {
-                                                toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные группы скидок добавлены', life: 3000 });
-                                                console.log(response);
-                                              })
-                                            .catch(function(error) {
-                                                console.log(error);
-                                              })
+            if (userInvDiscounts.value.data.length>0) { 
+                // ------------------ обновляем группу скидок
+                const res2 = await AxiosInstance.put(url2 + '/' +  userInvDiscounts.value.data[0].id + '/', formData, config)
+                                                .then(function(response) {
+                                                    console.log(response);
+                                                    toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные группы скидок обновлены', life: 3000 });
+                                                })
+                                                .catch(function(error) {
+                                                    console.log(error);
+                                                })
+            } else { 
+                // ------------------ добавляем группу скидок
+                const res2 = await AxiosInstance.post(url2 + '/', formData, config)
+                                                .then(function(response) {
+                                                    toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные группы скидок добавлены', life: 3000 });
+                                                    console.log(response);
+                                                })
+                                                .catch(function(error) {
+                                                    console.log(error);
+                                                })
 
+            }
         }
-
 
 
         saving.value = false
@@ -146,7 +152,6 @@
         </div>
 
         <div class="field pt-5">
-            {{ data.data.password }}
             <FloatLabel>
                 <Password id="password" v-model="data.data.password" class="w-full"/>
                 <label for="password">Пароль</label>
@@ -174,12 +179,12 @@
                     <label for="is_active" class="ml-2">Активный</label>
             </div>
 
-            <div class="flex items-center">
+            <div class="flex items-center" v-if="user.userIsSuperadmin">
                     <Checkbox v-model="data.data.is_staff" :binary="true"  inputId="is_staff"/>
                     <label for="is_staff" class="ml-2">Сотрудник</label>
             </div>
 
-            <div class="flex items-center">
+            <div class="flex items-center" v-if="user.userIsSuperadmin">
                     <Checkbox v-model="data.data.is_superuser" :binary="true"  inputId="is_superuser"/>
                     <label for="is_superuser" class="ml-2">Суперадмин</label>
             </div>

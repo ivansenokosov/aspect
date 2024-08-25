@@ -50,7 +50,7 @@
         const res = await axios.post(url, formData, config)
         .then(function(response) {
             if (response.data.status === 1) {
-                console.log()
+                // console.log()
                 userStore.setValues(response.data.id, response.data.first_name, response.data.is_staff, response.data.is_superuser)
                 // saveLog(1,'')
                 loginModal.visible = false
@@ -156,7 +156,7 @@ const menuItems = ref<IMenuItem[]>([
                         route: '/dictionaries/WaitingPeriod/List'
                     },
                     {
-                        label: 'Действия журналированя',
+                        label: 'Действия журналирования',
                         icon: 'pi pi-book',
                         show: computed((): boolean => isSuperadmin()),
                         route: '/dictionaries/Actions/List'
@@ -348,12 +348,6 @@ const menuItems = ref<IMenuItem[]>([
                                         icon: '',
                                         show: computed((): boolean => isSuperadmin()),
                                         route: '/dictionaries/InvDiscountGroups/List',
-                                    },
-                                    {
-                                        label: 'Назначение',
-                                        icon: '',
-                                        show: computed((): boolean => isSuperadmin()),
-                                        route: '/invDiscounts/UserInvDiscounts/List'
                                     },
                        ]
                     },

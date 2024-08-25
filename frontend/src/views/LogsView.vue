@@ -176,7 +176,7 @@
             <TabPanels>
                 <TabPanel value="0">
                     <DataTable :value="logs.data" paginator :rows="10" :rowsPerPageOptions="[5, 10, 20, 50]" tableStyle="min-width: 50rem">
-                        <Column header="id" field="id"></Column>
+                        <Column header="id" sortable field="id"></Column>
                         <Column header="Действие">
                             <template #body="{ data }" >
                                 {{ getValueFromDictionary(actions.data, data.action) }}
