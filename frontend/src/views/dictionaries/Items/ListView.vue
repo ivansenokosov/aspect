@@ -4,7 +4,7 @@
   import { RouterLink } from 'vue-router';
   import { getValueFromDictionary } from '@/api/getValueFromDictionary';
   import { FilterMatchMode } from '@primevue/core/api';
-  import { ISimpleData, type IItemData } from '@/interfaces.js';
+  import type { ISimpleData, IItemData } from '@/interfaces.js';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import Button from 'primevue/button';

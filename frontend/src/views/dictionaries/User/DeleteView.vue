@@ -43,38 +43,38 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.username" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].username" disabled class="w-full"/>
                 <label for="title">Логин</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.first_name" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].first_name" disabled class="w-full"/>
                 <label for="title">Имя</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.email" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].email" disabled class="w-full"/>
                 <label for="title">email</label>
             </FloatLabel>
         </div>
 
             <div class="card flex flex-wrap justify-center gap-4">
             <div class="flex items-center">
-                    <Checkbox v-model="data.data.is_active" :binary="true" disabled inputId="is_active"/>
+                    <Checkbox v-model="data.data[0].is_active" :binary="true" disabled inputId="is_active"/>
                     <label for="is_active" class="ml-2">Активный</label>
             </div>
 
             <div class="flex items-center">
-                    <Checkbox v-model="data.data.is_staff" :binary="true" disabled inputId="is_staff"/>
+                    <Checkbox v-model="data.data[0].is_staff" :binary="true" disabled inputId="is_staff"/>
                     <label for="is_staff" class="ml-2">Сотрудник</label>
             </div>
 
             <div class="flex items-center">
-                    <Checkbox v-model="data.data.is_superuser" :binary="true" disabled inputId="is_superuser"/>
+                    <Checkbox v-model="data.data[0].is_superuser" :binary="true" disabled inputId="is_superuser"/>
                     <label for="is_superuser" class="ml-2">Суперадмин</label>
             </div>
         </div>

@@ -19,9 +19,29 @@
     import TabPanels from 'primevue/tabpanels';
     import TabPanel from 'primevue/tabpanel';
 
-    interface IStack {
-        data: number []
-    }
+    // interface IStack {
+    //     data: number []
+    // }
+    // interface IDataset {
+    //     type            : string
+    //     label           : string
+    //     backgroundColor : any
+    //     data            : IStack
+    // }
+
+    const colors        = ref<string[]>(['--p-blue-500',
+                                         '--p-green-500',
+                                         '--p-yellow-500',
+                                         '--p-cyan-500',
+                                         '--p-pink-500',
+                                         '--p-indigo-500',
+                                         '--p-indigo-500',
+                                         '--p-orange-500',
+                                         '--p-bluegray-500',
+                                         '--p-purple-500',
+                                         '--p-red-500',
+                                         '--p-gray-500',
+                                         '--p-primary-500'])
 
     const logs          = ref<ILogData>({data:[], error: null, loading: true})
     const users         = ref<IUserData>({data:[], error: null, loading: true}) 
@@ -38,7 +58,13 @@
     const chartOptions2 = ref();
     const loading       = ref<boolean>(true)
     const dates         = ref<String[]>([])
-    const stacked       = ref<IStack[]>([])
+    var   stacked       = create2DArray(30,10) // ref<IStack[]>([])
+    var   dataset       = create2DArray(30,10) // ref<IDataset[]>([])
+    const documentStyle = getComputedStyle(document.documentElement);
+
+    function create2DArray(m:number, n:number) {
+        return Array(m).fill(Array(n).fill(0));
+    }
 
     const setChartData1 = () => {
         return {
@@ -55,25 +81,7 @@
         };
     };
 
-    const setChartData2 = () =>  {
-        const documentStyle = getComputedStyle(document.documentElement);
-
-        return {
-            labels: dates.value,
-            datasets: [
-                {   type: 'bar', label: actions.value.data[0].name, backgroundColor: documentStyle.getPropertyValue('--p-blue-500'), data: stacked.value[0] },
-                {   type: 'bar', label: actions.value.data[1].name, backgroundColor: documentStyle.getPropertyValue('--p-green-500'), data: stacked.value[1] },
-                {   type: 'bar', label: actions.value.data[2].name, backgroundColor: documentStyle.getPropertyValue('--p-yellow-500'), data: stacked.value[2] },
-                {   type: 'bar', label: actions.value.data[3].name, backgroundColor: documentStyle.getPropertyValue('--p-cyan-500'), data: stacked.value[3] },
-                {   type: 'bar', label: actions.value.data[4].name, backgroundColor: documentStyle.getPropertyValue('--p-pink-500'), data: stacked.value[4] },
-                {   type: 'bar', label: actions.value.data[5].name, backgroundColor: documentStyle.getPropertyValue('--p-indigo-500'), data: stacked.value[5] },
-                {   type: 'bar', label: actions.value.data[6].name, backgroundColor: documentStyle.getPropertyValue('--p-teal-500'), data: stacked.value[6] },
-                {   type: 'bar', label: actions.value.data[7].name, backgroundColor: documentStyle.getPropertyValue('--p-teal-500'), data: stacked.value[7] },
-                {   type: 'bar', label: actions.value.data[8].name, backgroundColor: documentStyle.getPropertyValue('--p-bluegray-500'), data: stacked.value[8] },
-                ]
-        };
-    };
-
+    const setChartData2 = () =>  { return { labels: dates.value, datasets: dataset }; };
 
     const setChartOptions1 = () => {
         const documentStyle = getComputedStyle(document.documentElement);
@@ -125,18 +133,23 @@
 
         // selectedUser.value = users.value.data[0]  // установка начального выбранного пользователя
 
-        actions.value.data.map((action, index) => { stacked.value.push([]) })  // Создаём пустые стеки
+        // actions.value.data.map((action, index) => { 
+        //     stacked.value.push()
+        // })  // Создаём пустые стеки
 
 
         loading.value       = false
     }
 
     watch(selectedUser, () => {
+
+        dataset = []
+        // dataset.value = []
         
         actions.value.data.map((action, index) => { 
             let date = Date.now() - 1000 * 60 * 60 * 24 * 29; // 30 дней назад
-            stacked.value[index]=[]
-            for (let i=1; i<30; i++) {
+            stacked[index]=[]
+            for (let i=0; i<30; i++) {
                 date += 1000 * 60 * 60 * 24
                 let count : number = 0
                 logs.value.data.map( log => {
@@ -144,13 +157,17 @@
                         moment(log.date).format('DD.MM.YYYY') == moment(date).format('DD.MM.YYYY') && 
                         log.action == action.id) 
                     {
-
                         count++
                     }
                 })
-                stacked.value[index].push(count)
+                // stacked.value[index].data.push(count)
+                stacked[index][i]=count
+
             }
+            // dataset.value.push({type: 'bar', label: actions.value.data[index].name, backgroundColor: documentStyle.getPropertyValue(colors.value[index]), data: stacked[index]})
+            dataset[index] = {type: 'bar', label: actions.value.data[index].name, backgroundColor: documentStyle.getPropertyValue(colors.value[index]), data: stacked[index]}
         })
+
         chartOptions2.value = setChartOptions2();
         chartData2.value    = setChartData2();
 
@@ -164,7 +181,7 @@
 <template>
     <h1>Журналирование</h1>
     <div v-if="loading">
-        loading
+        loading...
     </div>
     <div v-else>
         <Tabs value="0">

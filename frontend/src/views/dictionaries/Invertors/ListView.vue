@@ -13,20 +13,20 @@
   import InputText from 'primevue/inputtext';
   import Select from 'primevue/select';
 
-  const data = ref<IInvertorData>({data:[], error: null, loading: true}) 
-  const invDC = ref<ISimpleData>({data:[], error: null, loading: true})
-  const invEMC = ref<ISimpleData>({data:[], error: null, loading: true})
-  const invBreak = ref<ISimpleData>({data:[], error: null, loading: true})
-  const series = ref<IInvSerieData>({data:[], error: null, loading: true})
+  const data      = ref<IInvertorData>({data:[], error: null, loading: true}) 
+  const invDC     = ref<ISimpleData>({data:[], error: null, loading: true})
+  const invEMC    = ref<ISimpleData>({data:[], error: null, loading: true})
+  const invBreak  = ref<ISimpleData>({data:[], error: null, loading: true})
+  const series    = ref<IInvSerieData>({data:[], error: null, loading: true})
   const seriesStr = ref<String[]>([])
-  const loading = ref<boolean>(true)
+  const loading   = ref<boolean>(true)
 
   async function loadData() {
-    data.value = await useFetch('Invertors', {} );
-    invDC.value = await useFetch('Inv_DC_drossel', {} );
-    invEMC.value = await useFetch('Inv_EMC_drossel', {} );
+    data.value     = await useFetch('Invertors', {} );
+    invDC.value    = await useFetch('Inv_DC_drossel', {} );
+    invEMC.value   = await useFetch('Inv_EMC_drossel', {} );
     invBreak.value = await useFetch('Inv_breake_module', {} );
-    series.value = await useFetch('Inv_series', {} );
+    series.value   = await useFetch('Inv_series', {} );
 
     series.value.data.map(item => seriesStr.value.push(item.name))
     loading.value = false

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import {useRoute} from "vue-router";
   import { ref } from 'vue'
-  import type { IInvSerieData, IInvOptionData, IInvertorData, ISimpleData, IUserInvConfigData, IInvOption, IInvAvalControlData } from "@/interfaces";
+  import type { IInvSerieData, IInvOptionData, IInvertorData, ISimpleData, IUserInvConfigData, IInvOption, IInvAvalControlData, IInvSignalInputOutputData } from "@/interfaces";
   import { useFetch } from "@/api/useFetch";
   import { useBaseUrl } from "@/stores/baseUrl";
   import DataTable from "primevue/datatable";
@@ -28,34 +28,35 @@
   import { saveLog } from "@/api/log";
 
 
-  const route = useRoute()
+  const route   = useRoute()
   const baseUrl = useBaseUrl()
-  const user = useUserStore()
-  const toast = useToast()
+  const user    = useUserStore()
+  const toast   = useToast()
 
-  const id = ref<Number>(0)
+  const id      = ref<Number>(0)
 
-  const invConfig = ref<IUserInvConfigData>({data:[], error: null, loading: true})
-  const serie = ref<IInvSerieData>({data:[], error: null, loading: true})
-  const invertor = ref<IInvertorData>({data:[], error: null, loading: true})
-  const options = ref<IInvOptionData>({data:[], error: null, loading: true})
-  const optionsSelected = ref<IInvOption[]>([])
-  const typeOfOptions = ref<ISimpleData>({data:[], error: null, loading: true})
-  const outputVoltage = ref<ISimpleData>({data:[], error: null, loading: true})
-  const breakModule = ref<ISimpleData>({data:[], error: null, loading: true})
-  const ambientTemperature = ref<ISimpleData>({data:[], error: null, loading: true})
-  const InvTypeOfControl = ref<IInvAvalControlData>({data:[], error: null, loading: true})
-  const invVariantOfControl = ref<ISimpleData>({data:[], error: null, loading: true})
-  const signals = ref<any[]>([])
-  const invControl = ref<String>('') // Способы управления
-  const availableOptions = ref<String>('') // Доступные типы опций
+  const invConfig            = ref<IUserInvConfigData>({data:[], error: null, loading: true})
+  const serie                = ref<IInvSerieData>({data:[], error: null, loading: true})
+  const invertor             = ref<IInvertorData>({data:[], error: null, loading: true})
+  const options              = ref<IInvOptionData>({data:[], error: null, loading: true})
+  const optionsSelected      = ref<IInvOption[]>([])
+  const typeOfOptions        = ref<ISimpleData>({data:[], error: null, loading: true})
+  const outputVoltage        = ref<ISimpleData>({data:[], error: null, loading: true})
+  const breakModule          = ref<ISimpleData>({data:[], error: null, loading: true})
+  const ambientTemperature   = ref<ISimpleData>({data:[], error: null, loading: true})
+  const InvTypeOfControl     = ref<IInvAvalControlData>({data:[], error: null, loading: true})
+  const invVariantOfControl  = ref<ISimpleData>({data:[], error: null, loading: true})
+  const signals              = ref<IInvSignalInputOutputData>({data:[], error: null, loading: true})
+  const invControl           = ref<string>('') // Способы управления
+  const availableOptions     = ref<string>('') // Доступные типы опций
 
-  const optionsPrice = ref<Number>(0)
-  const optionsDiscountPrice = ref<Number>(0)
-  const optionsJSON = ref<any[]>([])
-  const pricesJSON = ref<any[]>([])
-  const discountsJSON = ref<any[]>([])
-  const saving = ref<boolean>(false)
+  const optionsPrice         = ref<number>(0)
+  const optionsDiscountPrice = ref<number>(0)
+  const optionsJSON          = ref<any[]>([])
+  const pricesJSON           = ref<any[]>([])
+  const discountsJSON        = ref<any[]>([])
+  const saving               = ref<boolean>(false)
+  const loading              = ref<boolean>(true)
 
 
   async function savePDF(print_price: number) {
@@ -96,8 +97,8 @@
   async function setRead() { // установка флага, что конфигурация просмотрена
     const url:string =  'userconfigs/UserInvConfg/' + id.value.toString() + '/'
     const config = { headers: { 'content-type': 'application/json', }, };
-    invConfig.value.data.staff_opened = true
-    const res = await AxiosInstance.put(url, invConfig.value.data, config)
+    invConfig.value.data[0].staff_opened = true
+    const res = await AxiosInstance.put(url, invConfig.value.data[0], config)
       .then(function(response) {
     }).catch(function(error) {
       console.log(error);
@@ -110,25 +111,25 @@
   async function loadData() {
     saveLog(9, '')
 
-    id.value = route.query.id
-    invConfig.value   = await useFetch('userconfigs/UserInvConfg/' + id.value.toString() + '/', {})
-    invertor.value    = await useFetch('Invertors/' + invConfig.value.data.invertor + '/', {})
-    serie.value       = await useFetch('Inv_series/' + invertor.value.data.serie, {})
-    options.value     = await useFetch('Inv_options/?serie=' + serie.value.data.id, {})
+    id.value                   = Number(route.query.id)
+    invConfig.value            = await useFetch('userconfigs/UserInvConfg/' + id.value.toString() + '/', {})
+    invertor.value             = await useFetch('Invertors/' + invConfig.value.data[0].invertor + '/', {})
+    serie.value                = await useFetch('Inv_series/' + invertor.value.data[0].serie, {})
+    options.value              = await useFetch('Inv_options/?serie=' + serie.value.data[0].id, {})
     typeOfOptions.value        = await useFetch('Type_of_options', {} );
-    outputVoltage.value        = await useFetch('Inv_output_voltage/'     + serie.value.data.output_voltage.toString() + '/', {} );
-    breakModule.value          = await useFetch('Inv_breake_module/'      + invertor.value.data.type_of_break_module.toString() + '/', {} );
-    ambientTemperature.value   = await useFetch('Ambient_temperatures/'   + serie.value.data.ambient_temperature.toString() + '/', {} );
-    signals.value              = await useFetch('Inv_spec_of_in_out/?serie=' + invertor.value.data.serie.toString() , {} );
+    outputVoltage.value        = await useFetch('Inv_output_voltage/'     + serie.value.data[0].output_voltage.toString() + '/', {} );
+    breakModule.value          = await useFetch('Inv_breake_module/'      + invertor.value.data[0].type_of_break_module.toString() + '/', {} );
+    ambientTemperature.value   = await useFetch('Ambient_temperatures/'   + serie.value.data[0].ambient_temperature.toString() + '/', {} );
+    signals.value              = await useFetch('Inv_spec_of_in_out/?serie=' + invertor.value.data[0].serie.toString() , {} );
     InvTypeOfControl.value     = await useFetch('Inv_type_of_control', {} );
     invVariantOfControl.value  = await useFetch('Variants_of_control', {} );
 
-    optionsJSON.value = JSON.parse(invConfig.value.data.options);
-    pricesJSON.value = JSON.parse(invConfig.value.data.options_prices);
-    discountsJSON.value = JSON.parse(invConfig.value.data.options_disccounts);
+    optionsJSON.value   = JSON.parse(invConfig.value.data[0].options);
+    pricesJSON.value    = JSON.parse(invConfig.value.data[0].options_prices);
+    discountsJSON.value = JSON.parse(invConfig.value.data[0].options_disccounts);
 
     // формирования способов управляния для серии
-    InvTypeOfControl.value.data = InvTypeOfControl.value.data.filter(item => item.serie === invertor.value.data.serie)
+    InvTypeOfControl.value.data = InvTypeOfControl.value.data.filter(item => item.serie === invertor.value.data[0].serie)
     InvTypeOfControl.value.data.map( item => {
       invVariantOfControl.value.data.map( variant => {
         if (item.control === variant.id) {
@@ -144,7 +145,7 @@
     availableOptions.value = availableOptions.value.substring(0, availableOptions.value.length-2)
 
     let i = 0
-    options.value.data.map(item => {
+    optionsJSON.value && options.value.data.map(item => {
       optionsJSON.value.map((selected, index) => {
         if (item.id == selected) {
           optionsSelected.value.push(item)
@@ -155,14 +156,18 @@
       })
     })
 
-    optionsSelected.value.map(item => { 
+    optionsSelected.value.map((item : IInvOption) => { 
       optionsPrice.value += Number(item.price)
-      optionsDiscountPrice.value += getOptionPrice(item.price, item.discount)
+      if (item.discount && item.price) {
+        optionsDiscountPrice.value += getOptionPrice(item.price, item.discount)
+      }
     }) // Итого цена опций
 
-    if (invConfig.value.data.staff_opened === false && user.userIsStaff) { 
+    if (invConfig.value.data[0].staff_opened === false && user.userIsStaff) { 
       await setRead()
     }
+
+    loading.value = false
   }
 
   function getOptionPrice(price: string, discount: string) {
@@ -175,14 +180,14 @@
 
 <template>
   <Toast/>
-  <h1 class="pt-5">Технико-коммерческое предложение № {{ invConfig.data.user }}/{{ invConfig.data.id }} от {{ moment(invConfig.data.date).format('DD.MM.YYYY') }}</h1>
-  <div v-if="options.loading || invertor.loading">
+  <div v-if="loading">
     Загружаю ...
   </div>
   <div v-else>
-    <div class="field pt-5">
+    <h1 class="pt-5">Технико-коммерческое предложение № {{ invConfig.data[0].user }}/{{ invConfig.data[0].id }} от {{ moment(invConfig.data[0].date).format('DD.MM.YYYY') }}</h1>
+      <div class="field pt-5">
         <FloatLabel>
-            <Textarea id="info" v-model="invConfig.data.info" class="w-full"/>
+            <Textarea id="info" v-model="invConfig.data[0].info" class="w-full"/>
             <label for="info">Комментарий</label>
         </FloatLabel>
     </div>
@@ -198,18 +203,18 @@
         <Button label="PDF без цен" severity="secondary" icon="pi pi-download" @click="savePDF(0)" class="ml-2"/>
         <Button label="Сохранить" severity="primary" icon="pi pi-save" @click="submission" class="ml-2"/>
         <!-- <p class="text-sm mt-5">Преобразователь частоты</p> -->
-        <p class="text-3xl font-bold  mt-5">{{ invertor.data.name }}</p>
-        <p class="text-sm">Серия: {{ serie.data.name }}</p>
-        <p class="text-sm pb-5">Призводитель: {{ invertor.data.manufactory_str }}/Аспект</p>
+        <p class="text-3xl font-bold  mt-5">{{ invertor.data[0].name }}</p>
+        <p class="text-sm">Серия: {{ serie.data[0].name }}</p>
+        <p class="text-sm pb-5">Призводитель: {{ invertor.data[0].manufactory_str }}/Аспект</p>
         
         <div class="mt-5">
-          <img v-if="serie.data.photo" :src="`${baseUrl.baseUrl}${serie.data.photo}`" height="350">
+          <img v-if="serie.data[0].photo" :src="`${baseUrl.baseUrl}${serie.data[0].photo}`" height="350">
           <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
         </div>
       </div>
 
       <div class="col-5 mt-5">
-        <img v-if="serie.data.schema" :src="`${baseUrl.baseUrl}${serie.data.schema}`" width="600">
+        <img v-if="serie.data[0].schema" :src="`${baseUrl.baseUrl}${serie.data[0].schema}`" width="600">
         <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
       </div>
 
@@ -227,8 +232,8 @@
           <label class="col-fixed font-semibold" style="width:200px">Мощность</label>
           <div class="col">
             <div>
-              <div class="mt-1" style="width: 100%"><Tag value="Pg" severity="primary" /> {{ invertor.data.p_heavy_g }} кВт</div>
-              <div class="mt-1" style="width: 100%"><Tag value="Pp" severity="info" /> {{ invertor.data.p_pumps_p }} кВт</div>
+              <div class="mt-1" style="width: 100%"><Tag value="Pg" severity="primary" /> {{ invertor.data[0].p_heavy_g }} кВт</div>
+              <div class="mt-1" style="width: 100%"><Tag value="Pp" severity="info" /> {{ invertor.data[0].p_pumps_p }} кВт</div>
             </div>
           </div>
         </div>
@@ -238,8 +243,8 @@
           <label class="col-fixed font-semibold" style="width:200px">Перегрузка</label>
           <div class="col">
             <div>
-              <div v-if="invertor.data.overload_p_mode!='None'" class="mt-1" style="width: 100%"><Tag value="Режим P" severity="info" /> {{ invertor.data.overload_p_mode }}</div>
-              <div class="mt-1" style="width: 100%"><Tag value="Режим G" severity="info" /> {{ invertor.data.overload_g_mode }}</div> 
+              <div v-if="invertor.data[0].overload_p_mode!='None'" class="mt-1" style="width: 100%"><Tag value="Режим P" severity="info" /> {{ invertor.data[0].overload_p_mode }}</div>
+              <div class="mt-1" style="width: 100%"><Tag value="Режим G" severity="info" /> {{ invertor.data[0].overload_g_mode }}</div> 
             </div>
             <p class="text-sm pt-3">Перегрузочная способность (не  чаще 1 раза в 10 мин)</p>
           </div>
@@ -250,8 +255,8 @@
           <label class="col-fixed font-semibold" style="width:200px">Диапазон напряжений</label>
           <div class="col">
             <div>
-              <div class="mt-1" style="width: 100%"><Tag value="На входе" severity="warn" /> {{ invertor.data.input_voltage_str }}</div>
-              <div class="mt-1" style="width: 100%"><Tag value="На выходе" severity="danger" /> {{ outputVoltage.data.name }}</div> 
+              <div class="mt-1" style="width: 100%"><Tag value="На входе" severity="warn" /> {{ invertor.data[0].input_voltage_str }}</div>
+              <div class="mt-1" style="width: 100%"><Tag value="На выходе" severity="danger" /> {{ outputVoltage.data[0].name }}</div> 
             </div>
           </div>
         </div>        
@@ -261,8 +266,8 @@
           <label class="col-fixed font-semibold" style="width:200px">Ток</label>
           <div class="col">
             <div>
-              <div class="mt-1" style="width: 100%"><Tag value="Ig" severity="warn" /> {{ invertor.data.current_g }} А</div>
-              <div class="mt-1" style="width: 100%"><Tag value="Ip" severity="danger" /> {{ invertor.data.current_p }} А</div> 
+              <div class="mt-1" style="width: 100%"><Tag value="Ig" severity="warn" /> {{ invertor.data[0].current_g }} А</div>
+              <div class="mt-1" style="width: 100%"><Tag value="Ip" severity="danger" /> {{ invertor.data[0].current_p }} А</div> 
             </div>
           </div>
         </div>
@@ -272,7 +277,7 @@
           <label class="col-fixed font-semibold" style="width:200px">Управление</label>
           <div class="col">
             <div>
-                <div class="mt-1" style="width: 100%"><Tag value="Метод" severity="warn" /> {{ invertor.data.type_of_control_str }}</div>
+                <div class="mt-1" style="width: 100%"><Tag value="Метод" severity="warn" /> {{ invertor.data[0].type_of_control_str }}</div>
                 <div class="mt-1" style="width: 100%"><Tag value="Способ" severity="danger" /> {{ invControl }}</div> 
               </div>
           </div>
@@ -282,7 +287,7 @@
         <div class="field grid">
           <label class="col-fixed font-semibold" style="width:200px">Панель</label>
           <div class="col">
-            {{ invertor.data.type_of_panel_str }}
+            {{ invertor.data[0].type_of_panel_str }}
           </div>
         </div>            
 
@@ -291,8 +296,8 @@
           <label class="col-fixed font-semibold" style="width:200px">Дроссель</label>
           <div class="col">
             <div>
-                <div class="mt-1" style="width: 100%"><Tag value="EMC" severity="warn" /> {{ invertor.data.type_of_emc_drossel_str }}</div>
-                <div class="mt-1" style="width: 100%"><Tag value="DC" severity="danger" /> {{ invertor.data.type_of_dc_drossel_str }}</div> 
+                <div class="mt-1" style="width: 100%"><Tag value="EMC" severity="warn" /> {{ invertor.data[0].type_of_emc_drossel_str }}</div>
+                <div class="mt-1" style="width: 100%"><Tag value="DC" severity="danger" /> {{ invertor.data[0].type_of_dc_drossel_str }}</div> 
               </div>
           </div>
         </div>  
@@ -301,7 +306,7 @@
         <div class="field grid">
           <label class="col-fixed font-semibold" style="width:200px">Тормозной модуль</label>
           <div class="col">
-            {{ breakModule.data.name }}
+            {{ breakModule.data[0].name }}
           </div>
         </div>            
 
@@ -309,7 +314,7 @@
         <div class="field grid">
           <label class="col-fixed font-semibold" style="width:200px">Точность регулирования частоты</label>
           <div class="col">
-            {{ invertor.data.type_of_accuracy_freq }}
+            {{ invertor.data[0].type_of_accuracy_freq }}
           </div>
         </div>            
 
@@ -317,7 +322,7 @@
         <div class="field grid">
           <label class="col-fixed font-semibold" style="width:200px">Уровень защиты</label>
           <div class="col">
-            {{ invertor.data.level_IP_str }}
+            {{ invertor.data[0].level_IP_str }}
           </div>
         </div>            
 
@@ -325,7 +330,7 @@
         <div class="field grid">
           <label class="col-fixed font-semibold" style="width:200px">Температура окружающей среды</label>
           <div class="col">
-            {{ ambientTemperature.data.name }}
+            {{ ambientTemperature.data[0].name }}
           </div>
         </div>            
 
@@ -342,7 +347,7 @@
         <div class="field grid">
           <label class="col-fixed font-semibold" style="width:200px">Описание</label>
           <div class="col">
-            {{ serie.data.description }}
+            {{ serie.data[0].description }}
           </div>
         </div>            
       </TabPanel>
@@ -368,6 +373,7 @@
   <h1 class="mt-5">Выбранные опции ({{ optionsSelected.length }})</h1>
 
   <DataTable v-if="!options.loading" :value="optionsSelected" stripedRows tableStyle="min-width: 50rem">
+    <template #empty> <tag severity="contrast"> Нет выбранных опций </tag> </template>
         <Column field="name" header="Наименование" headerStyle="width: 10%"></Column>
         <Column field="full_title" header="Описание" headerStyle="width: 10%"></Column>
         <Column field="short_title" header="Доп. описание" headerStyle="width: 10%"></Column>
@@ -398,18 +404,16 @@
         </Column>
       </DataTable>
 
-      <Divider/>
-      <h1>Итого</h1>
-      <p class="font-semibold text-lg">Цена частотного преобразователя {{ invertor.data.name }}: 
+      <Divider class="mt-5"/>
+
+      <p class="font-semibold text-lg">Цена частотного преобразователя {{ invertor.data[0].name }}: 
         <a class="font-bold text-xl line-through border-round m-2" style="min-width: 80px; min-height: 40px">
-          {{ priceFormat(invConfig.data.invertor_price) }} &#8381;
+          {{ priceFormat(invConfig.data[0].invertor_price) }} &#8381;
         </a>
         <a class="bg-primary font-bold text-xl border-round p-2 " style="min-width: 80px; min-height: 40px">
-          {{ priceFormat(getOptionPrice(invConfig.data.invertor_price, invConfig.data.invertor_discount)) }} &#8381;
+          {{ priceFormat(getOptionPrice(invConfig.data[0].invertor_price, invConfig.data[0].invertor_discount)) }} &#8381;
         </a>
       </p>
-
-        
         
       <p class="font-semibold text-lg">Цена выбранных опций: 
         <a class="font-bold text-xl line-through border-round m-2" style="min-width: 80px; min-height: 40px">
@@ -419,6 +423,21 @@
           {{ priceFormat(optionsDiscountPrice) }} &#8381;
         </a>
       </p> 
+
+      <Divider class="mt-5"/>
+      
+      <p class="font-bold text-xl">Итого: 
+        <span class="font-bold text-xl" v-if="!user.userId"> {{ priceFormat(Number(optionsPrice) + Number(invConfig.data[0].invertor_price)) }} &#8381;</span>
+        <span  v-else> 
+          <a class="font-bold text-xl line-through border-round m-2" style="min-width: 80px; min-height: 40px">
+              {{ priceFormat(Number(invConfig.data[0].invertor_price) + Number(optionsPrice)) }} &#8381;
+            </a>
+          <a class="bg-primary font-bold text-xl border-round p-2" style="min-width: 80px; min-height: 40px">
+              {{ priceFormat(getOptionPrice(invConfig.data[0].invertor_price, invConfig.data[0].invertor_discount) + Number(optionsDiscountPrice)) }} &#8381;
+          </a>
+        </span>
+      </p>
+
     </div>
 
      

@@ -1,21 +1,20 @@
 <script setup lang="ts">
   import { ref } from 'vue' 
   import { useFetch } from '@/api/useFetch';
-  import type { ISimpleData } from '@/interfaces.js';
+  import type { ISimpleData, ISimpleDictionary } from '@/interfaces.js';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import { RouterLink, useRoute } from 'vue-router';
   import Button from 'primevue/button';
   import InputText from 'primevue/inputtext';
   import { getPath } from '@/api/getPath';
-  const route = useRoute();
 
-  const props = defineProps(['url','title'])
-  const data = ref<ISimpleData>({data:[], error: null, loading: true}) 
-  const dataDisplay = ref<ISimpleData>({data:[], error: null, loading: true})
-
-  const searchText = ref<string>('')
-  const path = ref<string>('')
+  const route       = useRoute();
+  const props       = defineProps(['url','title'])
+  const data        = ref<ISimpleData>({data:[], error: null, loading: true}) 
+  const dataDisplay = ref<ISimpleDictionary[]>([])
+  const searchText  = ref<string>('')
+  const path        = ref<string>('')
 
   async function loadData() {
     data.value = await useFetch(props.url, {} );

@@ -1,7 +1,15 @@
 <script setup lang="ts">
   import { ref, watch, defineProps } from 'vue' 
   import { useRouter } from 'vue-router'
-  import type { IInvertorData, IInvertor, IInvAvalControlData,  IInvSerieData, IInvOptionData, IInvOption, ISimpleData, ISimpleDictionary, IUserDiscountData, IInvSerieDisountData, IInvOptionDisountData } from '@/interfaces.js';
+  import type { IInvertor, 
+                IInvOption, 
+                ISimpleDictionary, 
+                IInvSerie,
+                IDocument, 
+                IInvAvalControl, 
+                IUserDiscount, 
+                IInvOptionDisount,
+                IInvSerieDisount } from '@/interfaces.js';
   import { useFetch } from '@/api/useFetch';
   import { useBaseUrl } from '@/stores/baseUrl'
   import { priceFormat } from '@/api/priceFormat';
@@ -31,46 +39,46 @@
   const router = useRouter()
   const loginModal = useLoginStore()
 
-  const discontGroups        = ref<ISimpleData>({data:[], error: null, loading: true})  // Группы скидок. Отопбаржается только для аспекта
-  const discontGroupSelected = ref<ISimpleDictionary>()  // Выбранная группа скидок. Отопбаржается только для аспекта
-  const discontGroupId       = ref<number>(0)            // Id Выбранной группа скидок. Отопбаржается только для аспекта
+  const discontGroups          = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})  // Группы скидок. Отопбаржается только для аспекта
+  const discontGroupSelected   = ref<ISimpleDictionary>()  // Выбранная группа скидок. Отопбаржается только для аспекта
+  const discontGroupId         = ref<number>(0)            // Id Выбранной группа скидок. Отопбаржается только для аспекта
 
-  const data = ref<IInvertorData>({data:[], error: null, loading: true})  // Все инверторы
-  const dataDisplay = ref<IInvertor[]>([]) // Инверторы после фильтров
+  const data                   = ref<IDocument<IInvertor>>({data:[], error: null, loading: true})  // Все инверторы
+  const dataDisplay            = ref<IInvertor[]>([]) // Инверторы после фильтров
 
-  const invInputVolageStr = ref<string>('')
-  const invTypeOfControlStr = ref<string>('')
+  const invInputVolageStr      = ref<string>('')
+  const invTypeOfControlStr    = ref<string>('')
   const invVariantOfControlStr = ref<string>('') 
-  const invEMCStr = ref<string>('')
-  const invDCStr = ref<string>('')
-  const invBreakStr = ref<string>('')
-  const invAvalControl = ref<IInvAvalControlData>({data:[], error: null, loading: true})  // способ управления для серии
-  const userInvDisount = ref<IUserDiscountData>({data:[], error: null, loading: true}) // скидка для пользователя
-  const serieDiscounts = ref<IInvSerieDisountData>({data:[], error: null, loading: true}) // скидка для серий
-  const optionDiscounts = ref<IInvOptionDisountData>({data:[], error: null, loading: true}) // скидка для опций
+  const invEMCStr              = ref<string>('')
+  const invDCStr               = ref<string>('')
+  const invBreakStr            = ref<string>('')
+  const invAvalControl         = ref<IDocument<IInvAvalControl>>({data:[], error: null, loading: true})  // способ управления для серии
+  const userInvDisount         = ref<IDocument<IUserDiscount>>({data:[], error: null, loading: true}) // скидка для пользователя
+  const serieDiscounts         = ref<IDocument<IInvSerieDisount>>({data:[], error: null, loading: true}) // скидка для серий
+  const optionDiscounts        = ref<IDocument<IInvOptionDisount>>({data:[], error: null, loading: true}) // скидка для опций
 
   //------- данные модала {
-  const saving = ref<Boolean>(false)
-  const serie = ref<IInvSerieData>({data:[], error: null, loading: true})
-  const submitted = ref(false);
-  const options = ref<IInvOptionData>({data:[], error: null, loading: true})
-  const optionsDisplay = ref<IInvOptionData>({data:[], error: null, loading: true})
-  const typeOfOptions = ref<ISimpleData>({data:[], error: null, loading: true})
-  const selectedOptions = ref<IInvOption[]>([])
+  const saving                = ref<Boolean>(false)  // флаг процесса сохранения
+  const serie                 = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true}) // Серия
+  const submitted             = ref(false);
+  const options               = ref<IDocument<IInvOption>>({data:[], error: null, loading: true})
+  const optionsDisplay        = ref<IDocument<IInvOption>>({data:[], error: null, loading: true})
+  const typeOfOptions         = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const selectedOptions       = ref<IInvOption[]>([])
   const selectedTypeOFOptions = ref<ISimpleDictionary[]>([])
-  const optionsPrice = ref<Number>(0)
-  const optionsPriceDiscount = ref<Number>(0)
-  const typeOfOptionsStr = ref<String>('')
+  const optionsPrice          = ref<number>(0)  // итоговая цена выбранных опций
+  const optionsPriceDiscount  = ref<number>(0) // итоговая цена выбранных опций со скидкой
+  const typeOfOptionsStr      = ref<string>('')
 
-  const openProduct = async (prod) => {
-    product.value = {...prod};
-    productDialog.value = true;
+  const openProduct = async (prod:IInvertor) => {
+    product.value = {...prod}
+    productDialog.value = true
     selectedOptions.value = []
 
     saveLog(3,String(prod.serie))
 
-    serie.value   = await useFetch('Inv_series/' + prod.serie,{})
-    options.value = await useFetch('Inv_options/?serie=' + prod.serie,{})
+    serie.value   = await useFetch('Inv_series/' + String(prod.serie),{})
+    options.value = await useFetch('Inv_options/?serie=' + String(prod.serie),{})
     await loadOptionDiscounts()
     optionsDisplay.value = {...options.value}
   };
@@ -80,46 +88,45 @@
         saving.value = true
         const url:string =  'userconfigs/UserInvConfg/'
         const config = { headers: { 'content-type': 'application/json', }, };
-        const selectedOptionsStr = ref<String>('')
-        const selectedOptionsPricesStr = ref<String>('')
-        const selectedOptionsDiscountStr = ref<String>('')
+        const selectedOptionsStr = ref<string[]>([])
+        const selectedOptionsPricesStr = ref<string[]>([])
+        const selectedOptionsDiscountStr = ref<string[]>([])
 
-        if (selectedOptions) {
-          selectedOptionsStr.value         = selectedOptions.value.map(a => a.id.toString())
-          selectedOptionsPricesStr.value   = selectedOptions.value.map(a => a.price)
-          selectedOptionsDiscountStr.value = selectedOptions.value.map(a => getDiscountOption(a.option))
+        if (selectedOptions.value) {
+          selectedOptions.value.map(a => { 
+            selectedOptionsStr.value.push(a.id.toString())
+            a.price && (selectedOptionsPricesStr.value.push(a.price.toString()))
+            selectedOptionsDiscountStr.value.push(getDiscountOption(a.option))
+          })
         }
-
         const formData = new FormData();        
 
-        formData.append("user",               user.userId)
-        formData.append("invertor",           product.value.id)
-        formData.append("invertor_price",     product.value.price)
+        formData.append("user",               String(user.userId))
+        formData.append("invertor",           String(product.value.id))
+        formData.append("invertor_price",     String(product.value.price))
         formData.append("invertor_discount",  getDiscountSerie(product.value.serie) )
-        formData.append("options",            JSON.stringify(selectedOptionsStr.value))
-        formData.append("options_prices",     JSON.stringify(selectedOptionsPricesStr.value))
-        formData.append("options_disccounts", JSON.stringify(selectedOptionsDiscountStr.value))
+        formData.append("options",            JSON.stringify(selectedOptionsStr.value.map(item => item)))
+        formData.append("options_prices",     JSON.stringify(selectedOptionsPricesStr.value.map(item => item)))
+        formData.append("options_disccounts", JSON.stringify(selectedOptionsDiscountStr.value.map(item => item)))
         
         const res = await AxiosInstance.post(url, formData, config)
-          .then(function(response) {
-
-            saveLog(4, String(response.data.id))
-            toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
-            router.push('inv_config/?id=' + response.data.id)
-            // console.log(response);
-        }).catch(function(error) {
-          console.log(error);
-        })
+                                       .then(function(response) {
+                                            saveLog(4, String(response.data.id))
+                                            toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
+                                            router.push('inv_config/?id=' + response.data.id)
+                                          })
+                                        .catch(function(error) {
+                                          console.log(error);
+                                        })
         saving.value = false
       } else {
-        // noAuthVisible.value = true
         loginModal.visible = true // если пользлватель не авторизован, открываем модал
       }
     }
 
   watch(selectedTypeOFOptions, () => {
     if (selectedTypeOFOptions) {
-      typeOfOptionsStr.value  = selectedTypeOFOptions.value.map(a => a.id.toString())
+       selectedTypeOFOptions.value.map(a => typeOfOptionsStr.value.concat(a.id.toString()))
     }
     let filtered = options.value.data.filter((item) => typeOfOptionsStr.value.includes(item.option.toString()) )
     optionsDisplay.value.data = filtered
@@ -136,7 +143,7 @@
     selectedOptions.value.map(item => optionsPrice.value = optionsPrice.value + Number(item.price))
 
     if (user.userId>0) {
-       selectedOptions.value.map( item => optionsPriceDiscount.value += Number(getOptionPrice(item.price, item.option)) )
+       selectedOptions.value.map( item => optionsPriceDiscount.value += Number(getOptionPrice(Number(item.price), item.option)) )
     }
   })
   //------- данные модала } 
@@ -146,7 +153,7 @@
   //------- моддал с требованием авторизации }
   
 
-  const product = ref<IInvertor>([{name: ''}]);
+  const product = ref<IInvertor>({id: 0, item: 0, serie: 0, input_voltage: 0, size: 0, type_of_break_module: 0, type_of_dc_drossel: 0, type_of_emc_drossel: 0, name: '', p_heavy_g: '', p_pumps_p: '', current_g: '', current_p: '', type_of_control: ''});
   const productDialog = ref(false);
 
   async function loadDiscounts() {
@@ -197,22 +204,22 @@
         const maxPower:number = Number(props.power) + d
 
         if (props.invInputVolage) {
-          invInputVolageStr.value   = props.invInputVolage.map(a => a.id.toString())
+          invInputVolageStr.value   = props.invInputVolage.map((a:ISimpleDictionary) => a.id.toString())
         }
         if (props.invTypeOfControl) {
-          invTypeOfControlStr.value = props.invTypeOfControl.map(a => a.id.toString())    
+          invTypeOfControlStr.value = props.invTypeOfControl.map((a:ISimpleDictionary) => a.id.toString())    
         }
         if (props.invEMC) {
-          invEMCStr.value           = props.invEMC.map(a => a.id.toString())
+          invEMCStr.value           = props.invEMC.map((a:ISimpleDictionary) => a.id.toString())
         }
         if (props.invDC) {
-          invDCStr.value            = props.invDC.map(a => a.id.toString())
+          invDCStr.value            = props.invDC.map((a:ISimpleDictionary) => a.id.toString())
         }
         if (props.invBreak) {
-          invBreakStr.value         = props.invBreak.map(a => a.id.toString())
+          invBreakStr.value         = props.invBreak.map((a:ISimpleDictionary) => a.id.toString())
         }
         if (props.invVariantOfControl) {
-          invVariantOfControlStr.value = props.invVariantOfControl.map(a => a.id.toString())
+          invVariantOfControlStr.value = props.invVariantOfControl.map((a:ISimpleDictionary) => a.id.toString())
         }
         // снчала фильтруем список возможных вариантов контроля для серии
         const aval = invAvalControl.value.data.filter((item) => invVariantOfControlStr.value.includes(item.control.toString()) )
@@ -297,8 +304,8 @@
         </Column>
         <Column header="Перегрузка" headerStyle="width: 15em">
           <template #body="{ data }">
-              <div v-if="data.overload_p_mode!='None'" class="mt-1" style="width: 100%"><Tag value="Режим P" severity="info" /> {{ data.overload_p_mode }}</div>
               <div class="mt-1" style="width: 100%"><Tag value="Режим G" severity="info" /> {{ data.overload_g_mode }}</div> 
+              <div v-if="data.overload_p_mode!='None'" class="mt-1" style="width: 100%"><Tag value="Режим P" severity="info" /> {{ data.overload_p_mode }}</div>
           </template>
         </Column>
         <Column field="type_of_control_str"      header="Управление" headerStyle="width: 10em"></Column>
@@ -322,7 +329,7 @@
                     {{ priceFormat(data.price) }} &#8381;
                   </div>
                 </OverlayBadge>
-                <div class="bg-primary font-bold text-xl border-round m-2 flex align-items-center justify-content-center" style="min-width: 80px; min-height: 40px" v-if="serieDiscounts.loading == false && userInvDisount.loading == false">
+                <div class="bg-primary font-bold text-xl border-round m-2 flex align-items-center justify-content-center" style="min-width: 80px; min-height: 40px" v-if="!serieDiscounts.loading && !userInvDisount.loading">
                   {{ priceFormat(getInvPrice(data.price, data.serie)) }} &#8381;
                 </div>
 
@@ -351,12 +358,10 @@
 
 
     <Dialog v-model:visible="productDialog" :style="{ width: '1280px' }" :header="product.name" :modal="true">
-      <div class="grid">
+      <div class="grid" v-if="!serie.loading">
         <div class="col-4">
-          <template v-if="!serie.loading">
-            <img v-if="serie.data.photo" :src="`${baseUrl.baseUrl}${serie.data.photo}`" height="350">
-            <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
-          </template>
+          <img v-if="serie.data[0].photo" :src="`${baseUrl.baseUrl}${serie.data[0].photo}`" height="350" class="ml-5  ">
+          <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
         </div>
         <div class="col-8" >
           <div class="formgrid grid">
@@ -398,12 +403,11 @@
             </div>
             <div class="field col">
               <Fieldset legend="Описание" style="height:200px">
-                  {{ serie.data.description }}
+                  {{ serie.data[0].description }}
               </Fieldset>
             </div>
           </div>          
         </div>
-        
       </div>
 
       <SelectSimpleList url="Type_of_options" title="Тип опции" v-model="selectedTypeOFOptions"/>
@@ -441,7 +445,7 @@
                   </div>
                 </OverlayBadge>
 
-                <div class="bg-primary font-bold text-xl border-round m-2 flex align-items-center justify-content-center mr-5" style="min-width: 80px; min-height: 40px" v-if="optionDiscounts.loading == false && userInvDisount.loading == false">
+                <div class="bg-primary font-bold text-xl border-round m-2 flex align-items-center justify-content-center mr-5" style="min-width: 80px; min-height: 40px" v-if="!optionDiscounts.loading && !userInvDisount.loading">
                   {{ priceFormat(getOptionPrice(data.price, data.option)) }} &#8381;
                 </div>
 
@@ -458,16 +462,15 @@
         </Column>
       </DataTable>
 
-      <Divider/>
-      <h1>Итого</h1>
+      <Divider class="mt-5"/>
       <p class="font-semibold text-lg">Цена частотного преобразователя {{ product.name }}: 
         <span class="font-bold text-xl" v-if="!user.userId"> {{ priceFormat(product.price) }} &#8381;</span>
         <span v-else>
             <a class="font-bold text-xl line-through border-round m-2" style="min-width: 80px; min-height: 40px">
               {{ priceFormat(product.price) }} &#8381;
             </a>
-            <a class="bg-primary font-bold text-xl border-round p-2 " style="min-width: 80px; min-height: 40px" v-if="serieDiscounts.loading == false && userInvDisount.loading == false">
-              {{ priceFormat(getInvPrice(product.price, product.serie)) }} &#8381;
+            <a class="bg-primary font-bold text-xl border-round p-2 " style="min-width: 80px; min-height: 40px" v-if="!serieDiscounts.loading && !userInvDisount.loading">
+              {{ priceFormat(getInvPrice(Number(product.price), product.serie)) }} &#8381;
             </a>
          </span>
       </p>
@@ -478,12 +481,27 @@
           <a class="font-bold text-xl line-through border-round m-2" style="min-width: 80px; min-height: 40px">
               {{ priceFormat(optionsPrice) }} &#8381;
             </a>
-          <a class="bg-primary font-bold text-xl border-round p-2" style="min-width: 80px; min-height: 40px" v-if="serieDiscounts.loading == false && userInvDisount.loading == false">
+          <a class="bg-primary font-bold text-xl border-round p-2" style="min-width: 80px; min-height: 40px" v-if="!serieDiscounts.loading && !userInvDisount.loading">
               {{ priceFormat(optionsPriceDiscount) }} &#8381;
           </a>
 
         </span>
       </p>
+
+      <Divider class="mt-5"/>
+
+      <p class="font-bold text-xl">Итого: 
+        <span class="font-bold text-xl" v-if="!user.userId"> {{ priceFormat(Number(optionsPrice) + Number(product.price)) }} &#8381;</span>
+        <span  v-else> 
+          <a class="font-bold text-xl line-through border-round m-2" style="min-width: 80px; min-height: 40px">
+              {{ priceFormat(Number(optionsPrice) + Number(product.price)) }} &#8381;
+            </a>
+          <a class="bg-primary font-bold text-xl border-round p-2" style="min-width: 80px; min-height: 40px" v-if="!serieDiscounts.loading && !userInvDisount.loading">
+              {{ priceFormat(getInvPrice(Number(product.price), product.serie) + Number(optionsPriceDiscount)) }} &#8381;
+          </a>
+        </span>
+      </p>
+
 
 
             <template #footer>

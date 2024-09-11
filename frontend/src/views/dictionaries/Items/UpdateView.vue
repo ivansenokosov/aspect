@@ -10,7 +10,6 @@
     import Select from 'primevue/select';
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
-    import AutoComplete from 'primevue/autocomplete';
     import Listbox from 'primevue/listbox';
 
     const series          = ref<ISimpleData>({data:[], error: null, loading: true})
@@ -18,7 +17,7 @@
     const typeOfOption    = ref<ISimpleData>({data:[], error: null, loading: true})
 
     const optionForm      = ref<ISimpleDictionary>({name: '', id: 0})
-    const seriesForm      = ref<IInvSerie[]>([])
+    const seriesForm      = ref<ISimpleDictionary[]>([]) // IInvSerie
 
     const loading         = ref<boolean>(true)
 
@@ -30,19 +29,19 @@
         saving.value = true
         const url:string =  'Inv_options/' + props.id + '/'
         const config = { headers: { 'content-type': 'application/json', }, };
-        var seriesStr : String = ''
+        var seriesStr : string = ''
 
         seriesForm.value.map(item => seriesStr += item.id + ',')
         seriesStr = seriesStr.substring(0, seriesStr.length - 1)
 
         const formData = new FormData();        
 
-        formData.append("item",        invOption.value.data.item)
-        formData.append("name",        invOption.value.data.name)
-        formData.append("short_title", invOption.value.data.short_title)
-        formData.append("full_title",  invOption.value.data.full_title)
+        formData.append("item",        String(invOption.value.data[0].item))
+        formData.append("name",        String(invOption.value.data[0].name))
+        formData.append("short_title", String(invOption.value.data[0].short_title))
+        formData.append("full_title",  String(invOption.value.data[0].full_title))
         formData.append("series",      seriesStr)
-        formData.append("option",      optionForm.value.id)
+        formData.append("option",      String(optionForm.value.id))
 
         const res = await AxiosInstance.put(url, formData, config)
           .then(function(response) {
@@ -59,8 +58,8 @@
         series.value               = await useFetch('Inv_series_dict', {});
         typeOfOption.value         = await useFetch('Type_of_options', {});
 
-        seriesForm.value = series.value.data.filter(item => invOption.value.data.series.includes(item.id.toString()))
-        optionForm.value = typeOfOption.value.data.filter(item => invOption.value.data.option === item.id)[0]
+        seriesForm.value = series.value.data.filter(item => invOption.value.data[0].series.toString().includes(item.id.toString()))
+        optionForm.value = typeOfOption.value.data.filter(item => invOption.value.data[0].option === item.id)[0]
 
         loading.value = false
     }
@@ -78,14 +77,14 @@
     <div v-else class="pt-5">
         <div class="field pt-5">
             <FloatLabel>
-                <InputNumber id="id" v-model="invOption.data.id" disabled class="w-full"/>
+                <InputNumber id="id" v-model="invOption.data[0].id" disabled class="w-full"/>
                 <label for="id">id</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="item" v-model="invOption.data.item" disabled class="w-full"/>
+                <InputText id="item" v-model="invOption.data[0].item" disabled class="w-full"/>
                 <label for="id">item</label>
             </FloatLabel>
         </div>
@@ -104,28 +103,28 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.name" class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].name" class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.full_title" class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].full_title" class="w-full"/>
                 <label for="title">Наименование полное</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.short_title" class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].short_title" class="w-full"/>
                 <label for="title">Наименование короткое</label>
             </FloatLabel>
         </div>
 
         <div class="flex flex-wrap justify-center gap-4 pt-5">
             <RouterLink :to="`/dictionaries/InvOptions/List`" rel="noopener">
-                <Button link label="Отменить" />
+                <Button type="link" label="Отменить" />
             </RouterLink>
             <Button label="Сохранить" severity="success" icon="pi pi-check" iconPos="right" @click="submission" :loading="saving"/>
         </div>

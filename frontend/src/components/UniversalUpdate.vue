@@ -12,13 +12,12 @@
     import { useToast } from "primevue/usetoast";
     import { getPath } from '@/api/getPath';
 
-    const router = useRouter()
-    const route = useRoute();
-    const data = ref<ISimpleData>({data:[], error: null, loading: true})
-    const props = defineProps(['url', 'id', 'title'])
+    const route  = useRoute();
+    const data   = ref<ISimpleData>({data:[], error: null, loading: true})
+    const props  = defineProps(['url', 'id', 'title'])
     const saving = ref<boolean>(false)
-    const toast = useToast(); 
-    const path = ref<string>('')      
+    const toast  = useToast(); 
+    const path   = ref<string>('')      
 
 
     const submission = async () => {
@@ -28,7 +27,7 @@
 
         const formData = new FormData();        
 
-        formData.append("name", data.value.data.name)
+        formData.append("name", data.value.data[0].name)
 
         const res = await AxiosInstance.put(url, formData, config)
           .then(function(response) {
@@ -59,14 +58,14 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputNumber id="id" v-model="data.data.id" disabled class="w-full"/>
+                <InputNumber id="id" v-model="data.data[0].id" disabled class="w-full"/>
                 <label for="id">id</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.name" class="w-full"/>
+                <InputText id="title" v-model="data.data[0].name" class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>

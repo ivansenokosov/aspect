@@ -1,11 +1,9 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { RouterLink, useRouter, useRoute  } from 'vue-router'
-    import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData } from '@/interfaces';
+    import type { ISimpleData, ISimpleDictionary } from '@/interfaces';
     import Button from 'primevue/button';
-    import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';
     import Toast from 'primevue/toast';
@@ -14,12 +12,12 @@
 
 
     const router = useRouter()
-    const route = useRoute();
-    const data = ref<ISimpleData>({data:[], error: null, loading: true})
-    const props = defineProps(['url', 'id', 'title'])
+    const route  = useRoute();
+    const data   = ref<ISimpleDictionary>({id:0, name:''})
+    const props  = defineProps(['url', 'id', 'title'])
     const saving = ref<boolean>(false)
-    const toast = useToast(); 
-    const path = ref<string>('')    
+    const toast  = useToast(); 
+    const path   = ref<string>('')          
 
     const submission = async () => {
         saving.value = true
@@ -28,13 +26,12 @@
 
         const formData = new FormData();        
 
-        formData.append("name", data.value.data.name)
+        formData.append("name", data.value.name)
 
         const res = await AxiosInstance.post(url, formData, config)
           .then(function(response) {
             toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
             router.push('/dictionaries/' + path.value + '/List')
-            console.log(response);
         }).catch(function(error) {
           console.log(error);
         })
@@ -55,8 +52,8 @@
     <div class="pt-5">
 
         <div class="field pt-5">
-            <FloatLabel>
-                <InputText id="title" v-model="data.data.name" class="w-full"/>
+            <FloatLabel>        
+                <InputText id="title" v-model="data.name" class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>

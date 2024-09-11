@@ -20,9 +20,9 @@
     const data             = ref<IUserData>({data:[], error: null, loading: true})
     const companies        = ref<ICompanyData>({data:[], error: null, loading: true})
     const companyUsers     = ref<ICompanyUsersData>({data:[], error: null, loading: true})
-    const companyUser      = ref<ICompanyUsers>()
+    const companyUser      = ref<ICompanyUsers>({user:0, company:0})
     const filtered         = ref<ICompanyUsers[]>([])
-    const company          = ref<ICompany>()
+    const company          = ref<ICompany>({id: 0, name:'', inn:'', address:'', agreement:'', info:'', phone:'', email:'', logo:''})
     const groups           = ref<ISimpleData>({data:[], error: null, loading: true}) 
     const group            = ref<ISimpleDictionary>()
     const userInvDiscounts = ref<IUserDiscountData>({data:[], error: null, loading: true}) 
@@ -48,7 +48,7 @@
         })
 
         // проверяем наличие записи в CompanyUsers для этого пользователя
-        if (company.value) {
+        if (company.value.id) {
             filtered.value = companyUsers.value.data.filter(item => item.user === Number(props.id))
             companyUser.value = {user: props.id, company: company.value.id}
 
@@ -76,8 +76,8 @@
         if (group.value) {
             const url2:string =  'discounts/UserInvDisount'
             const formData = new FormData();        
-            formData.append("user",  Number(props.id))
-            formData.append("group", group.value.id)
+            formData.append("user",  props.id)
+            formData.append("group", group.value.id.toString())
 
             if (userInvDiscounts.value.data.length>0) { 
                 // ------------------ обновляем группу скидок
@@ -128,7 +128,7 @@
     }
 
     const items = ref<ICompany[]>([]);
-    const search = (event) => {
+    const search = (event:any) => {
         items.value = event.query ? companies.value.data.filter(item => item.name.toUpperCase().includes(event.query.toUpperCase())) : companies.value.data;
     }    
     
@@ -146,14 +146,14 @@
 
       <div class="field pt-5">
             <FloatLabel>
-                <InputText id="username" v-model="data.data.username" class="w-full"/>
+                <InputText id="username" v-model="data.data[0].username" class="w-full"/>
                 <label for="username">Логин</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <Password id="password" v-model="data.data.password" class="w-full"/>
+                <Password id="password" v-model="data.data[0].password" class="w-full"/>
                 <label for="password">Пароль</label>
             </FloatLabel>
         </div>
@@ -161,31 +161,31 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="first_name" v-model="data.data.first_name" class="w-full"/>
+                <InputText id="first_name" v-model="data.data[0].first_name" class="w-full"/>
                 <label for="first_name">Имя</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="email" v-model="data.data.email" class="w-full"/>
+                <InputText id="email" v-model="data.data[0].email" class="w-full"/>
                 <label for="email">email</label>
             </FloatLabel>
         </div>
 
         <div class="card flex flex-wrap justify-center gap-4 pt-5">
             <div class="flex items-center">
-                    <Checkbox v-model="data.data.is_active" :binary="true" inputId="is_active"/>
+                    <Checkbox v-model="data.data[0].is_active" :binary="true" inputId="is_active"/>
                     <label for="is_active" class="ml-2">Активный</label>
             </div>
 
             <div class="flex items-center" v-if="user.userIsSuperadmin">
-                    <Checkbox v-model="data.data.is_staff" :binary="true"  inputId="is_staff"/>
+                    <Checkbox v-model="data.data[0].is_staff" :binary="true"  inputId="is_staff"/>
                     <label for="is_staff" class="ml-2">Сотрудник</label>
             </div>
 
             <div class="flex items-center" v-if="user.userIsSuperadmin">
-                    <Checkbox v-model="data.data.is_superuser" :binary="true"  inputId="is_superuser"/>
+                    <Checkbox v-model="data.data[0].is_superuser" :binary="true"  inputId="is_superuser"/>
                     <label for="is_superuser" class="ml-2">Суперадмин</label>
             </div>
         </div>

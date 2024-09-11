@@ -15,20 +15,17 @@
     import type { IMenuItem } from '@/interfaces';
     import { useLoginStore } from '@/stores/login';
     import { useUnreadInvConfigs } from '@/stores/unreadInvConfig';
-    // import { saveLog } from '@/api/log';
-
-
-    const userStore = useUserStore()
-    const baseUrl = useBaseUrl()
-    const invUnread = useUnreadInvConfigs()
+    
+    const userStore  = useUserStore()
+    const baseUrl    = useBaseUrl()
+    const invUnread  = useUnreadInvConfigs()
     const loginModal = useLoginStore();
 
-
-    invUnread.count()
-
-    const login = ref<String>('')
+    const login    = ref<String>('')
     const password = ref<String>('')
     const errormsg = ref<String>('')
+
+    invUnread.count()
 
     const login_form_enter_completed = computed(() => {
         if (login.value.length > 3 && password.value.length > 3) {
@@ -43,29 +40,25 @@
         const config = { headers: { 'content-type': 'application/json', }, };
         const formData = new FormData();       
 
-        formData.append("login", login.value)
-        formData.append("password", password.value)
+        formData.append("login",    String(login.value))
+        formData.append("password", String(password.value))
         errormsg.value = ''
 
         const res = await axios.post(url, formData, config)
-        .then(function(response) {
-            if (response.data.status === 1) {
-                // console.log()
-                userStore.setValues(response.data.id, response.data.first_name, response.data.is_staff, response.data.is_superuser)
-                // saveLog(1,'')
-                loginModal.visible = false
-            } else {
-                errormsg.value = response.data.info
-            }
-
-
-        }).catch(function(error) {
-            console.log(error);
-        })
-
+                               .then(function(response) {
+                                   if (response.data.status === 1) {
+                                       userStore.setValues(response.data.id, response.data.first_name, response.data.is_staff, response.data.is_superuser)
+                                       loginModal.visible = false
+                                   } else {
+                                       errormsg.value = response.data.info
+                                   }
+                                })
+                               .catch(function(error) {
+                                   console.log(error);
+                               })
     }
 
-    function isStuff<Boolean>() {
+    function isStuff():boolean {
         if (userStore.userId > 0 && userStore.userIsStaff == true) {
             return true
         } else {
@@ -73,7 +66,7 @@
         }
     }
 
-    function isUser<Boolean>() {
+    function isUser():boolean {
         if (userStore.userId) {
             return true
         } else {
@@ -81,7 +74,7 @@
         }
     }
 
-    function isSuperadmin<Boolean>() {
+    function isSuperadmin():boolean {
         if (userStore.userId > 0 && userStore.userIsSuperadmin == true) {
             return true
         } else {
@@ -201,36 +194,36 @@ const menuItems = ref<IMenuItem[]>([
                         {
                             separator: true
                         },
+                        // {
+                        //     label: 'Входные напряжения',
+                        //     icon: 'pi pi-book',
+                        //     show: computed((): boolean => isSuperadmin()),
+                        //     route: '/dictionaries/InvInputVoltage/List'
+                        // },
                         {
-                        label: 'Входные напряжения',
-                        icon: 'pi pi-book',
-                        show: computed((): boolean => isSuperadmin()),
-                        route: '/dictionaries/InvInputVoltage/List'
-                    },
-                    {
-                        label: 'Типы управления',
-                        icon: 'pi pi-book',
-                        show: computed((): boolean => isSuperadmin()),
-                        route: '/dictionaries/TypeOfControl/List'
-                    },
-                    {
-                        label: 'Способы управления',
-                        icon: 'pi pi-book',
-                        show: computed((): boolean => isSuperadmin()),
-                        route: '/dictionaries/VariantsOfControl/List'
-                    },
-                    {
-                        label: 'Дроссели ЕМС',
-                        icon: 'pi pi-book',
-                        show: computed((): boolean => isSuperadmin()),
-                        route: '/dictionaries/InvEMCDrossel/List'
-                    },
-                    {
-                        label: 'DC фильтры',
-                        icon: 'pi pi-book',
-                        show: computed((): boolean => isSuperadmin()),
-                        route: '/dictionaries/InvDCDrossel/List'
-                    },
+                            label: 'Типы управления',
+                            icon: 'pi pi-book',
+                            show: computed((): boolean => isSuperadmin()),
+                            route: '/dictionaries/TypeOfControl/List'
+                        },
+                        {
+                            label: 'Способы управления',
+                            icon: 'pi pi-book',
+                            show: computed((): boolean => isSuperadmin()),
+                            route: '/dictionaries/VariantsOfControl/List'
+                        },
+                        {
+                            label: 'Дроссели ЕМС',
+                            icon: 'pi pi-book',
+                            show: computed((): boolean => isSuperadmin()),
+                            route: '/dictionaries/InvEMCDrossel/List'
+                        },
+                        {
+                            label: 'DC фильтры',
+                            icon: 'pi pi-book',
+                            show: computed((): boolean => isSuperadmin()),
+                            route: '/dictionaries/InvDCDrossel/List'
+                        },
                     // {
                     //     label: 'Мощности',
                     //     icon: '',
@@ -401,11 +394,8 @@ const menuItems = ref<IMenuItem[]>([
         
         <template #end>
             <div class="flex items-center align-items-center gap-2">
-                <div class="text-xl font-semibold pr-5">8 (800) 350-79-07</div>
-                <span v-if="userStore.userId > 0" @click="() => { 
-                                                                    // saveLog(2,'')
-                                                                    userStore.logout()
-                                                                }">
+                <div class="text-xl font-semibold pr-5">+7 (343) 227-07-27</div>
+                <span v-if="userStore.userId > 0" @click="() => { userStore.logout() }">
                 <span class="flex align-items-center menu-exit">
                     <Button severity="contrast" class="flex align-items-center" >
                         <span class="pi pi-sign-in p-menuitem-icon"></span>

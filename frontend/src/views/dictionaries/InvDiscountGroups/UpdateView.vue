@@ -4,7 +4,7 @@
     import { useFetch } from '@/api/useFetch';
     import { useToast } from "primevue/usetoast";
     import { getPath } from '@/api/getPath';
-    import { type ISimpleData, type IInvSerieDisountData, type IInvOptionDisountData, IInvSerieData } from '@/interfaces';
+    import type { ISimpleData, IInvSerieDisountData, IInvOptionDisountData, IInvSerieData } from '@/interfaces';
     import AxiosInstance from '@/api/axiosInstance';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
@@ -46,7 +46,7 @@
         // сохраняем группу скидок
         const config = { headers: { 'content-type': 'application/json', }, };
         const formData = new FormData();        
-        formData.append("name", data.value.data.name)
+        formData.append("name", data.value.data[0].name)
         const res = await AxiosInstance.put(url + '/' + props.id + '/', formData, config)
           .then(function(response) {
         }).catch(function(error) {
@@ -56,7 +56,7 @@
         // сохраняем скидки для серий
 
         seriesDiscount.value.data.map(item => {
-          const res = AxiosInstance.put('discounts/InvSerieDisount/' + item.id + '/', item, config)
+          const res = AxiosInstance.put('discounts/InvSerieDisount/' + item.id.toString() + '/', item, config)
             .then(function(response) {
           }).catch(function(error) {
             console.log(error);
@@ -64,7 +64,7 @@
         })
 
         optionsDiscount.value.data.map(item => {
-          const res = AxiosInstance.put('discounts/InvOptionDisount/' + item.id + '/', item, config)
+          const res = AxiosInstance.put('discounts/InvOptionDisount/' + item.id.toString() + '/', item, config)
             .then(function(response) {
           }).catch(function(error) {
             console.log(error);
@@ -80,7 +80,7 @@
     async function createSeries() {
       // удаление имеющихся скидок на серии группы
       seriesDiscount.value.data.map(item => {
-        const url:string =  'discounts/InvSerieDisount/' + item.id
+        const url:string =  'discounts/InvSerieDisount/' + item.id.toString()
         AxiosInstance.delete(url,{})
                      .then((res) => {
                       console.log('удалено успешно')
@@ -92,9 +92,9 @@
         const url_create:string =  'discounts/InvSerieDisount/'
         const config = { headers: { 'content-type': 'application/json', }, };
         const formData = new FormData();        
-        formData.append("serie",    item.id)
+        formData.append("serie",    item.id.toString())
         formData.append("group",    props.id)
-        formData.append("discount", 0)
+        formData.append("discount", '0')
 
         const res = AxiosInstance.post(url_create, formData, config)
           .then(function(response) {
@@ -111,7 +111,7 @@
     async function createOptions() {
       // удаление имеющихся скидок на опции группы
       optionsDiscount.value.data.map(item => {
-        const url:string =  'discounts/InvOptionDisount/' + item.id
+        const url:string =  'discounts/InvOptionDisount/' + item.id.toString()
         AxiosInstance.delete(url,{})
                      .then((res) => {
                       console.log('удалено успешно')
@@ -124,9 +124,9 @@
         const url_create:string =  'discounts/InvOptionDisount/'
         const config = { headers: { 'content-type': 'application/json', }, };
         const formData = new FormData();        
-        formData.append("option",    item.id)
-        formData.append("group",    props.id)
-        formData.append("discount", 0)
+        formData.append("option",    item.id.toString())
+        formData.append("group",     props.id)
+        formData.append("discount",  '0')
 
         const res = AxiosInstance.post(url_create, formData, config)
           .then(function(response) {
@@ -141,7 +141,7 @@
     }  
 
 
-    const isPositiveInteger = (val) => {
+    const isPositiveInteger = (val:number) => {
         let str = String(val);
 
         str = str.trim();
@@ -156,7 +156,7 @@
         return n !== Infinity && String(n) === str && n >= 0;
     };
 
-    const onCellEditComplete = (event) => {
+    const onCellEditComplete = (event:any) => {
       let { data, newValue, field } = event;
         if (isPositiveInteger(newValue)) data[field] = newValue;
               else event.preventDefault();
@@ -189,14 +189,14 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputNumber id="id" v-model="data.data.id" disabled class="w-full"/>
+                <InputNumber id="id" v-model="data.data[0].id" disabled class="w-full"/>
                 <label for="id">id</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.name" class="w-full"/>
+                <InputText id="title" v-model="data.data[0].name" class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>
@@ -206,15 +206,11 @@
             <div class="field col">
               <h1>Серии</h1>
               <Button label="Пересоздать серии" @click="createSeries()"/>
-              <DataTable :value="seriesDiscount.data" tableStyle="min-width: 50rem"  editMode="cell" @cell-edit-complete="onCellEditComplete"
-    :pt="{
-        table: { style: 'min-width: 50rem' },
-        column: {
-            bodycell: ({ state }) => ({
-                class: [{ 'pt-0 pb-0': state['d_editing'] }]
-            })
-        }
-    }">
+              <DataTable :value="seriesDiscount.data" 
+                     tableStyle="min-width: 50rem"  
+                       editMode="cell" 
+            @cell-edit-complete="onCellEditComplete"
+                            :pt="{ table: { style: 'min-width: 50rem' }, column: { bodycell: ({ state }:any ) => ({ class: [{ 'pt-0 pb-0': state['d_editing'] }] }) } }">
                 <Column field="serie" header="Серия">
                   <template #body="{ data }">
                     <span>{{ getValueFromDictionary(series.data, data.serie) }} </span>
@@ -242,15 +238,12 @@
             <div class="field col">
               <h1>Опции</h1>
               <Button label="Пересоздать опции" @click="createOptions()"/>
-              <DataTable :value="optionsDiscount.data" tableStyle="min-width: 50rem" editMode="cell" @cell-edit-complete="onCellEditComplete"
-    :pt="{
-        table: { style: 'min-width: 50rem' },
-        column: {
-            bodycell: ({ state }) => ({
-                class: [{ 'pt-0 pb-0': state['d_editing'] }]
-            })
-        }
-    }">
+              <DataTable :value="optionsDiscount.data" 
+                     tableStyle="min-width: 50rem" 
+                       editMode="cell" 
+            @cell-edit-complete="onCellEditComplete"
+                            :pt="{ table: { style: 'min-width: 50rem' }, column: { bodycell: ({ state }:any) => ({ class: [{ 'pt-0 pb-0': state['d_editing'] }] }) } }"
+                            >
                 <Column field="option" header="option">
                   <template #body="{ data }">
                     <span>{{ getValueFromDictionary(options.data, data.option) }} </span>

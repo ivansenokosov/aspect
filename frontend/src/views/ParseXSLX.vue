@@ -33,9 +33,15 @@
     price_uploaded: number
   }
 
+  interface IParseResult {
+    data: any  // array of parsed data
+    errors: any // array of errors
+    meta: any  // object with extra info
+  }
+
   const step = ref<Number>(1)
   const text = ref<string>('')
-  const data = ref<any[]>([])
+  const data = ref<IParseResult>({data:null,errors:null, meta:null})
   const items = ref<IItemData>({data:[], loading: true, error: null})
   const column_id = ref<string>('')
   const column_price = ref<string>('')
@@ -60,7 +66,7 @@
     columnIdIndex.value = 0
     columnPriceIndex.value = 0
     columnQuantityIndex.value = 0
-    data.value = []
+    data.value = {data: null, errors: null, meta: null}
     CSVData.value = []
   }
 
@@ -68,10 +74,7 @@
   function parse() {
     data.value = Papa.parse(text.value)
     csv_columns.value = data.value.data[0]
-    // data.value.data.map(item => CSVData.value.row.push(item))
-    data.value.data.map(item => {
-      CSVData.value.push({data: item, id: 0, action: 'IGNORE', uploaded: false, price_uploaded: 0})
-    })
+    data.value.data.map((item : any) => CSVData.value.push({data: item, id: 0, action: 'IGNORE', uploaded: false, price_uploaded: 0}) )
   }
 
   function setID() {

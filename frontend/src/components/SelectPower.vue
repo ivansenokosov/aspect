@@ -12,14 +12,17 @@
     const range = ref<string>('')
 
     const powersDisplay = ref<Number[]>([]);
-    const search = (event) => {
+    const search = (event:any) => {
         powersDisplay.value = powers.filter((item) => item.toString().includes(event.query.replace(',','.')));
     }
 
     watch([power, error], () => {
-        const d:number = Number(power.value) * error.value / 100
-        const minPower:number = (Number(power.value) - d).toFixed(2)
-        const maxPower:number = (Number(power.value) + d).toFixed(2)
+        let d: number = 0
+        if (error.value) {
+            d = Number(power.value) * error.value / 100
+        }
+        const minPower:number = Number((Number(power.value) - d).toFixed(2))
+        const maxPower:number = Number((Number(power.value) + d).toFixed(2))
         range.value = String(minPower) + ' - ' + String(maxPower)
     })
 

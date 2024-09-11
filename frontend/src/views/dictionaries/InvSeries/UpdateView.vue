@@ -29,14 +29,14 @@
     const ambientTemperatureData = ref<ISimpleData>({data:[], error: null, loading: true})
     const levelIPData            = ref<ISimpleData>({data:[], error: null, loading: true})
 
-    const manufactory        = ref<ISimpleDictionary>()
-    const outputVoltage      = ref<ISimpleDictionary>()
-    const typeOfControl      = ref<ISimpleDictionary>()
-    const typeOfPanel        = ref<ISimpleDictionary>()
-    const typeOfOverload     = ref<ISimpleDictionary>()
-    const typeOfAccuracyFreq = ref<ISimpleDictionary>()
-    const ambientTemperature = ref<ISimpleDictionary>()
-    const levelIP            = ref<ISimpleDictionary>()
+    const manufactory        = ref<ISimpleDictionary>({name:'',id:0})
+    const outputVoltage      = ref<ISimpleDictionary>({name:'',id:0})
+    const typeOfControl      = ref<ISimpleDictionary>({name:'',id:0})
+    const typeOfPanel        = ref<ISimpleDictionary>({name:'',id:0})
+    const typeOfOverload     = ref<ISimpleDictionary>({name:'',id:0})
+    const typeOfAccuracyFreq = ref<ISimpleDictionary>({name:'',id:0})
+    const ambientTemperature = ref<ISimpleDictionary>({name:'',id:0})
+    const levelIP            = ref<ISimpleDictionary>({name:'',id:0})
     const min_power          = ref<Number>()
     const max_power          = ref<Number>()
     const photo              = ref<IFile>()
@@ -54,21 +54,21 @@
 
         const formData = new FormData();        
 
-        formData.append("name", data.value.data.name)
-        formData.append("description", data.value.data.description)
-        formData.append("manufactory", manufactory.value.id)
-        formData.append("output_voltage", outputVoltage.value.id)
-        formData.append("type_of_control", typeOfControl.value.id)
-        formData.append("type_of_panel", typeOfPanel.value.id)
-        formData.append("type_of_overload", typeOfOverload.value.id)
-        formData.append("type_of_accuracy_freq", typeOfAccuracyFreq.value.id)
-        formData.append("ambient_temperature", ambientTemperature.value.id)
-        formData.append("level_IP", levelIP.value.id)
-        formData.append("min_power", min_power.value)
-        formData.append("max_power", max_power.value)
+        formData.append("name", data.value.data[0].name)
+        formData.append("description", data.value.data[0].description)
+        formData.append("manufactory", String(manufactory.value.id))
+        formData.append("output_voltage", String(outputVoltage.value.id))
+        formData.append("type_of_control", String(typeOfControl.value.id))
+        formData.append("type_of_panel", String(typeOfPanel.value.id))
+        formData.append("type_of_overload", String(typeOfOverload.value.id))
+        formData.append("type_of_accuracy_freq", String(typeOfAccuracyFreq.value.id))
+        formData.append("ambient_temperature", String(ambientTemperature.value.id))
+        formData.append("level_IP", String(levelIP.value.id))
+        formData.append("min_power", String(min_power.value))
+        formData.append("max_power", String(max_power.value))
 
-        photo.value && formData.append("photo", photo.value.file_blob, photo.value.file_name)
-        schema.value && formData.append("schema", schema.value.file_blob, schema.value.file_name)
+        photo.value && photo.value.file_blob && formData.append("photo", photo.value.file_blob, String(photo.value.file_name))
+        schema.value && schema.value.file_blob && formData.append("schema", schema.value.file_blob, String(schema.value.file_name))
 
         const res = await AxiosInstance.put(url, formData, config)
           .then(function(response) {
@@ -98,23 +98,23 @@
         ambientTemperatureData.value   = await useFetch('Ambient_temperatures', {} );
         levelIPData.value              = await useFetch('Level_IP', {} );
 
-        manufactory.value              = manufactoryData.value.data.filter(item => item.id === data.value.data.manufactory)[0]
-        outputVoltage.value            = outputVoltageData.value.data.filter(item => item.id === data.value.data.output_voltage)[0]
-        typeOfControl.value            = typeOfControlData.value.data.filter(item => item.id === data.value.data.type_of_control)[0]
-        typeOfPanel.value              = typeOfPanelData.value.data.filter(item => item.id === data.value.data.type_of_panel)[0]
-        typeOfOverload.value           = typeOfOverloadData.value.data.filter(item => item.id === data.value.data.type_of_overload)[0]
-        typeOfAccuracyFreq.value       = typeOfAccuracyFreqData.value.data.filter(item => item.id === data.value.data.type_of_accuracy_freq)[0]
-        ambientTemperature.value       = ambientTemperatureData.value.data.filter(item => item.id === data.value.data.ambient_temperature)[0]
-        levelIP.value                  = levelIPData.value.data.filter(item => item.id === data.value.data.level_IP)[0]
+        manufactory.value              = manufactoryData.value.data.filter(item => item.id === data.value.data[0].manufactory)[0]
+        outputVoltage.value            = outputVoltageData.value.data.filter(item => item.id === data.value.data[0].output_voltage)[0]
+        typeOfControl.value            = typeOfControlData.value.data.filter(item => item.id === data.value.data[0].type_of_control)[0]
+        typeOfPanel.value              = typeOfPanelData.value.data.filter(item => item.id === data.value.data[0].type_of_panel)[0]
+        typeOfOverload.value           = typeOfOverloadData.value.data.filter(item => item.id === data.value.data[0].type_of_overload)[0]
+        typeOfAccuracyFreq.value       = typeOfAccuracyFreqData.value.data.filter(item => item.id === data.value.data[0].type_of_accuracy_freq)[0]
+        ambientTemperature.value       = ambientTemperatureData.value.data.filter(item => item.id === data.value.data[0].ambient_temperature)[0]
+        levelIP.value                  = levelIPData.value.data.filter(item => item.id === data.value.data[0].level_IP)[0]
 
-        min_power.value = Number(data.value.data.min_power)
-        max_power.value = Number(data.value.data.max_power)
+        min_power.value = Number(data.value.data[0].min_power)
+        max_power.value = Number(data.value.data[0].max_power)
 
-        if (data.value.data.photo) {
-            photo.value = await loadFile(baseUrl.baseUrl + data.value.data.photo)
+        if (data.value.data[0].photo) {
+            photo.value = await loadFile(baseUrl.baseUrl + data.value.data[0].photo)
         }
-        if (data.value.data.schema) {
-            schema.value = await loadFile(baseUrl.baseUrl + data.value.data.schema)
+        if (data.value.data[0].schema) {
+            schema.value = await loadFile(baseUrl.baseUrl + data.value.data[0].schema)
         }
 
     }
@@ -133,14 +133,14 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputNumber id="id" v-model="data.data.id" disabled class="w-full"/>
+                <InputNumber id="id" v-model="data.data[0].id" disabled class="w-full"/>
                 <label for="id">id</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.name" class="w-full"/>
+                <InputText id="title" v-model="data.data[0].name" class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>
@@ -150,13 +150,13 @@
           <div class="grid">
               <div class="col-6">
                   <div class="width:100%"><h3 class="font-semibold">Изображение</h3></div>
-                  <img v-if="photo" v-bind:src="photo.file_base64data" width="350">
+                  <img v-if="photo" v-bind:src="String(photo.file_base64data)" width="350">
                   <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
                   <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" customUpload @uploader="upload_photo" :auto="true" chooseLabel="Выбрать" />
               </div>
               <div class="col-6">
                 <div class="width:100%"><h3 class="font-semibold">Схема</h3></div>
-                <img v-if="schema" v-bind:src="schema.file_base64data" width="350">
+                <img v-if="schema" v-bind:src="String(schema.file_base64data)" width="350">
                 <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
                 <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="10000000" customUpload @uploader="upload_schema" :auto="true" chooseLabel="Выбрать" />
               </div>
@@ -166,7 +166,7 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <Textarea id="description" v-model="data.data.description" class="w-full"/>
+                <Textarea id="description" v-model="data.data[0].description" class="w-full"/>
                 <label for="title">Описание</label>
             </FloatLabel>
         </div>

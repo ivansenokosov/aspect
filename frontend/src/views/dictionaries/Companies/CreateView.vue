@@ -11,7 +11,7 @@
     import InputMask from 'primevue/inputmask';
 
     const router = useRouter()
-    const data   = ref<ICompany>({name:'',inn:'',address:'',email:'',phone:'',info:'',agreement:''})
+    const data   = ref<ICompany>({id: 0, name:'',inn:'',address:'',email:'',phone:'',info:'',agreement:''})
     const props  = defineProps(['id'])
     const saving = ref<boolean>(false)
     const toast  = useToast(); 
@@ -90,7 +90,7 @@
         </div>
 
         <div class="flex flex-wrap justify-center gap-4 pt-5">
-            <RouterLink :to="`/dictionaries/Invertors/List`" rel="noopener">
+            <RouterLink :to="`/dictionaries/Companies/List`" rel="noopener">
                 <Button link label="Отменить" />
             </RouterLink>
             <Button label="Создать" severity="success" icon="pi pi-check" iconPos="right" @click="submission" :loading="saving"/>

@@ -13,7 +13,20 @@
     import AutoComplete from 'primevue/autocomplete';
     import { useToast } from "primevue/usetoast";
 
-    const data            = ref<IInvertor>([])
+    const data            = ref<IInvertor>({id:0, 
+                                            item: 0, 
+                                            serie: 0, 
+                                            input_voltage: 0, 
+                                            size: 0, 
+                                            type_of_break_module: 0, 
+                                            type_of_dc_drossel: 0, 
+                                            type_of_emc_drossel: 0, 
+                                            name: '', 
+                                            p_heavy_g: '',
+                                            p_pumps_p: '',
+                                            current_g: '',
+                                            current_p: '',
+                                            type_of_control: ''})
     const items           = ref<IItemData>({data:[], error: null, loading: true})
     const series          = ref<IInvSerieData>({data:[], error: null, loading: true})
     const invInputVoltage = ref<ISimpleData>({data:[], error: null, loading: true})
@@ -28,7 +41,9 @@
     const invInputVoltageData = ref<ISimpleDictionary>({name: '', id: 0})
     const invSizeData         = ref<ISimpleDictionary>({name: '', id: 0})
     const invSerieData        = ref<ISimpleDictionary>({name: '', id: 0})
-    const item                = ref<IItem>()
+    const item                = ref<IItem>({id:0, type: 0, name: '', quantity: 0, waiting_period: 0})
+    const itemsDisplay        = ref<IItem[]>([]);
+
 
     const p_heavy_g           = ref<number>(0)
     const p_pumps_p           = ref<number>(0)
@@ -49,18 +64,18 @@
 
         const formData = new FormData();        
 
-        formData.append("item", item.value.id)
+        formData.append("item", String(item.value.id))
         formData.append("name", data.value.name)
-        formData.append("serie", invSerieData.value.id)
-        formData.append("size", invSizeData.value.id)
-        formData.append("type_of_emc_drossel", invEMCdata.value.id)
-        formData.append("type_of_dc_drossel", invDCdata.value.id)
-        formData.append("type_of_break_module", invBreakModuleData.value.id)
-        formData.append("input_voltage", invInputVoltageData.value.id)
-        formData.append("p_heavy_p", p_heavy_g.value)
-        formData.append("p_pumps_p", p_pumps_p.value)
-        formData.append("current_p", current_p.value)
-        formData.append("current_g", current_g.value)
+        formData.append("serie", String(invSerieData.value.id))
+        formData.append("size", String(invSizeData.value.id))
+        formData.append("type_of_emc_drossel", String(invEMCdata.value.id))
+        formData.append("type_of_dc_drossel", String(invDCdata.value.id))
+        formData.append("type_of_break_module", String(invBreakModuleData.value.id))
+        formData.append("input_voltage", String(invInputVoltageData.value.id))
+        formData.append("p_heavy_p", String(p_heavy_g.value))
+        formData.append("p_pumps_p", String(p_pumps_p.value))
+        formData.append("current_p", String(current_p.value))
+        formData.append("current_g", String(current_g.value))
 
         const res = await AxiosInstance.post(url, formData, config)
           .then(function(response) {
@@ -72,8 +87,7 @@
         saving.value = false
     }
 
-    const itemsDisplay = ref([]);
-    const search = (event) => {
+    const search = (event:any) => {
         itemsDisplay.value = event.query ? items.value.data.filter((item) => item.id.toString().includes(event.query.toString())) : items.value.data;
     }    
 

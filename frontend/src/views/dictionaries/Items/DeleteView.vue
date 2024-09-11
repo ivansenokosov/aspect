@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, ISimpleDictionary, IInvSerie, IInvOptionData } from '@/interfaces';
+    import type { ISimpleData, ISimpleDictionary, IInvOptionData } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
@@ -10,15 +10,16 @@
     import Select from 'primevue/select';
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
-    import AutoComplete from 'primevue/autocomplete';
     import Listbox from 'primevue/listbox';
+    import { useRouter } from 'vue-router';
 
+    const router          = useRouter()
     const series          = ref<ISimpleData>({data:[], error: null, loading: true})
     const invOption       = ref<IInvOptionData>({data:[], error: null, loading: true})
     const typeOfOption    = ref<ISimpleData>({data:[], error: null, loading: true})
 
     const optionForm      = ref<ISimpleDictionary>({name: '', id: 0})
-    const seriesForm      = ref<IInvSerie[]>([])
+    const seriesForm      = ref<ISimpleDictionary[]>([])
 
     const loading         = ref<boolean>(true)
 
@@ -44,8 +45,8 @@
         series.value               = await useFetch('Inv_series_dict', {});
         typeOfOption.value         = await useFetch('Type_of_options', {});
 
-        seriesForm.value = series.value.data.filter(item => invOption.value.data.series.includes(item.id.toString()))
-        optionForm.value = typeOfOption.value.data.filter(item => invOption.value.data.option === item.id)[0]
+        seriesForm.value = series.value.data.filter(item => invOption.value.data[0].series.toString().includes(item.id.toString()))
+        optionForm.value = typeOfOption.value.data.filter(item => invOption.value.data[0].option === item.id)[0]
 
         loading.value = false
     }
@@ -63,14 +64,14 @@
     <div v-else class="pt-5">
         <div class="field pt-5">
             <FloatLabel>
-                <InputNumber id="id" v-model="invOption.data.id" disabled class="w-full"/>
+                <InputNumber id="id" v-model="invOption.data[0].id" disabled class="w-full"/>
                 <label for="id">id</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="item" v-model="invOption.data.item" disabled class="w-full"/>
+                <InputText id="item" v-model="invOption.data[0].item" disabled class="w-full"/>
                 <label for="id">item</label>
             </FloatLabel>
         </div>
@@ -89,21 +90,21 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.name" disabled class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].name" disabled class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.full_title" disabled class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].full_title" disabled class="w-full"/>
                 <label for="title">Наименование полное</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.short_title" disabled class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].short_title" disabled class="w-full"/>
                 <label for="title">Наименование короткое</label>
             </FloatLabel>
         </div>

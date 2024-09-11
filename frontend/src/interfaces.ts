@@ -5,7 +5,7 @@ export interface IMenuItem {
     route?: string
     icon?: string
     show?: ComputedRef<boolean>
-    badge?: number
+    badge?: number | ComputedRef<number>
     items?: IMenuItem[]
     separator?: boolean
     level?: number
@@ -16,7 +16,6 @@ export interface IFile {
     file_blob?: Blob
     file_base64data?: String
   }
-  
 
 export interface ISimpleDictionary {
     name: string
@@ -28,6 +27,13 @@ export interface ISimpleData {
     error: any
     loading: boolean
 }
+
+export interface IDocument<T> {
+    data   : T[]
+    error  : any
+    loading: boolean
+}
+
 
 export interface IInvAvalControl {
     id: number
@@ -69,32 +75,32 @@ export interface IInvertor {
     p_pumps_p: string
     current_g: string
     current_p: string
-    serie_str: string
-    input_voltage_str: string 
-    size_str: string
-    type_of_dc_drossel_str: string 
-    type_of_emc_drossel_str: string        
+    serie_str              ?: string
+    input_voltage_str      ?: string 
+    size_str               ?: string
+    type_of_dc_drossel_str ?: string 
+    type_of_emc_drossel_str?: string        
 
-    manufactory_str       : string  
-    output_voltage_str    : string  
-    min_power             : string  
-    max_power             : string  
-    type_of_control       : string  
-    type_of_control_str   : string  
-    type_of_panel         : string  
-    type_of_panel_str     : string  
-    overload_p_mode       : string  
-    overload_g_mode       : string  
-    type_of_overload_str  : string  
-    type_of_accuracy_freq : string  
-    level_IP              : string  
-    level_IP_str          : string  
-    description           : string  
+    manufactory_str       ?: string  
+    output_voltage_str    ?: string  
+    min_power             ?: string  
+    max_power             ?: string  
+    type_of_control        : string  
+    type_of_control_str   ?: string  
+    type_of_panel         ?: string  
+    type_of_panel_str     ?: string  
+    overload_p_mode       ?: string  
+    overload_g_mode       ?: string  
+    type_of_overload_str  ?: string  
+    type_of_accuracy_freq ?: string  
+    level_IP              ?: string  
+    level_IP_str          ?: string  
+    description           ?: string  
 
-    price                 : string
-    quantity              : number
-    waiting_period        : string
-    currency              : string
+    price                 ?: string
+    quantity              ?: number
+    waiting_period        ?: string
+    currency              ?: string
 }
 
 export interface IInvertorData {
@@ -123,26 +129,28 @@ export interface IInvSerie {
     min_power: string
     max_power: string
     photo: string
+    schema: string
 }
 
 export interface IInvSerieData {
-    data: IInvSerie[]
+    data: Array<IInvSerie>
     error: any
     loading: boolean
 }
 
 export interface IInvOption {
-    item : number
-    name : string
-    short_title : string
-    full_title : string
-    series : number
-    option : number 
-    price: string
-    discount?: string
-    waiting_period: string
-    quantity: string
-    option_type: string
+    id             : number 
+    item           : number
+    name           : string
+    short_title    : string
+    full_title     : string
+    series         : number
+    option         : number 
+    price         ?: string
+    discount      ?: string
+    waiting_period?: string
+    quantity      ?: string
+    option_type   ?: string
 }
 
 export interface IInvOptionData {
@@ -152,9 +160,10 @@ export interface IInvOptionData {
 }
 
 export interface IItem {
-    type : number
-    name : string
-    quantity : number
+    id             : number
+    type           : number
+    name           : string
+    quantity       : number
     waiting_period : number
 }
 
@@ -216,10 +225,23 @@ export interface IInvInputOuptputData {
     loading: boolean
 }
 
+export interface IInvSignalInputOutput {
+    serie    : number
+    signal   : number 
+    info    ?: string
+    quantity : number    
+}
+
+export interface IInvSignalInputOutputData {
+    data: IInvSignalInputOutput[]
+    error: any
+    loading: boolean
+}
 
 // ------------------------------- Скидки ------------------------------- 
 
 export interface IInvSerieDisount {
+    id:   number
     group: number
     serie: number
     discount: number
@@ -232,6 +254,7 @@ export interface IInvSerieDisountData {
   }
 
 export interface IInvOptionDisount {
+    id:number
     option: number
     serie: number
     discount: number
@@ -257,7 +280,7 @@ export interface IUserDiscountData {
 
 // ------------------------------- Организации ------------------------------- 
 export interface ICompany {
-    id?: number
+    id: number
     name:string
     inn:string
     address:string
@@ -302,3 +325,5 @@ export interface ILogData {
     error  : any
     loading: boolean
 }
+
+

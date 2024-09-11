@@ -4,9 +4,9 @@
     import Skeleton from 'primevue/skeleton';
 
     import { useFetch } from '@/api/useFetch';
-    import type { ISimpleData, ISimpleDictionary } from '@/interfaces';
+    import type { IDocument, ISimpleData, ISimpleDictionary } from '@/interfaces';
 
-    const data = ref<ISimpleData>({data: [{name:'',id:0}], error: null, loading: true}) 
+    const data = ref<IDocument<ISimpleDictionary>>({data: [{name:'',id:0}], error: null, loading: true}) 
     const model = defineModel<ISimpleDictionary[]>()
     const props = defineProps(['url','title'])
 

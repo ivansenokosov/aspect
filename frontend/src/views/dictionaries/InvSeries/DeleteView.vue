@@ -6,18 +6,17 @@
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
-    import Listbox  from 'primevue/listbox';
     import FloatLabel from 'primevue/floatlabel';
     import Select from 'primevue/select';
     import Toast from 'primevue/toast';
     import Textarea from 'primevue/textarea';
-    import FileUpload from 'primevue/fileupload';
     import { useToast } from "primevue/usetoast";
     import { useBaseUrl } from '@/stores/baseUrl'
-    import uploadFile from '@/api/uploadFile';
     import loadFile from '@/api/loadFile';
+    import { useRouter } from 'vue-router';
 
     const baseUrl = useBaseUrl()
+    const router  = useRouter()
 
     const data                   = ref<IInvSerieData>({data:[], error: null, loading: true})
     const manufactoryData        = ref<ISimpleData>({data:[], error: null, loading: true})
@@ -70,23 +69,23 @@
         ambientTemperatureData.value   = await useFetch('Ambient_temperatures', {} );
         levelIPData.value              = await useFetch('Level_IP', {} );
 
-        manufactory.value              = manufactoryData.value.data.filter(item => item.id === data.value.data.manufactory)[0]
-        outputVoltage.value            = outputVoltageData.value.data.filter(item => item.id === data.value.data.output_voltage)[0]
-        typeOfControl.value            = typeOfControlData.value.data.filter(item => item.id === data.value.data.type_of_control)[0]
-        typeOfPanel.value              = typeOfPanelData.value.data.filter(item => item.id === data.value.data.type_of_panel)[0]
-        typeOfOverload.value           = typeOfOverloadData.value.data.filter(item => item.id === data.value.data.type_of_overload)[0]
-        typeOfAccuracyFreq.value       = typeOfAccuracyFreqData.value.data.filter(item => item.id === data.value.data.type_of_accuracy_freq)[0]
-        ambientTemperature.value       = ambientTemperatureData.value.data.filter(item => item.id === data.value.data.ambient_temperature)[0]
-        levelIP.value                  = levelIPData.value.data.filter(item => item.id === data.value.data.level_IP)[0]
+        manufactory.value              = manufactoryData.value.data.filter(item => item.id === data.value.data[0].manufactory)[0]
+        outputVoltage.value            = outputVoltageData.value.data.filter(item => item.id === data.value.data[0].output_voltage)[0]
+        typeOfControl.value            = typeOfControlData.value.data.filter(item => item.id === data.value.data[0].type_of_control)[0]
+        typeOfPanel.value              = typeOfPanelData.value.data.filter(item => item.id === data.value.data[0].type_of_panel)[0]
+        typeOfOverload.value           = typeOfOverloadData.value.data.filter(item => item.id === data.value.data[0].type_of_overload)[0]
+        typeOfAccuracyFreq.value       = typeOfAccuracyFreqData.value.data.filter(item => item.id === data.value.data[0].type_of_accuracy_freq)[0]
+        ambientTemperature.value       = ambientTemperatureData.value.data.filter(item => item.id === data.value.data[0].ambient_temperature)[0]
+        levelIP.value                  = levelIPData.value.data.filter(item => item.id === data.value.data[0].level_IP)[0]
 
-        min_power.value = Number(data.value.data.min_power)
-        max_power.value = Number(data.value.data.max_power)
+        min_power.value = Number(data.value.data[0].min_power)
+        max_power.value = Number(data.value.data[0].max_power)
 
-        if (data.value.data.photo) {
-            photo.value = await loadFile(baseUrl.baseUrl + data.value.data.photo)
+        if (data.value.data[0].photo) {
+            photo.value = await loadFile(baseUrl.baseUrl + data.value.data[0].photo)
         }
-        if (data.value.data.schema) {
-            schema.value = await loadFile(baseUrl.baseUrl + data.value.data.schema)
+        if (data.value.data[0].schema) {
+            schema.value = await loadFile(baseUrl.baseUrl + data.value.data[0].schema)
         }
 
     }
@@ -105,14 +104,14 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputNumber id="id" v-model="data.data.id" disabled class="w-full"/>
+                <InputNumber id="id" v-model="data.data[0].id" disabled class="w-full"/>
                 <label for="id">id</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.name" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].name" disabled class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>
@@ -122,12 +121,12 @@
           <div class="grid">
               <div class="col-6">
                   <div class="width:100%"><h3 class="font-semibold">Изображение</h3></div>
-                  <img v-if="photo" v-bind:src="photo.file_base64data" width="350">
+                  <img v-if="photo" v-bind:src="String(photo.file_base64data)" width="350">
                   <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
               </div>
               <div class="col-6">
                 <div class="width:100%"><h3 class="font-semibold">Схема</h3></div>
-                <img v-if="schema" v-bind:src="schema.file_base64data" width="350">
+                <img v-if="schema" v-bind:src="String(schema.file_base64data)" width="350">
                 <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
               </div>
           </div>
@@ -136,7 +135,7 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <Textarea id="description" v-model="data.data.description" disabled class="w-full"/>
+                <Textarea id="description" v-model="data.data[0].description" disabled class="w-full"/>
                 <label for="title">Описание</label>
             </FloatLabel>
         </div>

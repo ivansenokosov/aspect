@@ -122,6 +122,13 @@ def CreatePDF(request):
             row.cell('Цена выбранных опций (с НДС)')
             row.cell(str(option_price) + ' руб.')
 
+            row = table.row()
+            pdf.set_font(style="B")
+            row.cell('Итого (с НДС)')
+            row.cell(str(option_price + option_price) + ' руб.')
+
+
+        pdf.set_font(style="")
         row = table.row()
         row.cell('Наименование')
         row.cell(invertor.name)

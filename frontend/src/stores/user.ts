@@ -45,7 +45,7 @@ export const useUserStore = defineStore('user', () => {
         const config = { headers: { 'content-type': 'application/json', }, };
 
         const res = await axios.post(baseUrl.baseUrl + 'logs/Logs/', logData, config)
-                                    .then(function(response) { console.log(response); })
+                                    .then(function(response) { /*console.log(response);*/ })
                                     .catch(function(error) { console.log(error); })
     }
   }

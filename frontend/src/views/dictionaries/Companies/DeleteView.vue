@@ -8,7 +8,6 @@
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';
     import Toast from 'primevue/toast';
-    import { useToast } from "primevue/usetoast";
 
     const router = useRouter()
     const data   = ref<ICompanyData>({data:[], error: null, loading: true})
@@ -43,49 +42,49 @@
 
       <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.name" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].name" disabled class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.inn" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].inn" disabled class="w-full"/>
                 <label for="title">ИНН</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.email" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].email" disabled class="w-full"/>
                 <label for="title">email</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.phone" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].phone" disabled class="w-full"/>
                 <label for="title">Телефон</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.address" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].address" disabled class="w-full"/>
                 <label for="title">Адрес</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.agreement" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].agreement" disabled class="w-full"/>
                 <label for="title">Договор</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.info" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].info" disabled class="w-full"/>
                 <label for="title">Примечение</label>
             </FloatLabel>
         </div>

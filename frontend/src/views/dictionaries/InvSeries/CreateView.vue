@@ -2,11 +2,10 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, IInvSerieData, ISimpleDictionary, IFile } from '@/interfaces';
+    import type { ISimpleData, ISimpleDictionary, IFile, IInvSerie } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
-    import Listbox  from 'primevue/listbox';
     import FloatLabel from 'primevue/floatlabel';
     import Select from 'primevue/select';
     import Toast from 'primevue/toast';
@@ -15,11 +14,23 @@
     import { useToast } from "primevue/usetoast";
     import { useBaseUrl } from '@/stores/baseUrl'
     import uploadFile from '@/api/uploadFile';
-    import loadFile from '@/api/loadFile';
 
     const baseUrl = useBaseUrl()
 
-    const data                   = ref<IInvSerieData>({data:[], error: null, loading: true})
+    const data                   = ref<IInvSerie>({id:0, name: '', 
+                                                   description: '', 
+                                                   manufactory: 0, 
+                                                   output_voltage: 0, 
+                                                   type_of_control: 0, 
+                                                   type_of_panel: 0, 
+                                                   type_of_overload: 0, 
+                                                   type_of_accuracy_freq: 0, 
+                                                   ambient_temperature: 0,
+                                                   level_IP: 0,
+                                                   min_power: '',
+                                                   max_power: '',
+                                                   photo: '',
+                                                   schema: ''})
     const manufactoryData        = ref<ISimpleData>({data:[], error: null, loading: true})
     const outputVoltageData      = ref<ISimpleData>({data:[], error: null, loading: true})
     const typeOfControlData      = ref<ISimpleData>({data:[], error: null, loading: true})
@@ -29,14 +40,14 @@
     const ambientTemperatureData = ref<ISimpleData>({data:[], error: null, loading: true})
     const levelIPData            = ref<ISimpleData>({data:[], error: null, loading: true})
 
-    const manufactory        = ref<ISimpleDictionary>()
-    const outputVoltage      = ref<ISimpleDictionary>()
-    const typeOfControl      = ref<ISimpleDictionary>()
-    const typeOfPanel        = ref<ISimpleDictionary>()
-    const typeOfOverload     = ref<ISimpleDictionary>()
-    const typeOfAccuracyFreq = ref<ISimpleDictionary>()
-    const ambientTemperature = ref<ISimpleDictionary>()
-    const levelIP            = ref<ISimpleDictionary>()
+    const manufactory        = ref<ISimpleDictionary>({name:'', id:0})
+    const outputVoltage      = ref<ISimpleDictionary>({name:'', id:0})
+    const typeOfControl      = ref<ISimpleDictionary>({name:'', id:0})
+    const typeOfPanel        = ref<ISimpleDictionary>({name:'', id:0})
+    const typeOfOverload     = ref<ISimpleDictionary>({name:'', id:0})
+    const typeOfAccuracyFreq = ref<ISimpleDictionary>({name:'', id:0})
+    const ambientTemperature = ref<ISimpleDictionary>({name:'', id:0})
+    const levelIP            = ref<ISimpleDictionary>({name:'', id:0})
     const min_power          = ref<Number>()
     const max_power          = ref<Number>()
     const photo              = ref<IFile>()
@@ -55,21 +66,21 @@
 
         const formData = new FormData();        
 
-        formData.append("name", data.value.data.name)
-        formData.append("description", data.value.data.description)
-        formData.append("manufactory", manufactory.value.id)
-        formData.append("output_voltage", outputVoltage.value.id)
-        formData.append("type_of_control", typeOfControl.value.id)
-        formData.append("type_of_panel", typeOfPanel.value.id)
-        formData.append("type_of_overload", typeOfOverload.value.id)
-        formData.append("type_of_accuracy_freq", typeOfAccuracyFreq.value.id)
-        formData.append("ambient_temperature", ambientTemperature.value.id)
-        formData.append("level_IP", levelIP.value.id)
-        formData.append("min_power", min_power.value)
-        formData.append("max_power", max_power.value)
-
-        photo.value && formData.append("photo", photo.value.file_blob, photo.value.file_name)
-        schema.value && formData.append("schema", schema.value.file_blob, schema.value.file_name)
+        formData.append("name", data.value.name)
+        formData.append("description", data.value.description)
+        formData.append("manufactory", String(manufactory.value.id))
+        formData.append("output_voltage", String(outputVoltage.value.id))
+        formData.append("type_of_control", String(typeOfControl.value.id))
+        formData.append("type_of_panel", String(typeOfPanel.value.id))
+        formData.append("type_of_overload", String(typeOfOverload.value.id))
+        formData.append("type_of_accuracy_freq", String(typeOfAccuracyFreq.value.id))
+        formData.append("ambient_temperature", String(ambientTemperature.value.id))
+        formData.append("level_IP", String(levelIP.value.id))
+        formData.append("min_power", String(min_power.value))
+        formData.append("max_power", String(max_power.value))
+    
+        photo.value && photo.value.file_blob && formData.append("photo", photo.value.file_blob, String(photo.value.file_name))
+        schema.value && schema.value.file_blob && formData.append("schema", schema.value.file_blob, String(schema.value.file_name))
 
         const res = await AxiosInstance.post(url, formData, config)
           .then(function(response) {
@@ -113,7 +124,7 @@
     <div v-else class="pt-5">
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.name" class="w-full"/>
+                <InputText id="title" v-model="data.name" class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>
@@ -123,13 +134,13 @@
           <div class="grid">
               <div class="col-6">
                   <div class="width:100%"><h3 class="font-semibold">Изображение</h3></div>
-                  <img v-if="photo" v-bind:src="photo.file_base64data" width="350">
+                  <img v-if="photo" v-bind:src="String(photo.file_base64data)" width="350">
                   <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
                   <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" customUpload @uploader="upload_photo" :auto="true" chooseLabel="Выбрать" />
               </div>
               <div class="col-6">
                 <div class="width:100%"><h3 class="font-semibold">Схема</h3></div>
-                <img v-if="schema" v-bind:src="schema.file_base64data" width="350">
+                <img v-if="schema" v-bind:src="String(schema.file_base64data)" width="350">
                 <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
                 <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="10000000" customUpload @uploader="upload_schema" :auto="true" chooseLabel="Выбрать" />
               </div>
@@ -139,7 +150,7 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <Textarea id="description" v-model="data.data.description" class="w-full"/>
+                <Textarea id="description" v-model="data.description" class="w-full"/>
                 <label for="title">Описание</label>
             </FloatLabel>
         </div>
@@ -164,7 +175,6 @@
         </div>
 
         <div class="field pt-5">
-          {{ manufactory }}
             <FloatLabel>
               <Select v-model="manufactory" :options="manufactoryData.data" optionLabel="name" placeholder="Производитель" class="w-full md:w-56" />
               <label for="serie">Производитель</label>
@@ -172,7 +182,6 @@
         </div>
 
         <div class="field pt-5">
-          {{ outputVoltage }}
             <FloatLabel>
               <Select v-model="outputVoltage" :options="outputVoltageData.data" optionLabel="name" placeholder="Выходное напряжение" class="w-full md:w-56" />
               <label for="serie">Выходное напряжение</label>
@@ -180,7 +189,6 @@
         </div>
 
         <div class="field pt-5">
-          {{ typeOfControl }}
             <FloatLabel>
               <Select v-model="typeOfControl" :options="typeOfControlData.data" optionLabel="name" placeholder="Управление" class="w-full md:w-56" />
               <label for="serie">Управление</label>
@@ -188,7 +196,6 @@
         </div>
 
         <div class="field pt-5">
-          {{ typeOfOverload }}
             <FloatLabel>
               <Select v-model="typeOfOverload" :options="typeOfOverloadData.data" optionLabel="name" placeholder="Перегрузка" class="w-full md:w-56" />
               <label for="serie">Перегрузка</label>
@@ -196,7 +203,6 @@
         </div>
 
         <div class="field pt-5">
-          {{ typeOfPanel }}
             <FloatLabel>
               <Select v-model="typeOfPanel" :options="typeOfPanelData.data" optionLabel="name" placeholder="Панель" class="w-full md:w-56" />
               <label for="serie">Панель</label>
@@ -205,7 +211,6 @@
 
 
         <div class="field pt-5">
-          {{ typeOfAccuracyFreq }}
             <FloatLabel>
               <Select v-model="typeOfAccuracyFreq" :options="typeOfAccuracyFreqData.data" optionLabel="name" placeholder="Точность регулирования" class="w-full md:w-56" />
               <label for="serie">Точность регулирования</label>
@@ -213,7 +218,6 @@
         </div>
 
         <div class="field pt-5">
-          {{ ambientTemperature }}
             <FloatLabel>
               <Select v-model="ambientTemperature" :options="ambientTemperatureData.data" optionLabel="name" placeholder="Допустимая температура окружающей среды" class="w-full md:w-56" />
               <label for="serie">Допустимая температура окружающей среды</label>
@@ -221,7 +225,6 @@
         </div>
 
         <div class="field pt-5">
-          {{ levelIP }}
             <FloatLabel>
               <Select v-model="levelIP" :options="levelIPData.data" optionLabel="name" placeholder="Допустимая температура окружающей среды" class="w-full md:w-56" />
               <label for="serie">Уровень защиты</label>

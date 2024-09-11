@@ -10,10 +10,10 @@
     import FloatLabel from 'primevue/floatlabel';
 
     const router = useRouter()
-    const route = useRoute();
-    const data = ref<ISimpleData>({data:[], error: null, loading: true})
-    const props = defineProps(['url', 'id', 'title'])
-    const path = ref<string>('')    
+    const route  = useRoute();
+    const data   = ref<ISimpleData>({data:[], error: null, loading: true})
+    const props  = defineProps(['url', 'id', 'title'])
+    const path   = ref<string>('')    
 
 
     const submission = () => {
@@ -40,14 +40,14 @@
     <div v-else class="pt-5">
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="id" v-model="data.data.id" disabled class="w-full"/>
+                <InputText id="id" v-model="data.data[0].id" disabled class="w-full"/>
                 <label for="id">id</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.name" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].name" disabled class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref } from 'vue' 
   import { useFetch } from '@/api/useFetch';
-  import { type ISimpleData, type IInvOptionData, type IUserInvConfigData, type IUserData, ICompanyUsersData, ICompanyData } from '@/interfaces.js';
+  import type { ISimpleData, IInvOptionData, IUserInvConfigData, IUserData, ICompanyUsersData, ICompanyData } from '@/interfaces.js';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import { RouterLink } from 'vue-router';
@@ -48,19 +48,21 @@
 
     users.value.data.map(item => userNames.value.push(item.first_name))
 
-    saveLog(8, '')
-
     loading.value = false
+
+    saveLog(8, '')
   }
 
-  function getOptionNames<String>(selectedOptions:String) {
-    const optionDict = ref<String[]>([])
-    let result: String = ''
-    optionDict.value = JSON.parse(selectedOptions)
-    optionDict.value.map(item => {
-      result = result + getValueFromDictionary(options.value.data, item) + '<br/>'
-    })
-    return(result)
+  function getOptionNames<String>(selectedOptions:string) {
+    let result: string = ''
+    if (selectedOptions.length>2) {
+      const optionDict = ref<string[]>([])
+      optionDict.value = JSON.parse(selectedOptions)
+      optionDict.value.map((item : string) => {
+        result = result + getValueFromDictionary(options.value.data, Number(item)) + '<br/>'
+      })
+    }
+    return result
   }
 
   function getCompanyName<String>(userId: number) {
@@ -167,7 +169,8 @@
         </Column>
         <Column field="options" header="Опции" width="">
           <template #body="{ data }" >
-              <div v-html="getOptionNames(data.options)"></div>
+            {{ data.options }}
+              <!-- <div v-html="getOptionNames(data.options)"></div> -->
           </template>
         </Column>
         <Column header="Дата конфигурации" field="date" sortable width="">

@@ -5,21 +5,16 @@
     import AxiosInstance from '@/api/axiosInstance';
     import type { IUserDiscountData, ISimpleData, ISimpleDictionary, IUser, IUserData } from '@/interfaces';
     import Button from 'primevue/button';
-    import InputNumber from 'primevue/inputnumber';
-    import InputText from 'primevue/inputtext';
-    import Listbox  from 'primevue/listbox';
     import FloatLabel from 'primevue/floatlabel';
     import Select from 'primevue/select';
     import Toast from 'primevue/toast';
-    import AutoComplete from 'primevue/autocomplete';
-    import { useToast } from "primevue/usetoast";
 
     const router          = useRouter()
-    const data            = ref<IUserDiscountData>([])
-    const users           = ref<IUserData>([])
-    const user            = ref<IUser>()
-    const groups          = ref<ISimpleData>([])
-    const group           = ref<ISimpleDictionary>()
+    const data            = ref<IUserDiscountData>({data:[], error:null, loading: false})
+    const users           = ref<IUserData>({data:[], error:null, loading: false})
+    const user            = ref<IUser>({id:0, username: '', password: '', first_name : '', last_name: '', email: '', is_staff: false, is_active: false, is_superuser: false})
+    const groups          = ref<ISimpleData>({data:[], error:null, loading: false})
+    const group           = ref<ISimpleDictionary>({name: '', id: 0})
     const loading         = ref<boolean>(true)
     const saving          = ref<boolean>(false)
 
@@ -30,8 +25,8 @@
 
         const formData = new FormData();        
 
-        formData.append("user",  user.value.id)
-        formData.append("group", group.value.id)
+        formData.append("user",  String(user.value.id))
+        formData.append("group", String(group.value.id))
 
         const res = await AxiosInstance.post(url, formData, config)
           .then(function(response) {

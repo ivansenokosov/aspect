@@ -1,19 +1,14 @@
 <script setup lang="ts">
   import { ref } from 'vue' 
   import { useFetch } from '@/api/useFetch';
-  import { RouterLink } from 'vue-router';
   import { getValueFromDictionary } from '@/api/getValueFromDictionary';
-  import { FilterMatchMode } from '@primevue/core/api';
-  import { IInvSerieData, ISimpleData, type IInvInputOuptputData } from '@/interfaces.js';
+  import type { ISimpleData, IInvInputOuptputData } from '@/interfaces.js';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
-  import Button from 'primevue/button';
-  import InputText from 'primevue/inputtext';
-  import Select from 'primevue/select';
   
-  const data = ref<IInvInputOuptputData>({data:[], error: null, loading: true}) // Входы/Выходы
-  const signal = ref<ISimpleData>({data:[], error: null, loading: true}) // Сигналы
-  const serie = ref<ISimpleData>({data:[], error: null, loading: true}) // Серии
+  const data    = ref<IInvInputOuptputData>({data:[], error: null, loading: true}) // Входы/Выходы
+  const signal  = ref<ISimpleData>({data:[], error: null, loading: true}) // Сигналы
+  const serie   = ref<ISimpleData>({data:[], error: null, loading: true}) // Серии
   const loading = ref<boolean>(true)
 
   async function loadData() {

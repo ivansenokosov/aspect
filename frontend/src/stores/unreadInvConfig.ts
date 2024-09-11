@@ -3,11 +3,11 @@ import { defineStore } from 'pinia'
 import { useBaseUrl } from './baseUrl'
 
 export const useUnreadInvConfigs = defineStore('unreadInvConfigs', () => {
-  const unreadInvConfigs = ref<Number>(1)
+  const unreadInvConfigs = ref<number>(1)
   const baseUrl = useBaseUrl()
 
   async function count() {
-    const data = ref(null);
+    const data = ref<any>(null);
     
     try {
       const res = await fetch(baseUrl.baseUrl + 'userconfigs/CountUnread', {});

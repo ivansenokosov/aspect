@@ -34,15 +34,15 @@
 
         const formData = new FormData();        
 
-        formData.append("name", data.value.data.name)
-        formData.append("inn", data.value.data.inn)
-        formData.append("address", data.value.data.address)
-        formData.append("agreement", data.value.data.agreement)
-        formData.append("info", data.value.data.info)
-        formData.append("phone", data.value.data.phone)
-        formData.append("email", data.value.data.email)
+        formData.append("name", data.value.data[0].name)
+        formData.append("inn", data.value.data[0].inn)
+        formData.append("address", data.value.data[0].address)
+        formData.append("agreement", data.value.data[0].agreement)
+        formData.append("info", data.value.data[0].info)
+        formData.append("phone", data.value.data[0].phone)
+        formData.append("email", data.value.data[0].email)
 
-        logo.value && formData.append("logo", logo.value.file_blob, logo.value.file_name)
+        logo.value && logo.value.file_blob && formData.append("logo", logo.value.file_blob, String(logo.value.file_name))
 
 
         const res = await AxiosInstance.put(url, formData, config)
@@ -73,8 +73,8 @@
         })
 
 
-        if (data.value.data.logo) {
-            logo.value = await loadFile(baseUrl.baseUrl + data.value.data.logo)
+        if (data.value.data[0].logo) {
+            logo.value = await loadFile(baseUrl.baseUrl + data.value.data[0].logo)
         }
 
     }
@@ -96,56 +96,56 @@
 
                 <div class="field pt-5">
                     <div class="width:100%"><h3 class="font-semibold">Логотип</h3></div>
-                    <img v-if="logo" v-bind:src="logo.file_base64data" width="350">
+                    <img v-if="logo" v-bind:src="String(logo.file_base64data)" width="350">
                     <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
                     <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" customUpload @uploader="upload_logo" :auto="true" chooseLabel="Выбрать" />
                 </div>
                 
                 <div class="field pt-5">
                     <FloatLabel>
-                        <InputText id="title" v-model="data.data.name" class="w-full"/>
+                        <InputText id="title" v-model="data.data[0].name" class="w-full"/>
                         <label for="title">Наименование</label>
                     </FloatLabel>
                 </div>
 
                 <div class="field pt-5">
                     <FloatLabel>
-                        <InputText id="title" v-model="data.data.inn" class="w-full"/>
+                        <InputText id="title" v-model="data.data[0].inn" class="w-full"/>
                         <label for="title">ИНН</label>
                     </FloatLabel>
                 </div>
 
                 <div class="field pt-5">
                     <FloatLabel>
-                        <InputText id="title" v-model="data.data.email" class="w-full"/>
+                        <InputText id="title" v-model="data.data[0].email" class="w-full"/>
                         <label for="title">email</label>
                     </FloatLabel>
                 </div>
 
                 <div class="field pt-5">
                     <FloatLabel>
-                        <InputMask id="title" v-model="data.data.phone"  mask="+7 (999) 999-99-99" fluid  class="w-full"/>
+                        <InputMask id="title" v-model="data.data[0].phone"  mask="+7 (999) 999-99-99" fluid  class="w-full"/>
                         <label for="title">Телефон</label>
                     </FloatLabel>
                 </div>
 
                 <div class="field pt-5">
                     <FloatLabel>
-                        <InputText id="title" v-model="data.data.address" class="w-full"/>
+                        <InputText id="title" v-model="data.data[0].address" class="w-full"/>
                         <label for="title">Адрес</label>
                     </FloatLabel>
                 </div>
 
                 <div class="field pt-5">
                     <FloatLabel>
-                        <InputText id="title" v-model="data.data.agreement" class="w-full"/>
+                        <InputText id="title" v-model="data.data[0].agreement" class="w-full"/>
                         <label for="title">Договор</label>
                     </FloatLabel>
                 </div>
 
                 <div class="field pt-5">
                     <FloatLabel>
-                        <InputText id="title" v-model="data.data.info" class="w-full"/>
+                        <InputText id="title" v-model="data.data[0].info" class="w-full"/>
                         <label for="title">Примечение</label>
                     </FloatLabel>
                 </div>

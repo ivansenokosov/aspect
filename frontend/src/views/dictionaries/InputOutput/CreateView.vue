@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, ISimpleDictionary, IInvSerie, IInvOptionData, IItemData } from '@/interfaces';
+    import type { ISimpleData, ISimpleDictionary, IInvSerie, IInvOptionData, IItemData, IItem } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
@@ -17,10 +17,12 @@
     const invOption       = ref<IInvOptionData>({data:[], error: null, loading: true})
     const typeOfOption    = ref<ISimpleData>({data:[], error: null, loading: true})
     const items           = ref<IItemData>({data:[], error: null, loading: true})
+    const itemsDisplay    = ref<IItem[]>([]);
+
 
     const optionForm      = ref<ISimpleDictionary>({name: '', id: 0})
     const seriesForm      = ref<IInvSerie[]>([])
-    const itemForm        = ref<IItem>()    
+    const itemForm        = ref<IItem>({id: 0, type: 0, name: '', quantity: 0, waiting_period : 0})    
 
     const loading         = ref<boolean>(true)
 
@@ -39,12 +41,12 @@
 
         const formData = new FormData();        
 
-        formData.append("item",        itemForm.value.id)
-        formData.append("name",        invOption.value.data.name)
-        formData.append("short_title", invOption.value.data.short_title)
-        formData.append("full_title",  invOption.value.data.full_title)
-        formData.append("series",      seriesStr)
-        formData.append("option",      optionForm.value.id)
+        formData.append("item",        String(itemForm.value.id))
+        formData.append("name",        invOption.value.data[0].name)
+        formData.append("short_title", invOption.value.data[0].short_title)
+        formData.append("full_title",  invOption.value.data[0].full_title)
+        formData.append("series",      String(seriesStr))
+        formData.append("option",      String(optionForm.value.id))
 
         const res = await AxiosInstance.post(url, formData, config)
           .then(function(response) {
@@ -56,8 +58,7 @@
         saving.value = false
     }
 
-    const itemsDisplay = ref([]);
-    const search = (event) => {
+    const search = (event:any) => {
         itemsDisplay.value = event.query ? items.value.data.filter((item) => item.id.toString().includes(event.query.toString())) : items.value.data;
     }    
 
@@ -100,21 +101,21 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.name" class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].name" class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.full_title" class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].full_title" class="w-full"/>
                 <label for="title">Наименование полное</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.short_title" class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].short_title" class="w-full"/>
                 <label for="title">Наименование короткое</label>
             </FloatLabel>
         </div>

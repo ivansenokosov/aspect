@@ -1,6 +1,9 @@
 <script setup lang="ts">
-    import { ref } from 'vue'
+    import { ref, computed } from 'vue'
     import { useRouter } from 'vue-router'
+    import { Form, Field, ErrorMessage  } from 'vee-validate';
+    import { useForm } from 'vee-validate';
+
     import AxiosInstance from '@/api/axiosInstance';
     import type { IUser } from '@/interfaces';
     import Button from 'primevue/button';
@@ -9,13 +12,29 @@
     import Checkbox from 'primevue/checkbox';
     import Password from 'primevue/password';
     import { useUserStore } from '@/stores/user';
+    import * as Yup from 'yup';    
 
     const router = useRouter()
     const user   = useUserStore()
+    // const { handleSubmit, setFieldError, setErrors } = useForm();
     const data   = ref<IUser>({username:'', password:'', first_name:'', last_name:'', email:'', is_active:true, is_staff:false, is_superuser: false})
     const saving = ref<boolean>(false)
 
-    const submission = async () => {
+    const schema = computed(() => { //Yup.object().shape({
+        return Yup.object({
+        username: Yup.string().required('Укажите имя пользователя'),
+        password: Yup.string().required('Укажите пароль'),
+        email: Yup.string().required('Укажите имейл').email('Это не имейл'),
+    });
+    })    
+
+    async function submission (values : any, { setErrors }:any) {
+
+        const { username, password } = values;
+        console.log(values)
+
+        console.log(username, password)
+
         saving.value = true
         const url:string =  'Users/' 
         const config = { headers: { 'content-type': 'application/json', }, };
@@ -25,6 +44,7 @@
           router.push('/dictionaries/Users/Update/' + response.data.id + '/')
         }).catch(function(error) {
           console.log(error);
+          setErrors({ apiError: error })
         })
         saving.value = false
     }
@@ -34,34 +54,55 @@
 <template>
     <h1 class="pt-5">Пользователь. Создание</h1>
 
-
+    <Form @submit="submission" :validation-schema="schema" v-slot="{ errors, isSubmitting }">
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="username" v-model="data.username" class="w-full"/>
-                <label for="title">Логин</label>
+                <Field name="username" v-slot="{ field, handleChange }">
+                    <InputText name="username" v-model="field.value" @change="handleChange" :invalid="errors.username" class="w-full"/>
+                </Field>
+                <label for="username">Логин</label>
             </FloatLabel>
+            <div class="text-red-500">{{errors.username}}</div>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <Password id="password" v-model="data.password" class="w-full"/>
-                <label for="title">Пароль</label>
+                <Field name="password" v-slot="{ field, handleChange }">
+                    <Password name="password" 
+                              v-model="field.value"
+                              @change="handleChange"
+                              :invalid="errors.password"
+                              promptLabel="Укажите пароль" 
+                              weakLabel="Слишком простой" 
+                              mediumLabel="Средней сложности" 
+                              strongLabel="Достаточно сложный" 
+                              toggleMask />
+                </Field>
+                <label for="password">Пароль</label>
             </FloatLabel>
+            <div class="text-red-500">{{errors.password}}</div>          
+
         </div>
 
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="first_name" v-model="data.first_name" class="w-full"/>
-                <label for="title">Имя</label>
+                <Field name="first_name" v-slot="{ field, handleChange }">
+                    <InputText name="first_name" v-model="field.value"  @change="handleChange" :invalid="errors.first_name" class="w-full"/>
+                </Field>
+                <label for="first_name">Имя</label>
             </FloatLabel>
+            <div class="text-red-500">{{errors.first_name}}</div>     
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="email" v-model="data.email" class="w-full"/>
-                <label for="title">email</label>
+                <Field name="email" v-slot="{ field, handleChange }">
+                    <InputText name="email" v-model="field.value" :invalid="errors.email" @change="handleChange" class="w-full"/>
+                </Field>                                    
+                <label for="email">email</label>
             </FloatLabel>
+            <div class="text-red-500">{{errors.email}}</div>     
         </div>
 
         <div class="card flex flex-wrap justify-center gap-4">
@@ -81,12 +122,15 @@
             </div>
         </div>
 
-        <div class="flex flex-wrap justify-center gap-4 pt-5">
-            <RouterLink :to="`/dictionaries/Users/List`" rel="noopener">
-                <Button link label="Отменить" />
-            </RouterLink>
-            <Button label="Создать" severity="success" icon="pi pi-check" iconPos="right" @click="submission" :loading="saving"/>
-        </div>
-    </template>
+        <div v-if="errors.apiError" class="alert alert-danger mt-3 mb-0">{{errors.apiError}}</div>
+        
+    </Form>
 
+    <div class="flex flex-wrap justify-center gap-4 pt-5">
+        <RouterLink :to="`/dictionaries/Users/List`" rel="noopener">
+            <Button link label="Отменить" />
+        </RouterLink>
+        <Button label="Создать" severity="success" icon="pi pi-check" iconPos="right" @click="submission" :loading="saving"/>
+    </div>
+</template>
 

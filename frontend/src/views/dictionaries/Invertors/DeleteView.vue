@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, IInvSerieData, ISimpleDictionary } from '@/interfaces';
+    import type { ISimpleData, IInvSerieData, ISimpleDictionary, IInvertorData } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
@@ -11,9 +11,10 @@
     import Select from 'primevue/select';
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
+    import { useRouter } from 'vue-router';
 
-    const data            = ref<ISimpleData>({data:[], error: null, loading: true})
-//    const items           = 
+    const router          = useRouter()
+    const data            = ref<IInvertorData>({data:[], error: null, loading: true})
     const series          = ref<IInvSerieData>({data:[], error: null, loading: true})
     const invInputVoltage = ref<ISimpleData>({data:[], error: null, loading: true})
     const sizes           = ref<ISimpleData>({data:[], error: null, loading: true})
@@ -57,17 +58,17 @@
         invDC.value           = await useFetch('Inv_DC_drossel', {});
         invEMC.value          = await useFetch('Inv_EMC_drossel', {});
 
-        invSerieData.value        = series.value.data.filter(item => item.id === data.value.data.serie)[0]
-        invDCdata.value           = invDC.value.data.filter(item => item.id === data.value.data.type_of_dc_drossel)[0]
-        invEMCdata.value          = invEMC.value.data.filter(item => item.id === data.value.data.type_of_emc_drossel)[0]
-        invBreakModuleData.value  = invBreakModule.value.data.filter(item => item.id === data.value.data.type_of_break_module)[0]
-        invInputVoltageData.value = invInputVoltage.value.data.filter(item => item.id === data.value.data.input_voltage)[0]
-        invSizeData.value         = sizes.value.data.filter(item => item.id === data.value.data.size)[0]
+        invSerieData.value        = series.value.data.filter(item => item.id === data.value.data[0].serie)[0]
+        invDCdata.value           = invDC.value.data.filter(item => item.id === data.value.data[0].type_of_dc_drossel)[0]
+        invEMCdata.value          = invEMC.value.data.filter(item => item.id === data.value.data[0].type_of_emc_drossel)[0]
+        invBreakModuleData.value  = invBreakModule.value.data.filter(item => item.id === data.value.data[0].type_of_break_module)[0]
+        invInputVoltageData.value = invInputVoltage.value.data.filter(item => item.id === data.value.data[0].input_voltage)[0]
+        invSizeData.value         = sizes.value.data.filter(item => item.id === data.value.data[0].size)[0]
 
-        p_heavy_g.value = Number(data.value.data.p_heavy_g)
-        p_pumps_p.value = Number(data.value.data.p_pumps_p)
-        current_g.value = Number(data.value.data.current_g)
-        current_p.value = Number(data.value.data.current_p)
+        p_heavy_g.value = Number(data.value.data[0].p_heavy_g)
+        p_pumps_p.value = Number(data.value.data[0].p_pumps_p)
+        current_g.value = Number(data.value.data[0].current_g)
+        current_p.value = Number(data.value.data[0].current_p)
     }
     
     loadData()
@@ -84,14 +85,14 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputNumber id="id" v-model="data.data.id" disabled class="w-full"/>
+                <InputNumber id="id" v-model="data.data[0].id" disabled class="w-full"/>
                 <label for="id">id</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="item" v-model="data.data.item" disabled class="w-full"/>
+                <InputText id="item" v-model="data.data[0].item" disabled class="w-full"/>
                 <label for="id">item</label>
             </FloatLabel>
         </div>
@@ -99,7 +100,7 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="data.data.name" disabled class="w-full"/>
+                <InputText id="title" v-model="data.data[0].name" disabled class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>

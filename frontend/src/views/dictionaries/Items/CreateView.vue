@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, ISimpleDictionary, IInvSerie, IInvOptionData, IItemData } from '@/interfaces';
+    import type { ISimpleData, ISimpleDictionary, IInvSerie, IInvOptionData, IItemData, IItem } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
@@ -20,7 +20,7 @@
 
     const optionForm      = ref<ISimpleDictionary>({name: '', id: 0})
     const seriesForm      = ref<IInvSerie[]>([])
-    const itemForm        = ref<IItem>()    
+    const itemForm        = ref<IItem>({id:0, type: 0, name: '', quantity: 0, waiting_period: 0})    
 
     const loading         = ref<boolean>(true)
 
@@ -29,50 +29,26 @@
     const toast = useToast(); 
 
     const submission = async () => {
-        saving.value = true
-        const url:string =  'Inv_options/'
-        const config = { headers: { 'content-type': 'application/json', }, };
-        var seriesStr : String = ''
 
-        seriesForm.value.map(item => seriesStr += item.id + ',')
-        seriesStr = seriesStr.substring(0, seriesStr.length - 1)
-
-        const formData = new FormData();        
-
-        formData.append("item",        itemForm.value.id)
-        formData.append("name",        invOption.value.data.name)
-        formData.append("short_title", invOption.value.data.short_title)
-        formData.append("full_title",  invOption.value.data.full_title)
-        formData.append("series",      seriesStr)
-        formData.append("option",      optionForm.value.id)
-
-        const res = await AxiosInstance.post(url, formData, config)
-          .then(function(response) {
-          // console.log(response);
-          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
-        }).catch(function(error) {
-          console.log(error);
-        })
-        saving.value = false
     }
 
-    const itemsDisplay = ref([]);
-    const search = (event) => {
-        itemsDisplay.value = event.query ? items.value.data.filter((item) => item.id.toString().includes(event.query.toString())) : items.value.data;
-    }    
+    // const itemsDisplay = ref([]);
+    // const search = (event) => {
+    //     itemsDisplay.value = event.query ? items.value.data.filter((item) => item.id.toString().includes(event.query.toString())) : items.value.data;
+    // }    
 
-    async function loadData() {
-        series.value               = await useFetch('Inv_series_dict', {});
-        typeOfOption.value         = await useFetch('Type_of_options', {});
-        items.value                = await useFetch('Items', {});
-        loading.value = false
-    }
+    // async function loadData() {
+    //     series.value               = await useFetch('Inv_series_dict', {});
+    //     typeOfOption.value         = await useFetch('Type_of_options', {});
+    //     items.value                = await useFetch('Items', {});
+    //     loading.value = false
+    // }
     
-    loadData()
+    // loadData()
 </script>
 
 <template>
-    <Toast />
+    <!-- <Toast />
 
     <h1 class="pt-5">Опция для преобразователя частоты. Создание</h1>
     <div v-if="loading">
@@ -100,21 +76,21 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.name" class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].name" class="w-full"/>
                 <label for="title">Наименование</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.full_title" class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].full_title" class="w-full"/>
                 <label for="title">Наименование полное</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="title" v-model="invOption.data.short_title" class="w-full"/>
+                <InputText id="title" v-model="invOption.data[0].short_title" class="w-full"/>
                 <label for="title">Наименование короткое</label>
             </FloatLabel>
         </div>
@@ -125,7 +101,7 @@
             </RouterLink>
             <Button label="Создать" severity="success" icon="pi pi-check" iconPos="right" @click="submission" :loading="saving"/>
         </div>
-    </div>
+    </div> -->
 </template>
 
 
