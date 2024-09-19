@@ -2,70 +2,43 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, ISimpleDictionary, IInvSerie, IInvOptionData, IItemData, IItem } from '@/interfaces';
+    import type { IDocument, ISimpleDictionary, IInvInputOuptput } from '@/interfaces';
     import Button from 'primevue/button';
-    import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';
-    import Select from 'primevue/select';
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
-    import Listbox from 'primevue/listbox';
-    import AutoComplete from 'primevue/autocomplete';
+    import MyAutocomplete from '@/components/MyAutocomplete.vue';
+    import { useRouter } from 'vue-router';
 
-    const series          = ref<ISimpleData>({data:[], error: null, loading: true})
-    const invOption       = ref<IInvOptionData>({data:[], error: null, loading: true})
-    const typeOfOption    = ref<ISimpleData>({data:[], error: null, loading: true})
-    const items           = ref<IItemData>({data:[], error: null, loading: true})
-    const itemsDisplay    = ref<IItem[]>([]);
+    const data    = ref<IInvInputOuptput>({id:0, serie:0, signal:0, quantity:0, info:''}) // Входы/Выходы
+    const signals = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) // Сигналы
+    const series  = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) // Серии
+    const signal  = ref<number>(0)
+    const serie   = ref<number>(0)
+    const loading = ref<boolean>(true)
 
-
-    const optionForm      = ref<ISimpleDictionary>({name: '', id: 0})
-    const seriesForm      = ref<IInvSerie[]>([])
-    const itemForm        = ref<IItem>({id: 0, type: 0, name: '', quantity: 0, waiting_period : 0})    
-
-    const loading         = ref<boolean>(true)
-
-    const props = defineProps(['id'])
-    const saving = ref<boolean>(false)
-    const toast = useToast(); 
+    const saving  = ref<boolean>(false)
+    const toast   = useToast(); 
+    const router  = useRouter()
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Inv_options/'
+        const url:string =  'Inv_spec_of_in_out/'
         const config = { headers: { 'content-type': 'application/json', }, };
-        var seriesStr : String = ''
-
-        seriesForm.value.map(item => seriesStr += item.id + ',')
-        seriesStr = seriesStr.substring(0, seriesStr.length - 1)
-
-        const formData = new FormData();        
-
-        formData.append("item",        String(itemForm.value.id))
-        formData.append("name",        invOption.value.data[0].name)
-        formData.append("short_title", invOption.value.data[0].short_title)
-        formData.append("full_title",  invOption.value.data[0].full_title)
-        formData.append("series",      String(seriesStr))
-        formData.append("option",      String(optionForm.value.id))
-
-        const res = await AxiosInstance.post(url, formData, config)
+        const res = await AxiosInstance.post(url, {"serie": serie.value, "signal": signal.value, "quantity": data.value.quantity, info: ''}, config)
           .then(function(response) {
-          // console.log(response);
-          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
+          router.push('/dictionaries/InputOutput/List')
         }).catch(function(error) {
           console.log(error);
         })
         saving.value = false
     }
 
-    const search = (event:any) => {
-        itemsDisplay.value = event.query ? items.value.data.filter((item) => item.id.toString().includes(event.query.toString())) : items.value.data;
-    }    
 
     async function loadData() {
-        series.value               = await useFetch('Inv_series_dict', {});
-        typeOfOption.value         = await useFetch('Type_of_options', {});
-        items.value                = await useFetch('Items', {});
+        signals.value    = await useFetch('Inv_type_of_signals', {} );
+        series.value     = await useFetch('Inv_series_dict', {} );
         loading.value = false
     }
     
@@ -75,53 +48,28 @@
 <template>
     <Toast />
 
-    <h1 class="pt-5">Опция для преобразователя частоты. Создание</h1>
+    <h1 class="pt-5">Входы/выходы управления. Создание</h1>
     <div v-if="loading">
         loading ...
     </div>
     <div v-else class="pt-5">
         <div class="field pt-5">
-            <FloatLabel>
-                <AutoComplete v-model="itemForm" dropdown :suggestions="itemsDisplay" optionLabel="id" placeholder="item" @complete="search" class="w-full md:w-56" />
-                <label for="item">item</label>
-            </FloatLabel>
+            <MyAutocomplete v-model="serie" :value="serie" label="Серия" :options="series.data"/>
         </div>
 
         <div class="field pt-5">
-              <label for="series">Серии</label>
-              <Listbox v-model="seriesForm" :options="series.data" multiple optionLabel="name" class="w-full md:w-56" listStyle="max-height:250px"/>
+            <MyAutocomplete v-model="signal" :value="signal" label="Сигнал" :options="signals.data"/>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <Select v-model="optionForm" :options="typeOfOption.data" optionLabel="name" placeholder="Тип" class="w-full md:w-56" />
-              <label for="id">Тип</label>
-            </FloatLabel>
-        </div>
-
-        <div class="field pt-5">
-            <FloatLabel>
-                <InputText id="title" v-model="invOption.data[0].name" class="w-full"/>
-                <label for="title">Наименование</label>
-            </FloatLabel>
-        </div>
-
-        <div class="field pt-5">
-            <FloatLabel>
-                <InputText id="title" v-model="invOption.data[0].full_title" class="w-full"/>
-                <label for="title">Наименование полное</label>
-            </FloatLabel>
-        </div>
-
-        <div class="field pt-5">
-            <FloatLabel>
-                <InputText id="title" v-model="invOption.data[0].short_title" class="w-full"/>
-                <label for="title">Наименование короткое</label>
+                <InputText id="title" v-model="data.quantity" class="w-full"/>
+                <label for="title">Количество</label>
             </FloatLabel>
         </div>
 
         <div class="flex flex-wrap justify-center gap-4 pt-5">
-            <RouterLink :to="`/dictionaries/InvOptions/List`" rel="noopener">
+            <RouterLink to="/dictionaries/InputOutput/List" rel="noopener">
                 <Button link label="Отменить" />
             </RouterLink>
             <Button label="Создать" severity="success" icon="pi pi-check" iconPos="right" @click="submission" :loading="saving"/>

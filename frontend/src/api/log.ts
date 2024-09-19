@@ -9,7 +9,7 @@ const user    = useUserStore()
 const baseUrl = useBaseUrl()
 
 export async function saveLog(action: number, params: string) {
-    if (user.userId>0) {    
+    if (user.isUser()) {    
         const date    = Date.now()
         const logData : ILog = {user: user.userId, action: action, params: params}
         const config = { headers: { 'content-type': 'application/json', }, };

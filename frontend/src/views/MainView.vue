@@ -1,19 +1,19 @@
 <script setup lang="ts">
   import {ref} from 'vue'
-  import type { ISimpleData, IPower } from '@/interfaces';
+  import type { IPower, ISimpleDictionary } from '@/interfaces';
   import { saveLog } from '@/api/log';
 
   import SelectSimpleList from '@/components/SelectSimpleList.vue';
   import InventorsList from '@/components/InventorsList.vue';
   import SelectPower from '@/components/SelectPower.vue';
 
-  const invInputVolage = ref<ISimpleData[]>()
-  const invTypeOfControl = ref<ISimpleData[]>()
-  const invVariantOfControl = ref<ISimpleData[]>()
-  const invEMC = ref<ISimpleData[]>()
-  const invDC = ref<ISimpleData[]>()
-  const invBreak = ref<ISimpleData[]>()
-  const invPower = ref<IPower>({power: '0', error: 10})
+  const invInputVolage      = ref<ISimpleDictionary[]>([])
+  const invTypeOfControl    = ref<ISimpleDictionary[]>([])
+  const invVariantOfControl = ref<ISimpleDictionary[]>([])
+  const invEMC              = ref<ISimpleDictionary[]>([])
+  const invDC               = ref<ISimpleDictionary[]>([])
+  const invBreak            = ref<ISimpleDictionary[]>([])
+  const invPower            = ref<IPower>({power: '0', error: 10})
 
   saveLog(7, '')
 </script>

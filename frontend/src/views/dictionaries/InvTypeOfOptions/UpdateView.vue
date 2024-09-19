@@ -9,6 +9,6 @@
 </script>
 
 <template>
-  <UniversalUpdate url="Level_IP" :id="props.id" title="Уровень защиты"/>
+  <UniversalUpdate url="Type_of_options" :id="props.id" title="Тип опции"/>
 </template>
 

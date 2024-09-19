@@ -2,20 +2,20 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, ISimpleDictionary, IFile, IInvSerie } from '@/interfaces';
+    import type { IDocument, ISimpleDictionary, IFile, IInvSerie } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';
     import Select from 'primevue/select';
-    import Toast from 'primevue/toast';
     import Textarea from 'primevue/textarea';
     import FileUpload from 'primevue/fileupload';
-    import { useToast } from "primevue/usetoast";
     import { useBaseUrl } from '@/stores/baseUrl'
     import uploadFile from '@/api/uploadFile';
+    import { useRouter } from 'vue-router';
 
-    const baseUrl = useBaseUrl()
+    const baseUrl                = useBaseUrl()
+    const router                 = useRouter()
 
     const data                   = ref<IInvSerie>({id:0, name: '', 
                                                    description: '', 
@@ -31,33 +31,29 @@
                                                    max_power: '',
                                                    photo: '',
                                                    schema: ''})
-    const manufactoryData        = ref<ISimpleData>({data:[], error: null, loading: true})
-    const outputVoltageData      = ref<ISimpleData>({data:[], error: null, loading: true})
-    const typeOfControlData      = ref<ISimpleData>({data:[], error: null, loading: true})
-    const typeOfPanelData        = ref<ISimpleData>({data:[], error: null, loading: true})
-    const typeOfOverloadData     = ref<ISimpleData>({data:[], error: null, loading: true})
-    const typeOfAccuracyFreqData = ref<ISimpleData>({data:[], error: null, loading: true})
-    const ambientTemperatureData = ref<ISimpleData>({data:[], error: null, loading: true})
-    const levelIPData            = ref<ISimpleData>({data:[], error: null, loading: true})
+    const manufactoryData        = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const outputVoltageData      = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const typeOfControlData      = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const typeOfPanelData        = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const typeOfOverloadData     = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const typeOfAccuracyFreqData = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const ambientTemperatureData = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const levelIPData            = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
 
-    const manufactory        = ref<ISimpleDictionary>({name:'', id:0})
-    const outputVoltage      = ref<ISimpleDictionary>({name:'', id:0})
-    const typeOfControl      = ref<ISimpleDictionary>({name:'', id:0})
-    const typeOfPanel        = ref<ISimpleDictionary>({name:'', id:0})
-    const typeOfOverload     = ref<ISimpleDictionary>({name:'', id:0})
-    const typeOfAccuracyFreq = ref<ISimpleDictionary>({name:'', id:0})
-    const ambientTemperature = ref<ISimpleDictionary>({name:'', id:0})
-    const levelIP            = ref<ISimpleDictionary>({name:'', id:0})
-    const min_power          = ref<Number>()
-    const max_power          = ref<Number>()
-    const photo              = ref<IFile>()
-    const schema             = ref<IFile>()
-
-
-    const props = defineProps(['id'])
-    const saving = ref<boolean>(false)
-    const toast = useToast(); 
-    const loading = ref<boolean>(true)
+    const manufactory            = ref<ISimpleDictionary>({name:'', id:0})
+    const outputVoltage          = ref<ISimpleDictionary>({name:'', id:0})
+    const typeOfControl          = ref<ISimpleDictionary>({name:'', id:0})
+    const typeOfPanel            = ref<ISimpleDictionary>({name:'', id:0})
+    const typeOfOverload         = ref<ISimpleDictionary>({name:'', id:0})
+    const typeOfAccuracyFreq     = ref<ISimpleDictionary>({name:'', id:0})
+    const ambientTemperature     = ref<ISimpleDictionary>({name:'', id:0})
+    const levelIP                = ref<ISimpleDictionary>({name:'', id:0})
+    const min_power              = ref<number>()
+    const max_power              = ref<number>()
+    const photo                  = ref<IFile>()
+    const schema                 = ref<IFile>()
+    const saving                 = ref<boolean>(false)
+    const loading                = ref<boolean>(true)
 
     const submission = async () => {
         saving.value = true
@@ -84,8 +80,7 @@
 
         const res = await AxiosInstance.post(url, formData, config)
           .then(function(response) {
-          console.log(response);
-          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
+            router.push('Inv_series/' + response.data.id)
         }).catch(function(error) {
           console.log(error);
         })
@@ -115,7 +110,6 @@
 </script>
 
 <template>
-    <Toast />
 
     <h1 class="pt-5">Серия преобразователя частоты. Создание</h1>
     <div v-if="loading">

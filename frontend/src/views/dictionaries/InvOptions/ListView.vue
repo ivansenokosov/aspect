@@ -2,31 +2,21 @@
   import { ref } from 'vue' 
   import { useFetch } from '@/api/useFetch';
   import { RouterLink } from 'vue-router';
-  import { getValueFromDictionary } from '@/api/getValueFromDictionary';
   import { FilterMatchMode } from '@primevue/core/api';
-  import type { IInvOptionData, IInvSerieData } from '@/interfaces.js';
+  import type { IDocument, IInvOption, IInvSerie } from '@/interfaces.js';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import Button from 'primevue/button';
   import InputText from 'primevue/inputtext';
   import Select from 'primevue/select';
+  import { getSerieNames } from '@/api/utils';
   
-  const data = ref<IInvOptionData>({data:[], error: null, loading: true}) // Опции
-  const series = ref<IInvSerieData>({data:[], error: null, loading: true}) // Серии
-  const optionType = ref<IInvSerieData>({data:[], error: null, loading: true}) // Типы опций
-  const optionTypeStr = ref<String[]>([])
-  const loading = ref<boolean>(true)
+  const data          = ref<IDocument<IInvOption>>({data:[], error: null, loading: true}) // Опции
+  const series        = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true}) // Серии
+  const optionType    = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true}) // Типы опций
+  const optionTypeStr = ref<string[]>([])
+  const loading       = ref<boolean>(true)
 
-  function getSerieNames(seriesStr:string) {
-    let seriesNames:String = ''
-    var temp = new Array();
-    temp = seriesStr.split(",");
-    for (let i=0; i<temp.length; i++) {
-      seriesNames += getValueFromDictionary(series.value.data, Number(temp[i])) + ', '
-    }
-    seriesNames = seriesNames.substring(0, seriesNames.length - 2)
-    return seriesNames
-  }
 
   async function loadData() {
     data.value       = await useFetch('Inv_options', {} );
@@ -111,7 +101,7 @@
 
         <Column field="series" header="Серии" width="">
           <template #body="{ data }">
-            {{ getSerieNames(data.series) }}
+            {{ getSerieNames(series.data, data.series) }}
               <!-- {{ data.series}} -->
           </template>
         </Column>

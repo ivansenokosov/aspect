@@ -5,9 +5,9 @@ import { useLoginStore } from '@/stores/login'
 
 
 const checkAuth = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
-  const userStore = useUserStore()
+  const user = useUserStore()
   const loginModal = useLoginStore()
-  if (!userStore.userId) {
+  if (!user.isUser()) {
     loginModal.visible = true
   } else {
     next() // Пусть идёт, куда хотел
@@ -57,14 +57,6 @@ const router = createRouter({
       component: () => import('../views/ParseXSLX.vue'),
       beforeEnter: checkAuth,
     },
-
-
-    {
-      path: '/auth',
-      name: 'auth',
-      component: () => import('../views/AuthView.vue')
-    },
-
 
     // ######################### справочники #########################
     // ------------------------- входные напряижения -----------------
@@ -157,29 +149,6 @@ const router = createRouter({
       path: '/dictionaries/LevelIP/Delete/:id',
       name: 'LevelIPDelete',
       component: () => import('../views/dictionaries/LevelIP/DeleteView.vue'),
-      props: true        
-    },
-    // ------------------------- Перегрузки ----------------- 
-    {
-      path: '/dictionaries/InvTypeOfOverload/List',
-      name: 'InvTypeOfOverloadList',
-      component: () => import('../views/dictionaries/InvTypeOfOverload/ListView.vue')
-    },
-    {
-      path: '/dictionaries/InvTypeOfOverload/Update/:id',
-      name: 'InvTypeOfOverloadUpdate',
-      component: () => import('../views/dictionaries/InvTypeOfOverload/UpdateView.vue'),
-      props: true        
-    },
-    {
-      path: '/dictionaries/InvTypeOfOverload/Create',
-      name: 'InvTypeOfOverloadCreate',
-      component: () => import('../views/dictionaries/InvTypeOfOverload/CreateView.vue')
-    },
-    {
-      path: '/dictionaries/InvTypeOfOverload/Delete/:id',
-      name: 'InvTypeOfOverloadDelete',
-      component: () => import('../views/dictionaries/InvTypeOfOverload/DeleteView.vue'),
       props: true        
     },
     // ------------------------- Панели -----------------
@@ -558,6 +527,78 @@ const router = createRouter({
       props: true        
     },    
 
+    // ------------------------- Типы опций -----------------
+    {
+      path: '/dictionaries/InvTypeOfOptions/List',
+      name: 'InvTypeOfOptionsList',
+      component: () => import('../views/dictionaries/InvTypeOfOptions/ListView.vue')
+    },
+    {
+      path: '/dictionaries/InvTypeOfOptions/Update/:id',
+      name: 'InvTypeOfOptionsUpdate',
+      component: () => import('../views/dictionaries/InvTypeOfOptions/UpdateView.vue'),
+      props: true        
+    },
+    {
+      path: '/dictionaries/InvTypeOfOptions/Create',
+      name: 'InvTypeOfOptionsCreate',
+      component: () => import('../views/dictionaries/InvTypeOfOptions/CreateView.vue')
+    },
+    {
+      path: '/dictionaries/InvTypeOfOptions/Delete/:id',
+      name: 'InvTypeOfOptionsDelete',
+      component: () => import('../views/dictionaries/InvTypeOfOptions/DeleteView.vue'),
+      props: true        
+    },    
+
+    // ------------------------- Перегрузки -----------------
+    {
+      path: '/dictionaries/InvOverloads/List',
+      name: 'InvOverloadsList',
+      component: () => import('../views/dictionaries/InvOverloads/ListView.vue')
+    },
+    {
+      path: '/dictionaries/InvOverloads/Update/:id',
+      name: 'InvOverloadsUpdate',
+      component: () => import('../views/dictionaries/InvOverloads/UpdateView.vue'),
+      props: true        
+    },
+    {
+      path: '/dictionaries/InvOverloads/Create',
+      name: 'InvOverloadsCreate',
+      component: () => import('../views/dictionaries/InvOverloads/CreateView.vue')
+    },
+    {
+      path: '/dictionaries/InvOverloads/Delete/:id',
+      name: 'InvOverloadsDelete',
+      component: () => import('../views/dictionaries/InvOverloads/DeleteView.vue'),
+      props: true        
+    },    
+
+    // ------------------------- Способы управления для серии -----------------
+    {
+      path: '/dictionaries/InvTypeOfControls/List',
+      name: 'InvTypeOfControlsList',
+      component: () => import('../views/dictionaries/InvTypeOfControls/ListView.vue')
+    },
+    {
+      path: '/dictionaries/InvTypeOfControls/Update/:id',
+      name: 'InvTypeOfControlsUpdate',
+      component: () => import('../views/dictionaries/InvTypeOfControls/UpdateView.vue'),
+      props: true        
+    },
+    {
+      path: '/dictionaries/InvTypeOfControls/Create',
+      name: 'InvTypeOfControlsCreate',
+      component: () => import('../views/dictionaries/InvTypeOfControls/CreateView.vue')
+    },
+    {
+      path: '/dictionaries/InvTypeOfControls/Delete/:id',
+      name: 'InvTypeOfControlsDelete',
+      component: () => import('../views/dictionaries/InvTypeOfControls/DeleteView.vue'),
+      props: true        
+    },    
+
     // ------------------------- Действия логирования -----------------
     {
       path: '/dictionaries/Actions/List',
@@ -659,22 +700,22 @@ const router = createRouter({
     },    
 
     // ------------------------- Пользователи и скидки -----------------
-    {
-      path: '/invDiscounts/UserInvDiscounts/List',
-      name: 'invDiscountUserList',
-      component: () => import('../views/invDiscounts/UserInvDiscounts/ListView.vue')
-    },
-    {
-      path: '/invDiscounts/UserInvDiscounts/Update/:id',
-      name: 'invDiscountUserUpdate',
-      component: () => import('../views/invDiscounts/UserInvDiscounts/UpdateView.vue'),
-      props: true        
-    },
-    {
-      path: '/invDiscounts/UserInvDiscounts/Create',
-      name: 'invDiscountUserCreate',
-      component: () => import('../views/invDiscounts/UserInvDiscounts/CreateView.vue')
-    },
+    // {
+    //   path: '/invDiscounts/UserInvDiscounts/List',
+    //   name: 'invDiscountUserList',
+    //   component: () => import('../views/invDiscounts/UserInvDiscounts/ListView.vue')
+    // },
+    // {
+    //   path: '/invDiscounts/UserInvDiscounts/Update/:id',
+    //   name: 'invDiscountUserUpdate',
+    //   component: () => import('../views/invDiscounts/UserInvDiscounts/UpdateView.vue'),
+    //   props: true        
+    // },
+    // {
+    //   path: '/invDiscounts/UserInvDiscounts/Create',
+    //   name: 'invDiscountUserCreate',
+    //   component: () => import('../views/invDiscounts/UserInvDiscounts/CreateView.vue')
+    // },
 
   ]
 })

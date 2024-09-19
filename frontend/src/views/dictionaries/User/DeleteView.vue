@@ -1,35 +1,30 @@
 <script setup lang="ts">
-    import { ref } from 'vue'
+    import { onMounted, ref } from 'vue'
     import { useRouter } from 'vue-router';
     import { useFetch } from '@/api/useFetch';
-    import AxiosInstance from '@/api/axiosInstance';
-    import type { IUserData } from '@/interfaces';
+    import type { IDocument, IUser } from '@/interfaces';
     import Button from 'primevue/button';
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';
     import Toast from 'primevue/toast';
     import Checkbox from 'primevue/checkbox';
+    import { deleteData } from '@/api/dataActions';
 
     const router = useRouter()
-    const data   = ref<IUserData>({data:[], error: null, loading: true})
-
-    const props = defineProps(['id'])
+    const data   = ref<IDocument<IUser>>({data:[], error: null, loading: true})
+    const props  = defineProps(['id'])
 
     const submission = async () => {
         const url:string =  'Users/' + props.id + '/'
-        const config = { headers: { 'content-type': 'application/json', }, };
-
-        AxiosInstance.delete(url,{})
-                     .then((res) => {
-                        router.push('/dictionaries/Users/List')
-                     })
+        deleteData(url).then(() => {router.push('/dictionaries/Users/List')})    
     }
 
     async function loadData() {
         data.value            = await useFetch('Users/' + props.id, {});
     }
     
-    loadData()
+    onMounted(() => {loadData()})
+    
 </script>
 
 <template>

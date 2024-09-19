@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref } from 'vue' 
   import { useFetch } from '@/api/useFetch';
-  import type { ISimpleData, ISimpleDictionary } from '@/interfaces.js';
+  import type { IDocument, ISimpleDictionary } from '@/interfaces.js';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import { RouterLink, useRoute } from 'vue-router';
@@ -11,7 +11,7 @@
 
   const route       = useRoute();
   const props       = defineProps(['url','title'])
-  const data        = ref<ISimpleData>({data:[], error: null, loading: true}) 
+  const data        = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) 
   const dataDisplay = ref<ISimpleDictionary[]>([])
   const searchText  = ref<string>('')
   const path        = ref<string>('')

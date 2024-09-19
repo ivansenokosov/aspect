@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { RouterLink, useRouter, useRoute  } from 'vue-router'
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, ISimpleDictionary } from '@/interfaces';
+    import type { ISimpleDictionary } from '@/interfaces';
     import Button from 'primevue/button';
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';

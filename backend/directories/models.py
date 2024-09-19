@@ -288,7 +288,7 @@ class Inv_type_of_control(models.Model):
 class Inv_spec_of_in_out(models.Model):
     serie       = models.ForeignKey(to=Inv_series, on_delete = models.CASCADE)
     signal      = models.ForeignKey(to=Inv_type_of_signals, on_delete = models.CASCADE)
-    info        = models.CharField(max_length=50, blank=False, null = False, verbose_name='Описание входа')
+    info        = models.CharField(max_length=50, blank=True, null = True, verbose_name='Описание входа')
     quantity    = models.IntegerField(blank=False, null = False, verbose_name='Количество')
 
     class Meta:

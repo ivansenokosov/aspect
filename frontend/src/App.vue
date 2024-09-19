@@ -5,7 +5,7 @@
   document.title = 'Аспект';
 
   const user = useUserStore()
-  user.setRefValues()
+  user.checkIsAuth()  // проверка был ли пользователь уже авторизован
 </script>
 
 <template>

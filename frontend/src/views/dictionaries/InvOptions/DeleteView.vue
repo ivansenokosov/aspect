@@ -1,42 +1,32 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
-    import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, ISimpleDictionary, IInvSerie, IInvOptionData, IInvSerieData } from '@/interfaces';
+    import type { IDocument, ISimpleDictionary, IInvOption, IInvSerie } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';
     import Select from 'primevue/select';
-    import Toast from 'primevue/toast';
-    import { useToast } from "primevue/usetoast";
     import Listbox from 'primevue/listbox';
     import { useRouter } from 'vue-router';
+    import { deleteData } from '@/api/dataActions';
 
     const router          = useRouter()
-    const series          = ref<IInvSerieData>({data:[], error: null, loading: true})
-    const invOption       = ref<IInvOptionData>({data:[], error: null, loading: true})
-    const typeOfOption    = ref<ISimpleData>({data:[], error: null, loading: true})
-
+    const props           = defineProps(['id'])
+    const series          = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
+    const invOption       = ref<IDocument<IInvOption>>({data:[], error: null, loading: true})
+    const typeOfOption    = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
     const optionForm      = ref<ISimpleDictionary>({name: '', id: 0})
     const seriesForm      = ref<IInvSerie[]>([])
-
     const loading         = ref<boolean>(true)
-
-    const props = defineProps(['id'])
-    const saving = ref<boolean>(false)
-    const toast = useToast(); 
+    const saving          = ref<boolean>(false)
 
     const submission = async () => {
         saving.value = true
         const url:string =  'Inv_options/' + props.id + '/'
-        const config = { headers: { 'content-type': 'application/json', }, };
-
-
-        AxiosInstance.delete(url,{})
-                     .then((res) => {
-                        router.push('dictionaries/InvOptions/List')
-                     })
+        deleteData(url).then(() => {
+            router.push('dictionaries/InvOptions/List')
+        })
         saving.value = false
     }
 
@@ -55,8 +45,6 @@
 </script>
 
 <template>
-    <Toast />
-
     <h1 class="pt-5">Опция для преобразователя частоты. Удалить?</h1>
     <div v-if="loading">
         loading ...

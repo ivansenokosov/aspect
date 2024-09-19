@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Inv_type_of_overload" title="Перегрузки"/>
+  <UniversalList url="Type_of_options" title="Типы опций"/>
 </template>
 

@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, IInvSerieData, ISimpleDictionary, IInvertorData } from '@/interfaces';
+    import type { IDocument, IInvSerie, ISimpleDictionary, IInvertor } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
@@ -10,17 +10,17 @@
     import FloatLabel from 'primevue/floatlabel';
     import Select from 'primevue/select';
     import Toast from 'primevue/toast';
-    import { useToast } from "primevue/usetoast";
     import { useRouter } from 'vue-router';
+    import { deleteData } from '@/api/dataActions';
 
     const router          = useRouter()
-    const data            = ref<IInvertorData>({data:[], error: null, loading: true})
-    const series          = ref<IInvSerieData>({data:[], error: null, loading: true})
-    const invInputVoltage = ref<ISimpleData>({data:[], error: null, loading: true})
-    const sizes           = ref<ISimpleData>({data:[], error: null, loading: true})
-    const invBreakModule  = ref<ISimpleData>({data:[], error: null, loading: true})
-    const invDC           = ref<ISimpleData>({data:[], error: null, loading: true})
-    const invEMC          = ref<ISimpleData>({data:[], error: null, loading: true})
+    const data            = ref<IDocument<IInvertor>>({data:[], error: null, loading: true})
+    const series          = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
+    const invInputVoltage = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const sizes           = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invBreakModule  = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invDC           = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invEMC          = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
 
     const invDCdata           = ref<ISimpleDictionary>({name: '', id: 0})
     const invEMCdata          = ref<ISimpleDictionary>({name: '', id: 0})
@@ -35,18 +35,10 @@
     const current_p           = ref<number>(0)
 
     const props = defineProps(['id'])
-    const saving = ref<boolean>(false)
-    const toast = useToast(); 
-    const path = ref<string>('')      
 
     const submission = async () => {
         const url:string =  'Invertors/' + props.id + '/'
-        const config = { headers: { 'content-type': 'application/json', }, };
-
-        AxiosInstance.delete(url,{})
-                     .then((res) => {
-                        router.push('dictionaries/Invertors/List')
-                     })
+        deleteData(url)
     }
 
     async function loadData() {

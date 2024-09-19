@@ -4,7 +4,7 @@
   import { RouterLink } from 'vue-router';
   import { getValueFromDictionary } from '@/api/getValueFromDictionary';
   import { FilterMatchMode } from '@primevue/core/api';
-  import type { ISimpleData, IInvertorData, IInvSerieData } from '@/interfaces.js';
+  import type { IDocument, ISimpleDictionary, IInvertor, IInvSerie } from '@/interfaces.js';
   
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
@@ -13,11 +13,11 @@
   import InputText from 'primevue/inputtext';
   import Select from 'primevue/select';
 
-  const data      = ref<IInvertorData>({data:[], error: null, loading: true}) 
-  const invDC     = ref<ISimpleData>({data:[], error: null, loading: true})
-  const invEMC    = ref<ISimpleData>({data:[], error: null, loading: true})
-  const invBreak  = ref<ISimpleData>({data:[], error: null, loading: true})
-  const series    = ref<IInvSerieData>({data:[], error: null, loading: true})
+  const data      = ref<IDocument<IInvertor>>({data:[], error: null, loading: true}) 
+  const invDC     = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const invEMC    = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const invBreak  = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const series    = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
   const seriesStr = ref<String[]>([])
   const loading   = ref<boolean>(true)
 

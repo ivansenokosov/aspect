@@ -2,11 +2,10 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, IInvSerieData, ISimpleDictionary, IFile } from '@/interfaces';
+    import type { IDocument, IInvSerie, ISimpleDictionary, IFile } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
-    import Listbox  from 'primevue/listbox';
     import FloatLabel from 'primevue/floatlabel';
     import Select from 'primevue/select';
     import Toast from 'primevue/toast';
@@ -17,35 +16,33 @@
     import uploadFile from '@/api/uploadFile';
     import loadFile from '@/api/loadFile';
 
-    const baseUrl = useBaseUrl()
+    const baseUrl                = useBaseUrl()
+    const toast                  = useToast(); 
+    const props                  = defineProps(['id'])
 
-    const data                   = ref<IInvSerieData>({data:[], error: null, loading: true})
-    const manufactoryData        = ref<ISimpleData>({data:[], error: null, loading: true})
-    const outputVoltageData      = ref<ISimpleData>({data:[], error: null, loading: true})
-    const typeOfControlData      = ref<ISimpleData>({data:[], error: null, loading: true})
-    const typeOfPanelData        = ref<ISimpleData>({data:[], error: null, loading: true})
-    const typeOfOverloadData     = ref<ISimpleData>({data:[], error: null, loading: true})
-    const typeOfAccuracyFreqData = ref<ISimpleData>({data:[], error: null, loading: true})
-    const ambientTemperatureData = ref<ISimpleData>({data:[], error: null, loading: true})
-    const levelIPData            = ref<ISimpleData>({data:[], error: null, loading: true})
+    const data                   = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
+    const manufactoryData        = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const outputVoltageData      = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const typeOfControlData      = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const typeOfPanelData        = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const typeOfOverloadData     = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const typeOfAccuracyFreqData = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const ambientTemperatureData = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const levelIPData            = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
 
-    const manufactory        = ref<ISimpleDictionary>({name:'',id:0})
-    const outputVoltage      = ref<ISimpleDictionary>({name:'',id:0})
-    const typeOfControl      = ref<ISimpleDictionary>({name:'',id:0})
-    const typeOfPanel        = ref<ISimpleDictionary>({name:'',id:0})
-    const typeOfOverload     = ref<ISimpleDictionary>({name:'',id:0})
-    const typeOfAccuracyFreq = ref<ISimpleDictionary>({name:'',id:0})
-    const ambientTemperature = ref<ISimpleDictionary>({name:'',id:0})
-    const levelIP            = ref<ISimpleDictionary>({name:'',id:0})
-    const min_power          = ref<Number>()
-    const max_power          = ref<Number>()
-    const photo              = ref<IFile>()
-    const schema             = ref<IFile>()
-
-
-    const props = defineProps(['id'])
+    const manufactory            = ref<ISimpleDictionary>({name:'',id:0})
+    const outputVoltage          = ref<ISimpleDictionary>({name:'',id:0})
+    const typeOfControl          = ref<ISimpleDictionary>({name:'',id:0})
+    const typeOfPanel            = ref<ISimpleDictionary>({name:'',id:0})
+    const typeOfOverload         = ref<ISimpleDictionary>({name:'',id:0})
+    const typeOfAccuracyFreq     = ref<ISimpleDictionary>({name:'',id:0})
+    const ambientTemperature     = ref<ISimpleDictionary>({name:'',id:0})
+    const levelIP                = ref<ISimpleDictionary>({name:'',id:0})
+    const min_power              = ref<Number>()
+    const max_power              = ref<Number>()
+    const photo                  = ref<IFile>()
+    const schema                 = ref<IFile>()
     const saving = ref<boolean>(false)
-    const toast = useToast(); 
 
     const submission = async () => {
         saving.value = true

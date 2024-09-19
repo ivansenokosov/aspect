@@ -2,26 +2,22 @@
     import { ref } from 'vue'
     import { useRouter } from 'vue-router';
     import { useFetch } from '@/api/useFetch';
-    import AxiosInstance from '@/api/axiosInstance';
-    import type { ICompanyData } from '@/interfaces';
+    import type { IDocument, ICompany } from '@/interfaces';
     import Button from 'primevue/button';
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';
     import Toast from 'primevue/toast';
+    import { deleteData } from '@/api/dataActions';
 
     const router = useRouter()
-    const data   = ref<ICompanyData>({data:[], error: null, loading: true})
-
+    const data   = ref<IDocument<ICompany>>({data:[], error: null, loading: true})
     const props = defineProps(['id'])
 
     const submission = async () => {
         const url:string =  'Companies/' + props.id + '/'
-        const config = { headers: { 'content-type': 'application/json', }, };
-
-        AxiosInstance.delete(url,{})
-                     .then((res) => {
-                        router.push('/dictionaries/Companies/List')
-                     })
+        deleteData(url).then(() =>{
+            router.push('/dictionaries/Companies/List')
+        })
     }
 
     async function loadData() {

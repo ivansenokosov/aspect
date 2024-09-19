@@ -1,8 +1,7 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
-    import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, ISimpleDictionary, IInvSerie, IInvOptionData, IInvSerieData } from '@/interfaces';
+    import type { IDocument, ISimpleDictionary, IInvSerie, IInvOption } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
@@ -11,44 +10,37 @@
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
     import Listbox from 'primevue/listbox';
+    import { updateData } from '@/api/dataActions';
 
-    const series          = ref<IInvSerieData>({data:[], error: null, loading: true})
-    const invOption       = ref<IInvOptionData>({data:[], error: null, loading: true})
-    const typeOfOption    = ref<ISimpleData>({data:[], error: null, loading: true})
+    const series          = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
+    const invOption       = ref<IDocument<IInvOption>>({data:[], error: null, loading: true})
+    const typeOfOption    = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
 
     const optionForm      = ref<ISimpleDictionary>({name: '', id: 0})
     const seriesForm      = ref<IInvSerie[]>([])
-
     const loading         = ref<boolean>(true)
+    const saving          = ref<boolean>(false)
 
-    const props = defineProps(['id'])
-    const saving = ref<boolean>(false)
-    const toast = useToast(); 
+    const props           = defineProps(['id'])
+    const toast           = useToast(); 
 
     const submission = async () => {
         saving.value = true
         const url:string =  'Inv_options/' + props.id + '/'
-        const config = { headers: { 'content-type': 'application/json', }, };
-        var seriesStr : String = ''
+        var seriesStr : string = ''
 
         seriesForm.value.map(item => seriesStr += item.id + ',')
         seriesStr = seriesStr.substring(0, seriesStr.length - 1)
 
-        const formData = new FormData();        
+        const formData = {"item"       : String(invOption.value.data[0].item),
+                          "name"       : invOption.value.data[0].name,
+                          "short_title": invOption.value.data[0].short_title,
+                          "full_title" : invOption.value.data[0].full_title,
+                          "series"     : seriesStr,
+                          "option"     : String(optionForm.value.id)}
 
-        formData.append("item",        String(invOption.value.data[0].item))
-        formData.append("name",        invOption.value.data[0].name)
-        formData.append("short_title", invOption.value.data[0].short_title)
-        formData.append("full_title",  invOption.value.data[0].full_title)
-        formData.append("series",      String(seriesStr))
-        formData.append("option",      String(optionForm.value.id))
-
-        const res = await AxiosInstance.put(url, formData, config)
-          .then(function(response) {
-          // console.log(response);
-          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
-        }).catch(function(error) {
-          console.log(error);
+        updateData(url, formData).then(() => {
+            toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
         })
         saving.value = false
     }

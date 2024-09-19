@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, IInvertor, IInvSerieData, ISimpleDictionary, IItem, IItemData } from '@/interfaces';
+    import type { IDocument, IInvertor, IInvSerie, ISimpleDictionary, IItem } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
@@ -27,13 +27,13 @@
                                             current_g: '',
                                             current_p: '',
                                             type_of_control: ''})
-    const items           = ref<IItemData>({data:[], error: null, loading: true})
-    const series          = ref<IInvSerieData>({data:[], error: null, loading: true})
-    const invInputVoltage = ref<ISimpleData>({data:[], error: null, loading: true})
-    const sizes           = ref<ISimpleData>({data:[], error: null, loading: true})
-    const invBreakModule  = ref<ISimpleData>({data:[], error: null, loading: true})
-    const invDC           = ref<ISimpleData>({data:[], error: null, loading: true})
-    const invEMC          = ref<ISimpleData>({data:[], error: null, loading: true})
+    const items           = ref<IDocument<IItem>>({data:[], error: null, loading: true})
+    const series          = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
+    const invInputVoltage = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const sizes           = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invBreakModule  = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invDC           = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invEMC          = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
 
     const invDCdata           = ref<ISimpleDictionary>({name: '', id: 0})
     const invEMCdata          = ref<ISimpleDictionary>({name: '', id: 0})

@@ -4,11 +4,11 @@
     import Skeleton from 'primevue/skeleton';
 
     import { useFetch } from '@/api/useFetch';
-    import type { ISimpleData, ISimpleDictionary } from '@/interfaces';
+    import type { IDocument, ISimpleDictionary } from '@/interfaces';
 
-    const invInputVolage = ref<ISimpleData>({data: [{name:'',id:0}], error: null, loading: true}) 
-    const model = defineModel<ISimpleDictionary[]>()
-    const props = defineProps(['url','title'])
+    const invInputVolage = ref<IDocument<ISimpleDictionary>>({data: [{name:'',id:0}], error: null, loading: true}) 
+    const model          = defineModel<ISimpleDictionary[]>()
+    const props          = defineProps(['url','title'])
 
     async function loadData() {
         invInputVolage.value = await useFetch(props.url,{})

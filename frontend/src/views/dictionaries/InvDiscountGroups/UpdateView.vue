@@ -1,11 +1,10 @@
 <script setup lang="ts">
     import { ref } from 'vue'
-    import { RouterLink, useRouter, useRoute  } from 'vue-router'
+    import { RouterLink, useRoute } from 'vue-router'
     import { useFetch } from '@/api/useFetch';
     import { useToast } from "primevue/usetoast";
     import { getPath } from '@/api/getPath';
-    import type { ISimpleData, IInvSerieDisountData, IInvOptionDisountData, IInvSerieData } from '@/interfaces';
-    import AxiosInstance from '@/api/axiosInstance';
+    import type { ISimpleDictionary, IInvSerieDisount, IInvOptionDisount, IInvSerie, IDocument } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
@@ -14,7 +13,8 @@
     import DataTable from 'primevue/datatable';
     import Column from 'primevue/column';
     import { getValueFromDictionary } from '@/api/getValueFromDictionary';
-
+    import { updateData } from '@/api/dataActions';
+    import { createOptions, createSeries, onCellEditComplete } from '@/api/discounts';
 
     const props = defineProps( {
       id: {
@@ -23,158 +23,54 @@
       }
     })
 
-    const url:string = 'discounts/InvDisountGroup'
-    const title:string = 'Группа скидок'
+    const route           = useRoute();
+    const toast           = useToast(); 
+    const data            = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) // Группа скидок
+    const options         = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) // типы опций
+    const series          = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true}) // серии
+    const seriesDiscount  = ref<IDocument<IInvSerieDisount>>({data:[], error: null, loading: true}) // скидки для серий
+    const optionsDiscount = ref<IDocument<IInvOptionDisount>>({data:[], error: null, loading: true}) // скидки для опций
 
-    const router = useRouter()
-    const route = useRoute();
-    const data = ref<ISimpleData>({data:[], error: null, loading: true}) // Группа скидок
-    const options = ref<ISimpleData>({data:[], error: null, loading: true}) // типы опций
-    const series = ref<IInvSerieData>({data:[], error: null, loading: true}) // серии
-    const seriesDiscount = ref<IInvSerieDisountData>({data:[], error: null, loading: true}) // скидки для серий
-    const optionsDiscount = ref<IInvOptionDisountData>({data:[], error: null, loading: true}) // скидки для опций
-
-    const saving = ref<boolean>(false)
-    const loading = ref<boolean>(true)
-    const toast = useToast(); 
-    const path = ref<string>('')      
-
+    const saving          = ref<boolean>(false)
+    const loading         = ref<boolean>(true)
+    const path            = ref<string>('')      
+    const url:string      = 'discounts/InvDisountGroup'
+    const title:string    = 'Группа скидок'
 
     const submission = async () => {
         saving.value = true
+        updateData(url + '/' + props.id + '/', {"name": data.value.data[0].name})         // сохраняем группу скидок
 
-        // сохраняем группу скидок
-        const config = { headers: { 'content-type': 'application/json', }, };
-        const formData = new FormData();        
-        formData.append("name", data.value.data[0].name)
-        const res = await AxiosInstance.put(url + '/' + props.id + '/', formData, config)
-          .then(function(response) {
-        }).catch(function(error) {
-          console.log(error);
+        seriesDiscount.value.data.map((item:IInvSerieDisount) => {
+          updateData('discounts/InvSerieDisount/' + item.id.toString() + '/', item)  // сохраняем скидки для серий
         })
 
-        // сохраняем скидки для серий
-
-        seriesDiscount.value.data.map(item => {
-          const res = AxiosInstance.put('discounts/InvSerieDisount/' + item.id.toString() + '/', item, config)
-            .then(function(response) {
-          }).catch(function(error) {
-            console.log(error);
-          })
+        optionsDiscount.value.data.map((item:IInvOptionDisount) => {
+          updateData('discounts/InvOptionDisount/' + item.id.toString() + '/', item)
         })
-
-        optionsDiscount.value.data.map(item => {
-          const res = AxiosInstance.put('discounts/InvOptionDisount/' + item.id.toString() + '/', item, config)
-            .then(function(response) {
-          }).catch(function(error) {
-            console.log(error);
-          })
-        })
-
-
 
         saving.value = false
         toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
     }
 
-    async function createSeries() {
-      // удаление имеющихся скидок на серии группы
-      seriesDiscount.value.data.map(item => {
-        const url:string =  'discounts/InvSerieDisount/' + item.id.toString()
-        AxiosInstance.delete(url,{})
-                     .then((res) => {
-                      console.log('удалено успешно')
-                     })
+    async function loadSeriesDisount() {
+      seriesDiscount.value  = await useFetch('discounts/InvSerieDisount/?group=' + props.id, {});  
+    }    
 
-      })
-      // создание новых скидок на серии
-      series.value.data.map(item => {
-        const url_create:string =  'discounts/InvSerieDisount/'
-        const config = { headers: { 'content-type': 'application/json', }, };
-        const formData = new FormData();        
-        formData.append("serie",    item.id.toString())
-        formData.append("group",    props.id)
-        formData.append("discount", '0')
-
-        const res = AxiosInstance.post(url_create, formData, config)
-          .then(function(response) {
-            console.log(response);
-        }).catch(function(error) {
-          console.log(error);
-        })
-      })
-
-      // азгружаем то, что насоздавали
-      seriesDiscount.value = await useFetch('discounts/InvSerieDisount/?group=' + props.id, {});  // не работает. Не дожидается полного создания серий
-    }
-
-    async function createOptions() {
-      // удаление имеющихся скидок на опции группы
-      optionsDiscount.value.data.map(item => {
-        const url:string =  'discounts/InvOptionDisount/' + item.id.toString()
-        AxiosInstance.delete(url,{})
-                     .then((res) => {
-                      console.log('удалено успешно')
-                     })
-
-      })
-
-      // создание новых скидок на опции
-      options.value.data.map(item => {
-        const url_create:string =  'discounts/InvOptionDisount/'
-        const config = { headers: { 'content-type': 'application/json', }, };
-        const formData = new FormData();        
-        formData.append("option",    item.id.toString())
-        formData.append("group",     props.id)
-        formData.append("discount",  '0')
-
-        const res = AxiosInstance.post(url_create, formData, config)
-          .then(function(response) {
-            console.log(response);
-        }).catch(function(error) {
-          console.log(error);
-        })
-      })
-
-      // азгружаем то, что насоздавали
-      optionsDiscount.value = await useFetch('discounts/InvOptionDisount/?group=' + props.id, {});  // не работает. Не дожидается полного создания серий
-    }  
-
-
-    const isPositiveInteger = (val:number) => {
-        let str = String(val);
-
-        str = str.trim();
-
-        if (!str) {
-            return false;
-        }
-
-        str = str.replace(/^0+/, '') || '0';
-        var n = Math.floor(Number(str));
-
-        return n !== Infinity && String(n) === str && n >= 0;
-    };
-
-    const onCellEditComplete = (event:any) => {
-      let { data, newValue, field } = event;
-        if (isPositiveInteger(newValue)) data[field] = newValue;
-              else event.preventDefault();
-
-    };
+    async function loadOptionsDisount() {
+      optionsDiscount.value  = await useFetch('discounts/InvOptionDisount/?group=' + props.id, {});
+    }    
 
     async function loadData() {
-        data.value = await useFetch(url + '/' + props.id, {});
-        series.value = await useFetch('Inv_series', {});
-        options.value = await useFetch('Type_of_options', {});
-        
-        seriesDiscount.value = await useFetch('discounts/InvSerieDisount/?group=' + props.id, {});
-        optionsDiscount.value = await useFetch('discounts/InvOptionDisount/?group=' + props.id, {});
-
+        data.value             = await useFetch(url + '/' + props.id, {});
+        series.value           = await useFetch('Inv_series', {});
+        options.value          = await useFetch('Type_of_options', {});
+        await loadSeriesDisount()
+        await loadOptionsDisount()
         path.value = getPath(route.path)        
         loading.value = false
     }
-    
+
     loadData()
 </script>
 
@@ -205,7 +101,10 @@
           <div class="formgrid grid">
             <div class="field col">
               <h1>Серии</h1>
-              <Button label="Пересоздать серии" @click="createSeries()"/>
+              <Button label="Пересоздать серии" @click="() => {
+                createSeries(props.id, series.data, seriesDiscount.data)
+                loadSeriesDisount()
+              }"/>
               <DataTable :value="seriesDiscount.data" 
                      tableStyle="min-width: 50rem"  
                        editMode="cell" 
@@ -237,7 +136,10 @@
             </div>
             <div class="field col">
               <h1>Опции</h1>
-              <Button label="Пересоздать опции" @click="createOptions()"/>
+              <Button label="Пересоздать опции" @click="() => {
+                createOptions(props.id, options.data, optionsDiscount.data)
+                loadOptionsDisount()
+              }"/>
               <DataTable :value="optionsDiscount.data" 
                      tableStyle="min-width: 50rem" 
                        editMode="cell" 

@@ -3,7 +3,7 @@
   import { useFetch } from '@/api/useFetch';
   import { RouterLink } from 'vue-router';
   import { FilterMatchMode } from '@primevue/core/api';
-  import type { ICompanyData } from '@/interfaces.js';
+  import type { IDocument, ICompany } from '@/interfaces.js';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import Button from 'primevue/button';
@@ -11,7 +11,7 @@
   import { useBaseUrl } from '@/stores/baseUrl';
   
   const baseUrl = useBaseUrl()
-  const data = ref<ICompanyData>({data:[], error: null, loading: true}) 
+  const data = ref<IDocument<ICompany>>({data:[], error: null, loading: true}) 
 
   async function loadData() {
     data.value = await useFetch('Companies', {} );

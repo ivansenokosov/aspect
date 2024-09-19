@@ -3,7 +3,7 @@
     import { RouterLink, useRouter, useRoute  } from 'vue-router'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData } from '@/interfaces';
+    import type { IDocument, ISimpleDictionary } from '@/interfaces';
     import Button from 'primevue/button';
     import { getPath } from '@/api/getPath';
     import InputText from 'primevue/inputtext';
@@ -11,7 +11,7 @@
 
     const router = useRouter()
     const route  = useRoute();
-    const data   = ref<ISimpleData>({data:[], error: null, loading: true})
+    const data   = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
     const props  = defineProps(['url', 'id', 'title'])
     const path   = ref<string>('')    
 

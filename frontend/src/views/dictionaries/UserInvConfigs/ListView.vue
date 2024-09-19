@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref } from 'vue' 
   import { useFetch } from '@/api/useFetch';
-  import type { ISimpleData, IInvOptionData, IUserInvConfigData, IUserData, ICompanyUsersData, ICompanyData } from '@/interfaces.js';
+  import type { IDocument, IInvOption, IUserInvConfig, IUser, ICompanyUsers, ICompany, ISimpleDictionary } from '@/interfaces.js';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import { RouterLink } from 'vue-router';
@@ -18,23 +18,24 @@
   import Checkbox from 'primevue/checkbox';
   import InputText from 'primevue/inputtext';
   import { saveLog } from '@/api/log';
+  import { getOptionNames, getCompanyName } from '@/api/utils';
 
   const user         = useUserStore()
-  const data         = ref<IUserInvConfigData>({data:[], error: null, loading: true}) 
-  const invertors    = ref<ISimpleData>({data:[], error: null, loading: true}) 
-  const options      = ref<IInvOptionData>({data:[], error: null, loading: true}) 
-  const users        = ref<IUserData>({data:[], error: null, loading: true}) 
-  const companyUsers = ref<ICompanyUsersData>({data:[], error: null, loading: true}) 
-  const companies    = ref<ICompanyData>({data:[], error: null, loading: true}) 
+  const data         = ref<IDocument<IUserInvConfig>>({data:[], error: null, loading: true}) 
+  const invertors    = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) 
+  const options      = ref<IDocument<IInvOption>>({data:[], error: null, loading: true}) 
+  const users        = ref<IDocument<IUser>>({data:[], error: null, loading: true}) 
+  const companyUsers = ref<IDocument<ICompanyUsers>>({data:[], error: null, loading: true}) 
+  const companies    = ref<IDocument<ICompany>>({data:[], error: null, loading: true}) 
   const userNames    = ref<string[]>([]) 
   const loading      = ref<boolean>(true)
 
-  const confirm = useConfirm();
-  const toast = useToast();
+  const confirm      = useConfirm();
+  const toast        = useToast();
 
   async function loadData() {
     let url:string
-    if (user.userIsStaff) {
+    if (user.isUser()) {
       url = 'userconfigs/UserInvConfg/' // загружаем всё
     } else {
       url = 'userconfigs/UserInvConfg?user_id=' + String(user.userId) // загружаем только конфигурации пользователя
@@ -53,27 +54,6 @@
     saveLog(8, '')
   }
 
-  function getOptionNames<String>(selectedOptions:string) {
-    let result: string = ''
-    if (selectedOptions.length>2) {
-      const optionDict = ref<string[]>([])
-      optionDict.value = JSON.parse(selectedOptions)
-      optionDict.value.map((item : string) => {
-        result = result + getValueFromDictionary(options.value.data, Number(item)) + '<br/>'
-      })
-    }
-    return result
-  }
-
-  function getCompanyName<String>(userId: number) {
-    const record = companyUsers.value.data.filter(item => item.user === userId)
-    const user = users.value.data.filter (item => item.id === userId)
-    if (record.length > 0) {
-      const company = companies.value.data.filter(item => item.id === record[0].company)
-      return '<a class="font-bold">' + company[0].name + '</a><p>' + user[0].first_name + '</p><p>' + company[0].phone + '</p>'
-    }
-    return ''
-  }
  
   loadData()
 
@@ -141,7 +121,7 @@
                   v-model:filters="filters"
                   filterDisplay="row"
                   >
-        <Column header="" field="staff_opened" v-if="user.userIsStaff" style="width: 5%">
+        <Column header="" field="staff_opened" v-if="user.isStaff()" style="width: 5%">
           <template #body="{ data }" >
             <i class="text-green-500 pi" :class="{ 'pi-eye text-green-500': data.staff_opened, 'pi-eye-slash text-red-400': !data.staff_opened }"></i>
           </template>
@@ -149,7 +129,7 @@
               <Checkbox v-model="filterModel.value" :indeterminate="filterModel.value === null" binary @change="filterCallback()" />
           </template>          
         </Column>
-        <Column header="Номер" field="id" sortable style="width: 15%" v-if="user.userIsStaff">
+        <Column header="Номер" field="id" sortable style="width: 15%" v-if="user.isStaff()">
           <template #body="{ data }" >
             {{ data.user }}/{{ data.id }}
           </template>
@@ -157,9 +137,9 @@
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Искать..." />
           </template>        
         </Column>
-        <Column header="Заказчик"  sortable style="width: 15%" v-if="user.userIsStaff">
+        <Column header="Заказчик"  sortable style="width: 15%" v-if="user.isStaff()">
           <template #body="{ data }">
-            <div v-html="getCompanyName(data.user)"></div>
+            <div v-html="getCompanyName(companyUsers.data, companies.data, data.user, true)"></div>
           </template>
         </Column>
         <Column header="Преобразователь частоты" field="invertor" sortable style="width: 10%">
@@ -169,8 +149,7 @@
         </Column>
         <Column field="options" header="Опции" width="">
           <template #body="{ data }" >
-            {{ data.options }}
-              <!-- <div v-html="getOptionNames(data.options)"></div> -->
+              <div v-html="getOptionNames(options.data, data.options)"></div>
           </template>
         </Column>
         <Column header="Дата конфигурации" field="date" sortable width="">

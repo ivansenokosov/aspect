@@ -10,6 +10,6 @@
 </script>
 
 <template>
-  <UniversalDelete url="Level_IP" :id="props.id" title="Уроавнь защиты"/>
+  <UniversalDelete url="Type_of_options" :id="props.id" title="Тип опции"/>
 </template>
 

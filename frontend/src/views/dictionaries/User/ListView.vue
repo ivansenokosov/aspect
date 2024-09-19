@@ -3,33 +3,20 @@
   import { useFetch } from '@/api/useFetch';
   import { RouterLink } from 'vue-router';
   import { FilterMatchMode } from '@primevue/core/api';
-  import type { ICompanyData, ICompanyUsersData, IUserData, ICompanyUsers, ICompany, ISimpleData, IUserDiscountData, ISimpleDictionary, IUserDiscount } from '@/interfaces.js';
-  
+  import type { IDocument, IUser, ICompanyUsers, ICompany, ISimpleDictionary, IUserDiscount } from '@/interfaces.js';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import Button from 'primevue/button';
   import InputText from 'primevue/inputtext';
+  import { getDiscountGroupNameByUserId, getCompanyName } from '@/api/utils';
   
-  const data           = ref<IUserData>({data:[], error: null, loading: true}) 
-  const companies      = ref<ICompanyData>({data:[], error: null, loading: true}) 
-  const companyUsers   = ref<ICompanyUsersData>({data:[], error: null, loading: true}) 
-  const discountGroups = ref<ISimpleData>({data:[], error: null, loading: true}) 
-  const userInvDiscounts = ref<IUserDiscountData>({data:[], error: null, loading: true}) 
+  const data             = ref<IDocument<IUser>>({data:[], error: null, loading: true}) 
+  const companies        = ref<IDocument<ICompany>>({data:[], error: null, loading: true}) 
+  const companyUsers     = ref<IDocument<ICompanyUsers>>({data:[], error: null, loading: true}) 
+  const discountGroups   = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) 
+  const userInvDiscounts = ref<IDocument<IUserDiscount>>({data:[], error: null, loading: true}) 
+  const loading          = ref<boolean>(true)
 
-
-  const loading       = ref<boolean>(true)
-
-function getDiscountGroupNameByUserId(discountGroups: ISimpleDictionary[], IUserDiscountData: IUserDiscount[], userId: number) {
-  const discountGroup = IUserDiscountData.filter(item => item.user === userId)
-  if (discountGroup.length>0) {
-    const groupName = discountGroups.filter(item => item.id === discountGroup[0].group)
-    if (groupName.length>0) {
-      return groupName[0].name
-    }
-  }
-
-  return ''
-}
 
   async function loadData() {
     data.value              = await useFetch('Users', {} );
@@ -37,19 +24,7 @@ function getDiscountGroupNameByUserId(discountGroups: ISimpleDictionary[], IUser
     companyUsers.value      = await useFetch('CompanyUsers', {});
     discountGroups.value    = await useFetch('discounts/InvDisountGroup', {});
     userInvDiscounts.value  = await useFetch('discounts/UserInvDisount', {});
-
     loading.value         = false        
-  }
-
-  function getCompanyName(userId:number) {
-    const user     = ref<ICompanyUsers[]>([])
-    const company  = ref<ICompany>()
-    user.value = companyUsers.value.data.filter(item => item.user === userId) // находим строку CompanyUser для этого пользователя
-    if (user.value.length > 0) { 
-        company.value = companies.value.data.filter(item => item.id === user.value[0].company)[0]
-        return company.value.name
-    } 
-    return ''
   }
 
   const filters = ref({
@@ -105,7 +80,7 @@ function getDiscountGroupNameByUserId(discountGroups: ISimpleDictionary[], IUser
         <!-- <Column field="second_name"      header="second_name"   sortable style="width: 10%"></Column> -->
         <Column header="Организация"             style="width: 10%" v-if="!companies.loading && !companyUsers.loading">
           <template #body="{ data }" >
-            {{ getCompanyName(data.id) }}
+            {{ getCompanyName(companyUsers.data, companies.data, data.id) }}
           </template>
         </Column>
         <Column field="email"            header="email" sortable style="width: 10%"></Column>

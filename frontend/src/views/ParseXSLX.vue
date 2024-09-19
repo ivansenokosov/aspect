@@ -2,7 +2,7 @@
   import { ref, watch } from 'vue';
   import { FilterMatchMode } from '@primevue/core/api';
   import { useFetch } from '@/api/useFetch';
-  import type { IItemData } from '@/interfaces';
+  import type { IDocument, IItem } from '@/interfaces';
 
   import Papa from 'papaparse';
   import Textarea from 'primevue/textarea';
@@ -39,16 +39,15 @@
     meta: any  // object with extra info
   }
 
-  const step = ref<Number>(1)
-  const text = ref<string>('')
-  const data = ref<IParseResult>({data:null,errors:null, meta:null})
-  const items = ref<IItemData>({data:[], loading: true, error: null})
-  const column_id = ref<string>('')
-  const column_price = ref<string>('')
-  const column_quantity = ref<string>('')
-  const csv_columns = ref<string[]>([])
-  const columnIdIndex = ref<number>(0)
-  const columnPriceIndex = ref<number>(0)
+  const text                = ref<string>('')
+  const data                = ref<IParseResult>({data:null,errors:null, meta:null})
+  const items               = ref<IDocument<IItem>>({data:[], loading: true, error: null})
+  const column_id           = ref<string>('')
+  const column_price        = ref<string>('')
+  const column_quantity     = ref<string>('')
+  const csv_columns         = ref<string[]>([])
+  const columnIdIndex       = ref<number>(0)
+  const columnPriceIndex    = ref<number>(0)
   const columnQuantityIndex = ref<number>(0)
   const CSVData = ref<ICSVRow[]>([{data:[], id:0, action: '', uploaded: false, price_uploaded: 0}])
 

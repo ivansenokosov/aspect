@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import { ref } from 'vue' 
   import { useFetch } from '@/api/useFetch';
-  import type { IInvSerieData, ISimpleData, IInvOverloadData } from '@/interfaces.js';
+  import type { IDocument, IInvSerie, ISimpleDictionary, IInvOverload } from '@/interfaces.js';
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import { RouterLink } from 'vue-router';
@@ -11,15 +11,15 @@
   import { getValueFromDictionary } from '@/api/getValueFromDictionary';
 
   const baseUrl = useBaseUrl()
-  const data                   = ref<IInvSerieData>({data:[], error: null, loading: true}) 
-  const manufacoryData         = ref<ISimpleData>({data:[], error: null, loading: true})
-  const outputVoltageData      = ref<ISimpleData>({data:[], error: null, loading: true})
-  const typeOfControlData      = ref<ISimpleData>({data:[], error: null, loading: true})
-  const typeOfPanelData        = ref<ISimpleData>({data:[], error: null, loading: true})
-  const typeOfOverloadData     = ref<IInvOverloadData>({data:[], error: null, loading: true})
-  const typeOfAccuracyFreqData = ref<ISimpleData>({data:[], error: null, loading: true})
-  const ambientTemperatureData = ref<ISimpleData>({data:[], error: null, loading: true})
-  const levelIPData = ref<ISimpleData>({data:[], error: null, loading: true})
+  const data                   = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true}) 
+  const manufacoryData         = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const outputVoltageData      = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const typeOfControlData      = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const typeOfPanelData        = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const typeOfAccuracyFreqData = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const ambientTemperatureData = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const levelIPData            = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const typeOfOverloadData     = ref<IDocument<IInvOverload>>({data:[], error: null, loading: true})
 
   async function loadData() {
     data.value                     = await useFetch('Inv_series', {} );
@@ -31,24 +31,6 @@
     typeOfAccuracyFreqData.value   = await useFetch('Inv_accurancy_frenq', {} );
     ambientTemperatureData.value   = await useFetch('Ambient_temperatures', {} );
     levelIPData.value              = await useFetch('Level_IP', {} );
-  }
-
-  function getTypeOfOverloadPName(id:number) {
-    const record = typeOfOverloadData.value.data.filter(item => item.id === id)[0]
-    if (record) {
-      return record.p_mode
-    } else {
-      return 'не определено'
-    }    
-  }
-
-  function getTypeOfOverloadGName(id:number) {
-    const record = typeOfOverloadData.value.data.filter(item => item.id === id)[0]
-    if (record) {
-      return record.g_mode
-    } else {
-      return 'не определено'
-    }    
   }
 
   loadData()
@@ -112,8 +94,8 @@
         </Column>
         <Column header="Перегрузка" width="10%">
           <template #body="{ data }">
-            <div class="mt-1" style="width: 100%"><Tag value="Режим P" severity="info" /> {{ getTypeOfOverloadPName(data.type_of_overload) }} </div>
-            <div class="mt-1" style="width: 100%"><Tag value="Режим G" severity="info" /> {{ getTypeOfOverloadGName(data.type_of_overload) }} </div>
+            <div class="mt-1" style="width: 100%"><Tag value="Режим G" severity="info" /> {{ getValueFromDictionary(typeOfOverloadData.data, data.type_of_overload, 'g_mode') }} </div>
+            <div class="mt-1" style="width: 100%"><Tag value="Режим P" severity="info" /> {{ getValueFromDictionary(typeOfOverloadData.data, data.type_of_overload, 'p_mode') }} </div>
           </template>          
         </Column>
         <Column header="Точность регулирования частоты" width="5%">

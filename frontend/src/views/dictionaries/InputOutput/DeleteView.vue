@@ -2,61 +2,50 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, ISimpleDictionary, IInvSerie, IInvOptionData, IInvSerieData } from '@/interfaces';
+    import type { IDocument, ISimpleDictionary, IInvInputOuptput } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';
-    import Select from 'primevue/select';
-    import Toast from 'primevue/toast';
-    import { useToast } from "primevue/usetoast";
-    import Listbox from 'primevue/listbox';
+    import MyAutocomplete from '@/components/MyAutocomplete.vue';
     import { useRouter } from 'vue-router';
 
-    const router          = useRouter()
-    const series          = ref<IInvSerieData>({data:[], error: null, loading: true})
-    const invOption       = ref<IInvOptionData>({data:[], error: null, loading: true})
-    const typeOfOption    = ref<ISimpleData>({data:[], error: null, loading: true})
+    const data    = ref<IDocument<IInvInputOuptput>>({data:[], error: null, loading: true}) // Входы/Выходы
+    const signals = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) // Сигналы
+    const series  = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) // Серии
+    const signal  = ref<number>(0)
+    const serie   = ref<number>(0)
+    const loading = ref<boolean>(true)
 
-    const optionForm      = ref<ISimpleDictionary>({name: '', id: 0})
-    const seriesForm      = ref<IInvSerie[]>([])
-
-    const loading         = ref<boolean>(true)
-
-    const props = defineProps(['id'])
-    const saving = ref<boolean>(false)
-    const toast = useToast(); 
+    const props   = defineProps(['id'])
+    const saving  = ref<boolean>(false)
+    const router  = useRouter()
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Inv_options/' + props.id + '/'
+        const url:string =  'Inv_spec_of_in_out/' + props.id + '/'
         const config = { headers: { 'content-type': 'application/json', }, };
-
 
         AxiosInstance.delete(url,{})
                      .then((res) => {
-                        router.push('dictionaries/InvOptions/List')
+                        router.push('/dictionaries/InputOutput/List')
                      })
         saving.value = false
     }
 
     async function loadData() {
-        invOption.value            = await useFetch('Inv_options/' + props.id, {});
-        series.value               = await useFetch('Inv_series_dict', {});
-        typeOfOption.value         = await useFetch('Type_of_options', {});
-
-        seriesForm.value = series.value.data.filter(item => invOption.value.data[0].series.toString().includes(item.id.toString()))
-        optionForm.value = typeOfOption.value.data.filter(item => invOption.value.data[0].option === item.id)[0]
-
-        loading.value = false
+        data.value       = await useFetch('Inv_spec_of_in_out', {} );
+        signals.value    = await useFetch('Inv_type_of_signals', {} );
+        series.value     = await useFetch('Inv_series_dict', {} );
+        serie.value      = data.value.data[0].serie
+        signal.value      = data.value.data[0].signal
+        loading.value    = false
     }
     
     loadData()
 </script>
 
 <template>
-    <Toast />
-
     <h1 class="pt-5">Опция для преобразователя частоты. Удалить?</h1>
     <div v-if="loading">
         loading ...
@@ -64,53 +53,28 @@
     <div v-else class="pt-5">
         <div class="field pt-5">
             <FloatLabel>
-                <InputNumber id="id" v-model="invOption.data[0].id" disabled class="w-full"/>
+                <InputNumber id="id" v-model="data.data[0].id" disabled class="w-full"/>
                 <label for="id">id</label>
             </FloatLabel>
         </div>
 
         <div class="field pt-5">
-            <FloatLabel>
-                <InputText id="item" v-model="invOption.data[0].item" disabled class="w-full"/>
-                <label for="id">item</label>
-            </FloatLabel>
+            <MyAutocomplete v-model="serie" :value="serie" label="Серия" disabled :options="series.data"/>
         </div>
 
         <div class="field pt-5">
-              <label for="series">Серии</label>
-              <Listbox v-model="seriesForm" :options="series.data" multiple disabled optionLabel="name" class="w-full md:w-56" listStyle="max-height:250px"/>
+            <MyAutocomplete v-model="signal" :value="signal" label="Сигнал" disabled :options="signals.data"/>
         </div>
 
         <div class="field pt-5">
             <FloatLabel>
-                <Select v-model="optionForm" :options="typeOfOption.data" disabled optionLabel="name" placeholder="Тип" class="w-full md:w-56" />
-              <label for="id">Тип</label>
-            </FloatLabel>
-        </div>
-
-        <div class="field pt-5">
-            <FloatLabel>
-                <InputText id="title" v-model="invOption.data[0].name" disabled class="w-full"/>
-                <label for="title">Наименование</label>
-            </FloatLabel>
-        </div>
-
-        <div class="field pt-5">
-            <FloatLabel>
-                <InputText id="title" v-model="invOption.data[0].full_title" disabled class="w-full"/>
-                <label for="title">Наименование полное</label>
-            </FloatLabel>
-        </div>
-
-        <div class="field pt-5">
-            <FloatLabel>
-                <InputText id="title" v-model="invOption.data[0].short_title" disabled class="w-full"/>
-                <label for="title">Наименование короткое</label>
+                <InputText id="title" v-model="data.data[0].quantity" disabled class="w-full"/>
+                <label for="title">Количество</label>
             </FloatLabel>
         </div>
 
         <div class="flex flex-wrap justify-center gap-4 pt-5">
-            <RouterLink :to="`/dictionaries/InvOptions/List`" rel="noopener">
+            <RouterLink to="/dictionaries/InputOutput/List" rel="noopener">
                 <Button link label="Отменить" />
             </RouterLink>
             <Button label="Удалить" severity="danger" icon="pi pi-check" iconPos="right" @click="submission" :loading="saving"/>

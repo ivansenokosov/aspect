@@ -1,7 +1,7 @@
 <script setup lang="ts">
   import {useRoute} from "vue-router";
   import { ref } from 'vue'
-  import type { IInvSerieData, IInvOptionData, IInvertorData, ISimpleData, IUserInvConfigData, IInvOption, IInvAvalControlData, IInvSignalInputOutputData } from "@/interfaces";
+  import type { IDocument, IInvSerie, IInvertor, IUserInvConfig, IInvOption, IInvAvalControl, IInvSignalInputOutput, ISimpleDictionary } from "@/interfaces";
   import { useFetch } from "@/api/useFetch";
   import { useBaseUrl } from "@/stores/baseUrl";
   import DataTable from "primevue/datatable";
@@ -18,7 +18,6 @@
   import axios from "axios";
   import { getValueFromDictionary } from "@/api/getValueFromDictionary";
   import { useUserStore } from "@/stores/user";
-  import AxiosInstance from "@/api/axiosInstance";
   import moment from 'moment'
   import OverlayBadge from "primevue/overlaybadge";
   import Textarea from "primevue/textarea";
@@ -26,27 +25,28 @@
   import Toast from 'primevue/toast';
   import { useToast } from "primevue/usetoast";
   import { saveLog } from "@/api/log";
+  import { updateData } from '@/api/dataActions'
+  import { generatePDF } from "@/api/generatePDF";
 
+  const route                = useRoute()
+  const baseUrl              = useBaseUrl()
+  const user                 = useUserStore()
+  const toast                = useToast()
 
-  const route   = useRoute()
-  const baseUrl = useBaseUrl()
-  const user    = useUserStore()
-  const toast   = useToast()
+  const id                   = ref<number>(0)
 
-  const id      = ref<Number>(0)
-
-  const invConfig            = ref<IUserInvConfigData>({data:[], error: null, loading: true})
-  const serie                = ref<IInvSerieData>({data:[], error: null, loading: true})
-  const invertor             = ref<IInvertorData>({data:[], error: null, loading: true})
-  const options              = ref<IInvOptionData>({data:[], error: null, loading: true})
+  const invConfig            = ref<IDocument<IUserInvConfig>>({data:[], error: null, loading: true})
+  const serie                = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
+  const invertor             = ref<IDocument<IInvertor>>({data:[], error: null, loading: true})
+  const options              = ref<IDocument<IInvOption>>({data:[], error: null, loading: true})
   const optionsSelected      = ref<IInvOption[]>([])
-  const typeOfOptions        = ref<ISimpleData>({data:[], error: null, loading: true})
-  const outputVoltage        = ref<ISimpleData>({data:[], error: null, loading: true})
-  const breakModule          = ref<ISimpleData>({data:[], error: null, loading: true})
-  const ambientTemperature   = ref<ISimpleData>({data:[], error: null, loading: true})
-  const InvTypeOfControl     = ref<IInvAvalControlData>({data:[], error: null, loading: true})
-  const invVariantOfControl  = ref<ISimpleData>({data:[], error: null, loading: true})
-  const signals              = ref<IInvSignalInputOutputData>({data:[], error: null, loading: true})
+  const typeOfOptions        = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const outputVoltage        = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const breakModule          = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const ambientTemperature   = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const InvTypeOfControl     = ref<IDocument<IInvAvalControl>>({data:[], error: null, loading: true})
+  const invVariantOfControl  = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+  const signals              = ref<IDocument<IInvSignalInputOutput>>({data:[], error: null, loading: true})
   const invControl           = ref<string>('') // Способы управления
   const availableOptions     = ref<string>('') // Доступные типы опций
 
@@ -57,56 +57,49 @@
   const discountsJSON        = ref<any[]>([])
   const saving               = ref<boolean>(false)
   const loading              = ref<boolean>(true)
-
+  const docNumber            = ref<string>('')
 
   async function savePDF(print_price: number) {
-    const pdfurl = baseUrl.baseUrl + 'users/invpdf?id=' + String(id.value) + '&print_price=' + String(print_price)
+    generatePDF(invertor.value.data[0], 
+                serie.value.data[0],
+                optionsSelected.value, 
+                signals.value.data, 
+                optionsPrice.value, 
+                availableOptions.value,
+                invControl.value,
+                print_price, 
+                docNumber.value)
 
-    if (print_price == 1) { saveLog(5, '') } else { saveLog(6, '') }   
-    // console.log(pdfurl)
+    // const pdfurl = baseUrl.baseUrl + 'users/invpdf?id=' + String(id.value) + '&print_price=' + String(print_price)
 
-    axios({
-      method: 'get',
-      url: pdfurl,
-      responseType: 'arraybuffer'
-    }).then(function(response) {
-      let blob = new Blob([response.data], { type: 'application/pdf' })
-      let link = document.createElement('a')
-      link.href = window.URL.createObjectURL(blob)
-      link.download = 'aspect.pdf'
-      link.click()
-    })    
+    // if (print_price == 1) { saveLog(5, '') } else { saveLog(6, '') }   
+    // // console.log(pdfurl)
+
+    // axios({
+    //   method: 'get',
+    //   url: pdfurl,
+    //   responseType: 'arraybuffer'
+    // }).then(function(response) {
+    //   let blob = new Blob([response.data], { type: 'application/pdf' })
+    //   let link = document.createElement('a')
+    //   link.href = window.URL.createObjectURL(blob)
+    //   link.download = 'aspect.pdf'
+    //   link.click()
+    // })    
   }
 
   const submission = async () => {
-        saving.value = true
-        const url:string =  'userconfigs/UserInvConfg/' + id.value + '/'
-        const config = { headers: { 'content-type': 'application/json', }, };
-
-        const res = await AxiosInstance.put(url, invConfig.value.data, config)
-          .then(function(response) {
-            toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
-            // console.log(response);
-        }).catch(function(error) {
-          console.log(error);
-        })
-        saving.value = false
-    }
-
-
-  async function setRead() { // установка флага, что конфигурация просмотрена
-    const url:string =  'userconfigs/UserInvConfg/' + id.value.toString() + '/'
-    const config = { headers: { 'content-type': 'application/json', }, };
-    invConfig.value.data[0].staff_opened = true
-    const res = await AxiosInstance.put(url, invConfig.value.data[0], config)
-      .then(function(response) {
-    }).catch(function(error) {
-      console.log(error);
-    })
-
-
+      saving.value = true
+      const url:string =  'userconfigs/UserInvConfg/' + id.value.toString() + '/'
+      updateData(url, invConfig.value.data[0]).then(() => {toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });})
+      saving.value = false
   }
 
+  async function setRead() { // установка флага, что конфигурация просмотрена
+      const url:string =  'userconfigs/UserInvConfg/' + id.value.toString() + '/'
+      invConfig.value.data[0].staff_opened = true
+      updateData(url, invConfig.value.data[0])
+  }
 
   async function loadData() {
     saveLog(9, '')
@@ -163,9 +156,11 @@
       }
     }) // Итого цена опций
 
-    if (invConfig.value.data[0].staff_opened === false && user.userIsStaff) { 
+    if (invConfig.value.data[0].staff_opened === false && user.isStaff()) { 
       await setRead()
     }
+
+    docNumber.value = invConfig.value.data[0].user.toString() + '/' +  invConfig.value.data[0].id.toString() + ' от ' + moment(invConfig.value.data[0].date).format('DD.MM.YYYY')
 
     loading.value = false
   }
@@ -184,7 +179,7 @@
     Загружаю ...
   </div>
   <div v-else>
-    <h1 class="pt-5">Технико-коммерческое предложение № {{ invConfig.data[0].user }}/{{ invConfig.data[0].id }} от {{ moment(invConfig.data[0].date).format('DD.MM.YYYY') }}</h1>
+    <h1 class="pt-5">Технико-коммерческое предложение № {{ docNumber }}</h1>
       <div class="field pt-5">
         <FloatLabel>
             <Textarea id="info" v-model="invConfig.data[0].info" class="w-full"/>
@@ -427,7 +422,7 @@
       <Divider class="mt-5"/>
       
       <p class="font-bold text-xl">Итого: 
-        <span class="font-bold text-xl" v-if="!user.userId"> {{ priceFormat(Number(optionsPrice) + Number(invConfig.data[0].invertor_price)) }} &#8381;</span>
+        <span class="font-bold text-xl" v-if="!user.isUser()"> {{ priceFormat(Number(optionsPrice) + Number(invConfig.data[0].invertor_price)) }} &#8381;</span>
         <span  v-else> 
           <a class="font-bold text-xl line-through border-round m-2" style="min-width: 80px; min-height: 40px">
               {{ priceFormat(Number(invConfig.data[0].invertor_price) + Number(optionsPrice)) }} &#8381;

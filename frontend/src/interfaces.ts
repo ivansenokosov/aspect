@@ -22,18 +22,11 @@ export interface ISimpleDictionary {
     id: number
 }
 
-export interface ISimpleData {
-    data: ISimpleDictionary[]
-    error: any
-    loading: boolean
-}
-
 export interface IDocument<T> {
     data   : T[]
     error  : any
     loading: boolean
 }
-
 
 export interface IInvAvalControl {
     id: number
@@ -41,25 +34,11 @@ export interface IInvAvalControl {
     control: number
 }
 
-export interface IInvAvalControlData {
-    data: IInvAvalControl[]
-    error: any
-    loading: boolean
-}
-
-
 export interface IInvOverload {
     id: number
     p_mode: string
     g_mode: string
 }
-
-export interface IInvOverloadData {
-    data: IInvOverload[]
-    error: any
-    loading: boolean
-}
-
 
 export interface IInvertor {
     id: number
@@ -103,12 +82,6 @@ export interface IInvertor {
     currency              ?: string
 }
 
-export interface IInvertorData {
-    data: IInvertor[]
-    error: any
-    loading: boolean
-}
-
 export interface IPower {
     power: string
     error: number
@@ -132,12 +105,6 @@ export interface IInvSerie {
     schema: string
 }
 
-export interface IInvSerieData {
-    data: Array<IInvSerie>
-    error: any
-    loading: boolean
-}
-
 export interface IInvOption {
     id             : number 
     item           : number
@@ -153,12 +120,6 @@ export interface IInvOption {
     option_type   ?: string
 }
 
-export interface IInvOptionData {
-    data: IInvOption[]
-    error: any
-    loading: boolean
-}
-
 export interface IItem {
     id             : number
     type           : number
@@ -166,13 +127,6 @@ export interface IItem {
     quantity       : number
     waiting_period : number
 }
-
-export interface IItemData {
-    data: IItem[]
-    error: any
-    loading: boolean
-}
-
 export interface IUserInvConfig {
     id : number
     invertor : number
@@ -187,12 +141,6 @@ export interface IUserInvConfig {
     info: string
 }
 
-export interface IUserInvConfigData {
-    data: IUserInvConfig[]
-    error: any
-    loading: boolean
-}
-
 export interface IUser {
     id ?: number
     username?: string
@@ -205,12 +153,6 @@ export interface IUser {
     is_superuser?: boolean
 }
 
-export interface IUserData {
-    data: IUser[]
-    error: any
-    loading: boolean
-}
-
 export interface IInvInputOuptput {
     id : number
     serie : number
@@ -219,23 +161,12 @@ export interface IInvInputOuptput {
     quantity: number
 }
 
-export interface IInvInputOuptputData {
-    data: IInvInputOuptput[]
-    error: any
-    loading: boolean
-}
-
 export interface IInvSignalInputOutput {
     serie    : number
     signal   : number 
+    signal_str: string
     info    ?: string
     quantity : number    
-}
-
-export interface IInvSignalInputOutputData {
-    data: IInvSignalInputOutput[]
-    error: any
-    loading: boolean
 }
 
 // ------------------------------- Скидки ------------------------------- 
@@ -247,12 +178,6 @@ export interface IInvSerieDisount {
     discount: number
   }
 
-export interface IInvSerieDisountData {
-    data: IInvSerieDisount[]
-    error: any
-    loading: true
-  }
-
 export interface IInvOptionDisount {
     id:number
     option: number
@@ -260,22 +185,10 @@ export interface IInvOptionDisount {
     discount: number
   }
 
-export interface IInvOptionDisountData {
-    data: IInvOptionDisount[]
-    error: any
-    loading: true
-  }
-
 export interface IUserDiscount {
     id: number
     user: number
     group: number
-  }
-
-export interface IUserDiscountData {
-    data: IUserDiscount[]
-    error: any
-    loading: boolean
   }
 
 // ------------------------------- Организации ------------------------------- 
@@ -291,25 +204,11 @@ export interface ICompany {
     logo?:string    
 }
 
-export interface ICompanyData {
-    data: ICompany[]
-    error: any
-    loading: boolean
-}
-
 export interface ICompanyUsers {
     id?     : number
     company : number
     user    : number
 }
-
-export interface ICompanyUsersData {
-    data: ICompanyUsers[]
-    error: any
-    loading: boolean
-}
-
-
 // ------------------------------- Журналироание ------------------------------- 
 
 export interface ILog {
@@ -319,11 +218,3 @@ export interface ILog {
     user   : number
     params : string
 }
-
-export interface ILogData {
-    data   : ILog[]
-    error  : any
-    loading: boolean
-}
-
-

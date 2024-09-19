@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ICompanyUsersData, ICompanyData, IFile, IUserData, IUser } from '@/interfaces';
+    import type { IDocument, ICompanyUsers, ICompany, IFile, IUser } from '@/interfaces';
     import Button from 'primevue/button';
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';
@@ -17,13 +17,13 @@
     import Column from 'primevue/column';
 
     const baseUrl      = useBaseUrl()
-    const data         = ref<ICompanyData>({data:[], error: null, loading: true})
+    const data         = ref<IDocument<ICompany>>({data:[], error: null, loading: true})
     const props        = defineProps(['id'])
     const saving       = ref<boolean>(false)
     const toast        = useToast(); 
     const logo         = ref<IFile>()
-    const companyUsers = ref<ICompanyUsersData>({data:[], error: null, loading: true})
-    const usersAll     = ref<IUserData>({data:[], error: null, loading: true})
+    const companyUsers = ref<IDocument<ICompanyUsers>>({data:[], error: null, loading: true})
+    const usersAll     = ref<IDocument<IUser>>({data:[], error: null, loading: true})
     const users        = ref<IUser[]>([])
 
 
@@ -44,7 +44,6 @@
 
         logo.value && logo.value.file_blob && formData.append("logo", logo.value.file_blob, String(logo.value.file_name))
 
-
         const res = await AxiosInstance.put(url, formData, config)
           .then(function(response) {
 //          console.log(response);
@@ -58,7 +57,6 @@
     const upload_logo = async (event:any) => { 
         logo.value = await uploadFile(event)
     }
-
     
     async function loadData() {
         data.value            = await useFetch('Companies/' + props.id, {});
@@ -71,7 +69,6 @@
                 }
             })
         })
-
 
         if (data.value.data[0].logo) {
             logo.value = await loadFile(baseUrl.baseUrl + data.value.data[0].logo)

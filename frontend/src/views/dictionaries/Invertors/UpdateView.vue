@@ -2,7 +2,7 @@
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
-    import type { ISimpleData, IInvertorData, IInvSerieData, ISimpleDictionary } from '@/interfaces';
+    import type { IDocument, IInvertor, IInvSerie, ISimpleDictionary } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
     import InputText from 'primevue/inputtext';
@@ -12,13 +12,13 @@
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
 
-    const data            = ref<IInvertorData>({data:[], error: null, loading: true})
-    const series          = ref<IInvSerieData>({data:[], error: null, loading: true})
-    const invInputVoltage = ref<ISimpleData>({data:[], error: null, loading: true})
-    const sizes           = ref<ISimpleData>({data:[], error: null, loading: true})
-    const invBreakModule  = ref<ISimpleData>({data:[], error: null, loading: true})
-    const invDC           = ref<ISimpleData>({data:[], error: null, loading: true})
-    const invEMC          = ref<ISimpleData>({data:[], error: null, loading: true})
+    const data            = ref<IDocument<IInvertor>>({data:[], error: null, loading: true})
+    const series          = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
+    const invInputVoltage = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const sizes           = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invBreakModule  = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invDC           = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invEMC          = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
 
     const invDCdata           = ref<ISimpleDictionary>({name: '', id: 0})
     const invEMCdata          = ref<ISimpleDictionary>({name: '', id: 0})

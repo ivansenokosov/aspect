@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Level_IP" title="Уровень защиты"/>
+  <UniversalCreate url="Type_of_options" title="Тип опции"/>
 </template>
 

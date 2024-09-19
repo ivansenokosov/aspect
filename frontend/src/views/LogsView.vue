@@ -1,33 +1,20 @@
 <script setup lang="ts">
-
     import { ref, watch } from 'vue'
     import { useFetch } from '@/api/useFetch';
-    import type { ILogData, IUserData, ICompanyUsersData, ICompanyData, ISimpleData, IUser } from '@/interfaces';
-    import { getCompanyNameByUserId, getUserNameByUserId, getLoginByUserId } from '@/api/getCompanyNameByUserId';
+    import type { IDocument, ILog, ICompanyUsers, ICompany, IUser, ISimpleDictionary } from '@/interfaces';
+    import { getCompanyNameByUserId, getLoginByUserId } from '@/api/getCompanyNameByUserId';
     import { getValueFromDictionary } from '@/api/getValueFromDictionary';
     import moment from 'moment';
-
     import DataTable from 'primevue/datatable';
     import Column from 'primevue/column';
     import Chart from 'primevue/chart';  
     import Select from 'primevue/select';
     import FloatLabel from 'primevue/floatlabel';
-    
     import Tabs from 'primevue/tabs';
     import TabList from 'primevue/tablist';
     import Tab from 'primevue/tab';
     import TabPanels from 'primevue/tabpanels';
     import TabPanel from 'primevue/tabpanel';
-
-    // interface IStack {
-    //     data: number []
-    // }
-    // interface IDataset {
-    //     type            : string
-    //     label           : string
-    //     backgroundColor : any
-    //     data            : IStack
-    // }
 
     const colors        = ref<string[]>(['--p-blue-500',
                                          '--p-green-500',
@@ -43,23 +30,23 @@
                                          '--p-gray-500',
                                          '--p-primary-500'])
 
-    const logs          = ref<ILogData>({data:[], error: null, loading: true})
-    const users         = ref<IUserData>({data:[], error: null, loading: true}) 
-    const companyUsers  = ref<ICompanyUsersData>({data:[], error: null, loading: true}) 
-    const companies     = ref<ICompanyData>({data:[], error: null, loading: true}) 
-    const actions       = ref<ISimpleData>({data:[], error: null, loading: true}) 
+    const logs          = ref<IDocument<ILog>>({data:[], error: null, loading: true})
+    const users         = ref<IDocument<IUser>>({data:[], error: null, loading: true}) 
+    const companyUsers  = ref<IDocument<ICompanyUsers>>({data:[], error: null, loading: true}) 
+    const companies     = ref<IDocument<ICompany>>({data:[], error: null, loading: true}) 
+    const actions       = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) 
 
     const selectedUser  = ref<IUser>()
-    const actionLabels  = ref<String[]>([])
-    const actionValues  = ref<Number[]>([])
+    const actionLabels  = ref<string[]>([])
+    const actionValues  = ref<number[]>([])
     const chartData1    = ref();
     const chartData2    = ref();
     const chartOptions1 = ref();
     const chartOptions2 = ref();
     const loading       = ref<boolean>(true)
-    const dates         = ref<String[]>([])
-    var   stacked       = create2DArray(30,10) // ref<IStack[]>([])
-    var   dataset       = create2DArray(30,10) // ref<IDataset[]>([])
+    const dates         = ref<string[]>([])
+    var   stacked       = create2DArray(30,10) 
+    var   dataset       = create2DArray(30,10) 
     const documentStyle = getComputedStyle(document.documentElement);
 
     function create2DArray(m:number, n:number) {
@@ -131,20 +118,12 @@
         chartOptions1.value = setChartOptions1();
         chartData1.value    = setChartData1();
 
-        // selectedUser.value = users.value.data[0]  // установка начального выбранного пользователя
-
-        // actions.value.data.map((action, index) => { 
-        //     stacked.value.push()
-        // })  // Создаём пустые стеки
-
-
         loading.value       = false
     }
 
     watch(selectedUser, () => {
 
         dataset = []
-        // dataset.value = []
         
         actions.value.data.map((action, index) => { 
             let date = Date.now() - 1000 * 60 * 60 * 24 * 29; // 30 дней назад
@@ -160,11 +139,9 @@
                         count++
                     }
                 })
-                // stacked.value[index].data.push(count)
                 stacked[index][i]=count
 
             }
-            // dataset.value.push({type: 'bar', label: actions.value.data[index].name, backgroundColor: documentStyle.getPropertyValue(colors.value[index]), data: stacked[index]})
             dataset[index] = {type: 'bar', label: actions.value.data[index].name, backgroundColor: documentStyle.getPropertyValue(colors.value[index]), data: stacked[index]}
         })
 

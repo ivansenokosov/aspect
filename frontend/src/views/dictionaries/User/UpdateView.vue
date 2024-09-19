@@ -1,108 +1,63 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
-    import AxiosInstance from '@/api/axiosInstance';
-    import type { ICompany, ICompanyData, IUserData, ICompanyUsersData, ICompanyUsers, ISimpleData, ISimpleDictionary, IUserDiscountData } from '@/interfaces';
+    import type { IDocument, IUser, ICompany, ICompanyUsers, IUserDiscount, ISimpleDictionary } from '@/interfaces';
     import Button from 'primevue/button';
     import InputText from 'primevue/inputtext';
     import FloatLabel from 'primevue/floatlabel';
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
-    import { useBaseUrl } from '@/stores/baseUrl';
     import { useUserStore } from '@/stores/user';
     import Checkbox from 'primevue/checkbox';
     import Password from 'primevue/password';
-    import AutoComplete from 'primevue/autocomplete';
     import Select from 'primevue/select';
+    import MyAutocomplete from '@/components/MyAutocomplete.vue';
+    import { updateData, insertData } from '@/api/dataActions';
 
-    const baseUrl          = useBaseUrl()
     const user             = useUserStore()
-    const data             = ref<IUserData>({data:[], error: null, loading: true})
-    const companies        = ref<ICompanyData>({data:[], error: null, loading: true})
-    const companyUsers     = ref<ICompanyUsersData>({data:[], error: null, loading: true})
+    const props            = defineProps(['id'])
+    const toast            = useToast(); 
+
+    const data             = ref<IDocument<IUser>>({data:[], error: null, loading: true})
+    const companies        = ref<IDocument<ICompany>>({data:[], error: null, loading: true})
+    const companyUsers     = ref<IDocument<ICompanyUsers>>({data:[], error: null, loading: true})
     const companyUser      = ref<ICompanyUsers>({user:0, company:0})
     const filtered         = ref<ICompanyUsers[]>([])
-    const company          = ref<ICompany>({id: 0, name:'', inn:'', address:'', agreement:'', info:'', phone:'', email:'', logo:''})
-    const groups           = ref<ISimpleData>({data:[], error: null, loading: true}) 
+    const groups           = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) 
     const group            = ref<ISimpleDictionary>()
-    const userInvDiscounts = ref<IUserDiscountData>({data:[], error: null, loading: true}) 
+    const userInvDiscounts = ref<IDocument<IUserDiscount>>({data:[], error: null, loading: true}) 
+    const company          = ref<number>(0) // id организации пользователя из комбо
 
-
-    const props        = defineProps(['id'])
-    const saving       = ref<boolean>(false)
-    const toast        = useToast(); 
-    const loading      = ref<boolean>(true)
-    
-    
+    const saving           = ref<boolean>(false)
+    const loading          = ref<boolean>(true)
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Users/' + props.id + '/'
-        const config = { headers: { 'content-type': 'application/json', }, };
+        const url:string  =  'Users/' + props.id + '/'
+        const url2:string =  'discounts/UserInvDisount'
 
-        const res = await AxiosInstance.put(url, data.value.data, config)
-          .then(function(response) {
-          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные пользователя обновлены', life: 3000 });
-        }).catch(function(error) {
-          console.log(error);
+        updateData(url, data.value.data[0]).then(()=>{
+            toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные пользователя обновлены', life: 3000 });
         })
 
         // проверяем наличие записи в CompanyUsers для этого пользователя
-        if (company.value.id) {
+        if (company.value) {
             filtered.value = companyUsers.value.data.filter(item => item.user === Number(props.id))
-            companyUser.value = {user: props.id, company: company.value.id}
-
-            if (filtered.value.length > 0) { // нашли, обновляем
-                const res = await AxiosInstance.put('CompanyUsers/' + filtered.value[0].id + '/', companyUser.value, config)
-                                            .then(function(response) {
-                                                    // console.log(response)
-                                                })
-                                                .catch(function(error) {
-                                                    console.log(error);
-                                                })
-            } else { // не нашли, добавлям
-                const res = await AxiosInstance.post('CompanyUsers/', companyUser.value, config)
-                                            .then(function(response) {
-                                                    // console.log(response)
-                                            })
-                                            .catch(function(error) {
-                                                    console.log(error);
-                                                })
-            }
-
+            companyUser.value = {user: props.id, company: company.value}
+            filtered.value.length > 0 ? updateData('CompanyUsers/' + filtered.value[0].id + '/', companyUser.value) : insertData('CompanyUsers/', companyUser.value)
         }
 
         //-------------------- Сохраняем группу скидок
         if (group.value) {
-            const url2:string =  'discounts/UserInvDisount'
-            const formData = new FormData();        
-            formData.append("user",  props.id)
-            formData.append("group", group.value.id.toString())
+            const formData = {"user": props.id, "group": group.value.id.toString()}      
 
-            if (userInvDiscounts.value.data.length>0) { 
-                // ------------------ обновляем группу скидок
-                const res2 = await AxiosInstance.put(url2 + '/' +  userInvDiscounts.value.data[0].id + '/', formData, config)
-                                                .then(function(response) {
-                                                    console.log(response);
-                                                    toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные группы скидок обновлены', life: 3000 });
-                                                })
-                                                .catch(function(error) {
-                                                    console.log(error);
-                                                })
-            } else { 
-                // ------------------ добавляем группу скидок
-                const res2 = await AxiosInstance.post(url2 + '/', formData, config)
-                                                .then(function(response) {
-                                                    toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные группы скидок добавлены', life: 3000 });
-                                                    console.log(response);
-                                                })
-                                                .catch(function(error) {
-                                                    console.log(error);
-                                                })
-
-            }
+            userInvDiscounts.value.data.length>0 ? 
+                updateData(url2 + '/' +  userInvDiscounts.value.data[0].id + '/', formData).then( () => {
+                    toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные группы скидок обновлены', life: 3000 });
+                }) 
+                : 
+                insertData(url2 + '/', formData)
         }
-
 
         saving.value = false
     }
@@ -112,9 +67,9 @@
         companies.value       = await useFetch('Companies', {});
         companyUsers.value    = await useFetch('CompanyUsers', {});
 
-        filtered.value = companyUsers.value.data.filter(item => item.user === Number(props.id))
-        if (filtered.value.length > 0) { 
-            company.value = companies.value.data.filter(item => item.id === filtered.value[0].company)[0]
+        filtered.value        = companyUsers.value.data.filter(item => item.user === Number(props.id))
+        if (filtered.value.length>0) {
+            company.value = filtered.value[0].company
         }
 
         // Загражаем то, что нужно для группы скидок
@@ -127,11 +82,6 @@
         loading.value         = false
     }
 
-    const items = ref<ICompany[]>([]);
-    const search = (event:any) => {
-        items.value = event.query ? companies.value.data.filter(item => item.name.toUpperCase().includes(event.query.toUpperCase())) : companies.value.data;
-    }    
-    
     loadData()
 </script>
 
@@ -179,22 +129,19 @@
                     <label for="is_active" class="ml-2">Активный</label>
             </div>
 
-            <div class="flex items-center" v-if="user.userIsSuperadmin">
+            <div class="flex items-center" v-if="user.isSuperadmin()">
                     <Checkbox v-model="data.data[0].is_staff" :binary="true"  inputId="is_staff"/>
                     <label for="is_staff" class="ml-2">Сотрудник</label>
             </div>
 
-            <div class="flex items-center" v-if="user.userIsSuperadmin">
+            <div class="flex items-center" v-if="user.isSuperadmin()">
                     <Checkbox v-model="data.data[0].is_superuser" :binary="true"  inputId="is_superuser"/>
                     <label for="is_superuser" class="ml-2">Суперадмин</label>
             </div>
         </div>
 
         <div class="field pt-5">
-            <FloatLabel>
-                <AutoComplete v-model="company" dropdown :suggestions="items" @complete="search" optionLabel="name" class="w-full"/>
-                <label for="email">Организация</label>
-            </FloatLabel>
+            <MyAutocomplete v-model="company" :options="companies.data" :value="company" label="Организация"/>
         </div>
 
         <div class="field pt-5"> 

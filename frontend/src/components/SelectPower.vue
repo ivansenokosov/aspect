@@ -4,7 +4,6 @@
     import FloatLabel from 'primevue/floatlabel';
     import AutoComplete from 'primevue/autocomplete';
     import { powers } from '@/assets/powers';
-    import type { IPower } from '@/interfaces';
 
     const props = defineProps(['title'])
     const power = defineModel<any>('power')
@@ -12,6 +11,7 @@
     const range = ref<string>('')
 
     const powersDisplay = ref<Number[]>([]);
+
     const search = (event:any) => {
         powersDisplay.value = powers.filter((item) => item.toString().includes(event.query.replace(',','.')));
     }
