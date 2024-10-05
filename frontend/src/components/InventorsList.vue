@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, watch, defineProps } from 'vue' 
+  import { ref, watch } from 'vue' 
   import type { IInvertor, ISimpleDictionary, IDocument, IInvAvalControl, IUserDiscount, IInvSerieDisount } from '@/interfaces.js';
   import { useFetch } from '@/api/useFetch';
   import { priceFormat } from '@/api/priceFormat';
@@ -9,13 +9,13 @@
   import DataTable from 'primevue/datatable';
   import Column from 'primevue/column';
   import Button from 'primevue/button';
-  import Toast from 'primevue/toast';
   import OverlayBadge from 'primevue/overlaybadge';  
   import ProgressSpinner from 'primevue/progressspinner';
   import SelectButton from 'primevue/selectbutton';
   import SelectOptionsModal from './SelectOptionsModal.vue';
   import { filterInvertors } from '@/api/filtterInvertors';
   import { useBaseUrl } from '@/stores/baseUrl';
+  import AxiosInstance from './../api/axiosInstance'
 
   const props      = defineProps(['invInputVolage','invTypeOfControl','invVariantOfControl','invEMC','invDC','invBreak','power','error'])
   const user       = useUserStore()
@@ -45,28 +45,28 @@
 
   async function loadDiscounts() {
     if (user.isUser()) {
-      userInvDisount.value = await useFetch('discounts/UserInvDisount?user=' + user.userId, {} ); 
+      userInvDisount.value = await useFetch('discounts/UserInvDisount?user=' + user.getUser().userId.value); 
       discontGroupId.value = userInvDisount.value.data[0].group
     }
   }
 
   function loadInvertors() {
     for (let i=2; i<=count/20 + 1; i++) {
-      fetch(baseUrl.baseUrl + 'users/invertors2?page=' + i.toString())
-      .then(response => response.json())
-      .then(data2 => data.value.data.push(...data2.results))
+      AxiosInstance.get('/users/invertors2?page=' + i.toString())
+           .then(data2 => data.value.data.push(...data2.data.results))
     }
   }
 
   async function loadData() {
-    invAvalControl.value = await useFetch('Inv_type_of_control',{})
+    invAvalControl.value = await useFetch('Inv_type_of_control')
+
     // загружаем первые 20 ПЧ
-    let res:any = await useFetch('users/invertors2?page=1',{})
+    let res:any = await useFetch('users/invertors2?page=1')
     count = res.data[0].count
     data.value.data = res.data[0].results
     data.value.loading = false
 
-    discontGroups.value  = await useFetch('discounts/InvDisountGroup', {})
+    discontGroups.value  = await useFetch('discounts/InvDisountGroup')
     await loadDiscounts()      
     dataDisplay.value = data.value.data
     // загружаем оставльные ПЧ фоном
@@ -76,7 +76,7 @@
   watch(() => [user.userId], async () => {  await loadDiscounts()  })
 
   watch(discontGroupId, async () => {  
-    serieDiscounts.value = await useFetch('discounts/InvSerieDisount/?group=' + discontGroupId.value,{})
+    serieDiscounts.value = await useFetch('discounts/InvSerieDisount/?group=' + discontGroupId.value)
   })
 
   watch(discontGroupSelected, () => {  
@@ -90,10 +90,10 @@
   })
 
   loadData()
+
 </script> 
 
 <template>
-  <Toast/>
   <div v-if="data.error">
     <h2>Error: {{ data.error }}</h2>
   </div>

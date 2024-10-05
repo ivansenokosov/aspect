@@ -63,9 +63,9 @@
     }
 
     async function loadData() {
-        data.value            = await useFetch('Users/' + props.id, {});
-        companies.value       = await useFetch('Companies', {});
-        companyUsers.value    = await useFetch('CompanyUsers', {});
+        data.value            = await useFetch('Users/' + props.id);
+        companies.value       = await useFetch('Companies');
+        companyUsers.value    = await useFetch('CompanyUsers');
 
         filtered.value        = companyUsers.value.data.filter(item => item.user === Number(props.id))
         if (filtered.value.length>0) {
@@ -73,10 +73,10 @@
         }
 
         // Загражаем то, что нужно для группы скидок
-        groups.value            = await useFetch('discounts/InvDisountGroup', {});
-        userInvDiscounts.value  = await useFetch('discounts/UserInvDisount?user=' + props.id, {});
-        if (userInvDiscounts.value.data.length > 0) {
-            group.value = groups.value.data.filter(item => item.id === userInvDiscounts.value.data[0].group)[0]
+        groups.value            = await useFetch('discounts/InvDisountGroup');
+        userInvDiscounts.value  = await useFetch('discounts/UserInvDisount?user=' + props.id);
+        if (userInvDiscounts.value.data) {
+            group.value = groups.value.data.find(item => item.id === userInvDiscounts.value.data[0].group)
         }
 
         loading.value         = false

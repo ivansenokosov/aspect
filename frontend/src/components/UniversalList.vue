@@ -17,7 +17,7 @@
   const path        = ref<string>('')
 
   async function loadData() {
-    data.value = await useFetch(props.url, {} );
+    data.value = await useFetch(props.url);
     dataDisplay.value = data.value.data
     path.value = getPath(route.path)
   }

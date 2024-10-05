@@ -92,13 +92,13 @@
     }    
 
     async function loadData() {
-        items.value           = await useFetch('Items', {});
-        series.value          = await useFetch('Inv_series_dict', {});
-        invInputVoltage.value = await useFetch('Inv_input_voltage', {});
-        sizes.value           = await useFetch('Inv_sizes_dict', {});
-        invBreakModule.value  = await useFetch('Inv_breake_module', {});
-        invDC.value           = await useFetch('Inv_DC_drossel', {});
-        invEMC.value          = await useFetch('Inv_EMC_drossel', {});
+        items.value           = await useFetch('Items');
+        series.value          = await useFetch('Inv_series_dict');
+        invInputVoltage.value = await useFetch('Inv_input_voltage');
+        sizes.value           = await useFetch('Inv_sizes_dict');
+        invBreakModule.value  = await useFetch('Inv_breake_module');
+        invDC.value           = await useFetch('Inv_DC_drossel');
+        invEMC.value          = await useFetch('Inv_EMC_drossel');
         loading.value = false
     }
     

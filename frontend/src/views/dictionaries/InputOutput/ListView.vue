@@ -13,9 +13,9 @@
   const loading = ref<boolean>(true)
 
   async function loadData() {
-    data.value      = await useFetch('Inv_spec_of_in_out', {} );
-    signal.value    = await useFetch('Inv_type_of_signals', {} );
-    serie.value     = await useFetch('Inv_series_dict', {} );
+    data.value      = await useFetch('Inv_spec_of_in_out');
+    signal.value    = await useFetch('Inv_type_of_signals');
+    serie.value     = await useFetch('Inv_series_dict');
     loading.value = false
   }
 

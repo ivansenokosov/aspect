@@ -59,9 +59,9 @@
     }
     
     async function loadData() {
-        data.value            = await useFetch('Companies/' + props.id, {});
-        companyUsers.value    = await useFetch('CompanyUsers/?company=' + props.id, {})
-        usersAll.value        = await useFetch('Users', {})
+        data.value            = await useFetch('Companies/' + props.id);
+        companyUsers.value    = await useFetch('CompanyUsers/?company=' + props.id)
+        usersAll.value        = await useFetch('Users')
         usersAll.value.data.map(user => {
             companyUsers.value.data.map(cu => {
                 if (user.id == cu.user) {
@@ -94,7 +94,7 @@
                 <div class="field pt-5">
                     <div class="width:100%"><h3 class="font-semibold">Логотип</h3></div>
                     <img v-if="logo" v-bind:src="String(logo.file_base64data)" width="350">
-                    <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
+                    <img v-else :src="`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`" width="350" height="262"/>
                     <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" customUpload @uploader="upload_logo" :auto="true" chooseLabel="Выбрать" />
                 </div>
                 

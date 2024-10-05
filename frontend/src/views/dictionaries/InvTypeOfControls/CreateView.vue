@@ -31,8 +31,8 @@
     }
 
     async function loadData() {
-        series.value   = await useFetch('Inv_series_dict', {} );
-        controls.value = await useFetch('Variants_of_control', {} );
+        series.value   = await useFetch('Inv_series_dict');
+        controls.value = await useFetch('Variants_of_control');
         loading.value  = false
     }
     

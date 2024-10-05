@@ -71,7 +71,7 @@
         }
         const formData = new FormData();        
 
-        formData.append("user",               String(user.userId))
+        formData.append("user",               String(user.getUser().userId.value))
         formData.append("invertor",           String(props.invertor.id))
         formData.append("invertor_price",     String(props.invertor.price))
         formData.append("invertor_discount",  getDiscountSerie(props.invertor.serie, serieDiscounts.value.data) )
@@ -101,8 +101,8 @@
 
     async function loadOptionDiscounts() {
         if (user.isUser() && props.invertor.id && props.discontGroupId) {
-            optionDiscounts.value = await useFetch('discounts/InvOptionDisount/?group=' + props.discontGroupId,{})
-            serieDiscounts.value  = await useFetch('discounts/InvSerieDisount/?group=' + props.discontGroupId,{})
+            optionDiscounts.value = await useFetch('discounts/InvOptionDisount/?group=' + props.discontGroupId)
+            serieDiscounts.value  = await useFetch('discounts/InvSerieDisount/?group=' + props.discontGroupId)
         }  
     }
 
@@ -113,9 +113,9 @@
         saveLog(3,String(props.invertor.serie))
 
         if (props.invertor.id) {
-            typeOfOptions.value  = await useFetch('Type_of_options', {} );
-            serie.value          = await useFetch('Inv_series/' + String(props.invertor.serie),{})
-            options.value        = await useFetch('Inv_options/?serie=' + String(props.invertor.serie),{})
+            typeOfOptions.value  = await useFetch('Type_of_options');
+            serie.value          = await useFetch('Inv_series/' + String(props.invertor.serie))
+            options.value        = await useFetch('Inv_options/?serie=' + String(props.invertor.serie))
             await loadOptionDiscounts()
             optionsDisplay.value = {...options.value}
             loading.value = false

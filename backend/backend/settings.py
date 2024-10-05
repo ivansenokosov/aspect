@@ -148,7 +148,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
-CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1','http://localhost:5173']
+CSRF_TRUSTED_ORIGINS = ['http://*.127.0.0.1','http://localhost:5173','http://192.168.1.5:5173']
 
 
 # Добавлено для auth

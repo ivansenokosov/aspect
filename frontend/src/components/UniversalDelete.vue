@@ -25,7 +25,7 @@
     }
 
     async function loadData() {
-        data.value = await useFetch(props.url + '/' + props.id, {});
+        data.value = await useFetch(props.url + '/' + props.id);
         path.value = getPath(route.path)        
     }
     

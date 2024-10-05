@@ -20,7 +20,7 @@
     }
 
     async function loadData() {
-        data.value            = await useFetch('Users/' + props.id, {});
+        data.value            = await useFetch('Users/' + props.id);
     }
     
     onMounted(() => {loadData()})

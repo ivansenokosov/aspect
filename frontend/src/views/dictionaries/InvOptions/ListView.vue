@@ -19,9 +19,9 @@
 
 
   async function loadData() {
-    data.value       = await useFetch('Inv_options', {} );
-    series.value     = await useFetch('Inv_series', {} );
-    optionType.value = await useFetch('Type_of_options', {} );
+    data.value       = await useFetch('Inv_options');
+    series.value     = await useFetch('Inv_series');
+    optionType.value = await useFetch('Type_of_options');
     optionType.value.data.map(item => optionTypeStr.value.push(item.name))
     loading.value = false
   }

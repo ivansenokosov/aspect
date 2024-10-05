@@ -57,7 +57,7 @@
   });  
 
   async function loadData() {
-    items.value = await useFetch('Items',{})
+    items.value = await useFetch('Items')
   }
 
   function reset() {

@@ -34,18 +34,18 @@
   const toast        = useToast();
 
   async function loadData() {
-    let url:string
-    if (user.isUser()) {
-      url = 'userconfigs/UserInvConfg/' // загружаем всё
-    } else {
-      url = 'userconfigs/UserInvConfg?user_id=' + String(user.userId) // загружаем только конфигурации пользователя
-    }
-    data.value            = await useFetch(url, {} ); 
-    options.value         = await useFetch('Inv_options', {} );
-    invertors.value       = await useFetch('Invertor_dict', {} );
-    users.value           = await useFetch('UsersDict', {} );
-    companyUsers.value    = await useFetch('CompanyUsers', {} );
-    companies.value       = await useFetch('Companies', {} );
+    var url:string      = 'userconfigs/UserInvConfg'
+    const userId:string = user.getUser().userId.value.toString()
+
+    if (!user.isStaff()) 
+      url += '?user_id=' + userId // загружаем только конфигурации пользователя
+    
+    data.value            = await useFetch(url); 
+    options.value         = await useFetch('Inv_options');
+    invertors.value       = await useFetch('Invertor_dict');
+    users.value           = await useFetch('UsersDict');
+    companyUsers.value    = await useFetch('CompanyUsers');
+    companies.value       = await useFetch('Companies');
 
     users.value.data.map(item => userNames.value.push(item.first_name))
 

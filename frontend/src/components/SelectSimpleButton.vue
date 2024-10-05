@@ -11,7 +11,7 @@
     const props          = defineProps(['url','title'])
 
     async function loadData() {
-        invInputVolage.value = await useFetch(props.url,{})
+        invInputVolage.value = await useFetch(props.url)
         model.value = invInputVolage.value.data
     }
 

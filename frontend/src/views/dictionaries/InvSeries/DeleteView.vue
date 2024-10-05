@@ -51,24 +51,24 @@
     }
 
     async function loadData() {
-        data.value                     = await useFetch('Inv_series/' + props.id, {});
-        manufactoryData.value          = await useFetch('Manufactoty', {} );
-        outputVoltageData.value        = await useFetch('Inv_output_voltage', {} );
-        typeOfControlData.value        = await useFetch('Type_of_control', {} );
-        typeOfPanelData.value          = await useFetch('Inv_type_of_panels', {} );
-        typeOfOverloadData.value       = await useFetch('Inv_overload_dict', {} );
-        typeOfAccuracyFreqData.value   = await useFetch('Inv_accurancy_frenq', {} );
-        ambientTemperatureData.value   = await useFetch('Ambient_temperatures', {} );
-        levelIPData.value              = await useFetch('Level_IP', {} );
+        data.value                     = await useFetch('Inv_series/' + props.id);
+        manufactoryData.value          = await useFetch('Manufactoty');
+        outputVoltageData.value        = await useFetch('Inv_output_voltage');
+        typeOfControlData.value        = await useFetch('Type_of_control');
+        typeOfPanelData.value          = await useFetch('Inv_type_of_panels');
+        typeOfOverloadData.value       = await useFetch('Inv_overload_dict');
+        typeOfAccuracyFreqData.value   = await useFetch('Inv_accurancy_frenq');
+        ambientTemperatureData.value   = await useFetch('Ambient_temperatures');
+        levelIPData.value              = await useFetch('Level_IP');
 
-        manufactory.value              = manufactoryData.value.data.filter(item => item.id === data.value.data[0].manufactory)[0]
-        outputVoltage.value            = outputVoltageData.value.data.filter(item => item.id === data.value.data[0].output_voltage)[0]
-        typeOfControl.value            = typeOfControlData.value.data.filter(item => item.id === data.value.data[0].type_of_control)[0]
-        typeOfPanel.value              = typeOfPanelData.value.data.filter(item => item.id === data.value.data[0].type_of_panel)[0]
-        typeOfOverload.value           = typeOfOverloadData.value.data.filter(item => item.id === data.value.data[0].type_of_overload)[0]
-        typeOfAccuracyFreq.value       = typeOfAccuracyFreqData.value.data.filter(item => item.id === data.value.data[0].type_of_accuracy_freq)[0]
-        ambientTemperature.value       = ambientTemperatureData.value.data.filter(item => item.id === data.value.data[0].ambient_temperature)[0]
-        levelIP.value                  = levelIPData.value.data.filter(item => item.id === data.value.data[0].level_IP)[0]
+        manufactory.value              = manufactoryData.value.data.find(item => item.id === data.value.data[0].manufactory)
+        outputVoltage.value            = outputVoltageData.value.data.find(item => item.id === data.value.data[0].output_voltage)
+        typeOfControl.value            = typeOfControlData.value.data.find(item => item.id === data.value.data[0].type_of_control)
+        typeOfPanel.value              = typeOfPanelData.value.data.find(item => item.id === data.value.data[0].type_of_panel)
+        typeOfOverload.value           = typeOfOverloadData.value.data.find(item => item.id === data.value.data[0].type_of_overload)
+        typeOfAccuracyFreq.value       = typeOfAccuracyFreqData.value.data.find(item => item.id === data.value.data[0].type_of_accuracy_freq)
+        ambientTemperature.value       = ambientTemperatureData.value.data.find(item => item.id === data.value.data[0].ambient_temperature)
+        levelIP.value                  = levelIPData.value.data.find(item => item.id === data.value.data[0].level_IP)
 
         min_power.value = Number(data.value.data[0].min_power)
         max_power.value = Number(data.value.data[0].max_power)
@@ -112,12 +112,12 @@
               <div class="col-6">
                   <div class="width:100%"><h3 class="font-semibold">Изображение</h3></div>
                   <img v-if="photo" v-bind:src="String(photo.file_base64data)" width="350">
-                  <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
+                  <img v-else :src="`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`" width="350" height="262"/>
               </div>
               <div class="col-6">
                 <div class="width:100%"><h3 class="font-semibold">Схема</h3></div>
                 <img v-if="schema" v-bind:src="String(schema.file_base64data)" width="350">
-                <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
+                <img v-else :src="`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`" width="350" height="262"/>
               </div>
           </div>
         </div> 

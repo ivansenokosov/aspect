@@ -35,9 +35,9 @@
     }
 
     async function loadData() {
-        data.value       = await useFetch('Inv_spec_of_in_out', {} );
-        signals.value    = await useFetch('Inv_type_of_signals', {} );
-        series.value     = await useFetch('Inv_series_dict', {} );
+        data.value       = await useFetch('Inv_spec_of_in_out');
+        signals.value    = await useFetch('Inv_type_of_signals');
+        series.value     = await useFetch('Inv_series_dict');
         serie.value      = data.value.data[0].serie
         signal.value      = data.value.data[0].signal
         loading.value    = false

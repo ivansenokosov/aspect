@@ -42,20 +42,20 @@
     }
 
     async function loadData() {
-        data.value            = await useFetch('Invertors/' + props.id, {});
-        series.value          = await useFetch('Inv_series_dict', {});
-        invInputVoltage.value = await useFetch('Inv_input_voltage', {});
-        sizes.value           = await useFetch('Inv_sizes_dict', {});
-        invBreakModule.value  = await useFetch('Inv_breake_module', {});
-        invDC.value           = await useFetch('Inv_DC_drossel', {});
-        invEMC.value          = await useFetch('Inv_EMC_drossel', {});
+        data.value            = await useFetch('Invertors/' + props.id);
+        series.value          = await useFetch('Inv_series_dict');
+        invInputVoltage.value = await useFetch('Inv_input_voltage');
+        sizes.value           = await useFetch('Inv_sizes_dict');
+        invBreakModule.value  = await useFetch('Inv_breake_module');
+        invDC.value           = await useFetch('Inv_DC_drossel');
+        invEMC.value          = await useFetch('Inv_EMC_drossel');
 
-        invSerieData.value        = series.value.data.filter(item => item.id === data.value.data[0].serie)[0]
-        invDCdata.value           = invDC.value.data.filter(item => item.id === data.value.data[0].type_of_dc_drossel)[0]
-        invEMCdata.value          = invEMC.value.data.filter(item => item.id === data.value.data[0].type_of_emc_drossel)[0]
-        invBreakModuleData.value  = invBreakModule.value.data.filter(item => item.id === data.value.data[0].type_of_break_module)[0]
-        invInputVoltageData.value = invInputVoltage.value.data.filter(item => item.id === data.value.data[0].input_voltage)[0]
-        invSizeData.value         = sizes.value.data.filter(item => item.id === data.value.data[0].size)[0]
+        invSerieData.value        = series.value.data.find(item => item.id === data.value.data[0].serie)!
+        invDCdata.value           = invDC.value.data.find(item => item.id === data.value.data[0].type_of_dc_drossel)!
+        invEMCdata.value          = invEMC.value.data.find(item => item.id === data.value.data[0].type_of_emc_drossel)!
+        invBreakModuleData.value  = invBreakModule.value.data.find(item => item.id === data.value.data[0].type_of_break_module)!
+        invInputVoltageData.value = invInputVoltage.value.data.find(item => item.id === data.value.data[0].input_voltage)!
+        invSizeData.value         = sizes.value.data.find(item => item.id === data.value.data[0].size)!
 
         p_heavy_g.value = Number(data.value.data[0].p_heavy_g)
         p_pumps_p.value = Number(data.value.data[0].p_pumps_p)

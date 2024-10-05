@@ -22,7 +22,7 @@
     }
 
     async function loadData() {
-        data.value            = await useFetch('Inv_type_of_overload/' + props.id, {});
+        data.value            = await useFetch('Inv_type_of_overload/' + props.id);
     }
     
     loadData()

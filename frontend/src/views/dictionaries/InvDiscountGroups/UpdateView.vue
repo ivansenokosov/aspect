@@ -54,17 +54,17 @@
     }
 
     async function loadSeriesDisount() {
-      seriesDiscount.value  = await useFetch('discounts/InvSerieDisount/?group=' + props.id, {});  
+      seriesDiscount.value  = await useFetch('discounts/InvSerieDisount/?group=' + props.id);  
     }    
 
     async function loadOptionsDisount() {
-      optionsDiscount.value  = await useFetch('discounts/InvOptionDisount/?group=' + props.id, {});
+      optionsDiscount.value  = await useFetch('discounts/InvOptionDisount/?group=' + props.id);
     }    
 
     async function loadData() {
-        data.value             = await useFetch(url + '/' + props.id, {});
-        series.value           = await useFetch('Inv_series', {});
-        options.value          = await useFetch('Type_of_options', {});
+        data.value             = await useFetch(url + '/' + props.id);
+        series.value           = await useFetch('Inv_series');
+        options.value          = await useFetch('Type_of_options');
         await loadSeriesDisount()
         await loadOptionsDisount()
         path.value = getPath(route.path)        

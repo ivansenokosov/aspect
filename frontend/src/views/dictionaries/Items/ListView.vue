@@ -14,9 +14,9 @@
   const loading       = ref<boolean>(true)
   
   async function loadData() {
-    data.value            = await useFetch('Items', {} );
-    typeOfItems.value     = await useFetch('Type_of_items', {} );
-    waitingPeriod.value   = await useFetch('Waiting_period', {} );
+    data.value            = await useFetch('Items');
+    typeOfItems.value     = await useFetch('Type_of_items');
+    waitingPeriod.value   = await useFetch('Waiting_period');
     loading.value = false
   }
 

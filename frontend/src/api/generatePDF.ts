@@ -3,13 +3,13 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { dejavuFont } from "./dejavuFont";
 import { useBaseUrl } from "@/stores/baseUrl";
-import type { IInvertor, IInvOption, IInvSerie, IInvSignalInputOutput } from '@/interfaces';
+import type { IInvertor, IInvOption, IInvSerie, IInvSignalInputOutput, IFile } from '@/interfaces';
 import { priceFormat } from "./priceFormat";
-import type { IDocument, ISimpleDictionary, IInvAvalControl } from "@/interfaces";
+import type { IDocument, ISimpleDictionary } from "@/interfaces";
 import { useFetch } from './useFetch';
 import { getValueFromDictionary } from './getValueFromDictionary';
 
-const baseUrl = useBaseUrl()
+const baseUrl              = useBaseUrl()
 const typeOfOptions        = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
 const outputVoltage        = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
 const breakModule          = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
@@ -38,20 +38,20 @@ export async function generatePDF(invertor: IInvertor,
                             ) {
     const filename = "aspect"
     const pdf      = new jsPDF({orientation: "portrait", unit: "px", format: "a4"});
-    const logo     = baseUrl.baseUrl + 'media/logos/aspect_logo.jpg'
-    const docs     = baseUrl.baseUrl + 'media/link_to_doc.png'
-    const photo    = baseUrl.baseUrl + serie.photo.substring(1, serie.photo.length)
-    const schema   = baseUrl.baseUrl + serie.schema.substring(1, serie.schema.length)
+    const logo     = `${baseUrl.baseUrl}/media/logos/aspect_logo.jpg`
+    const docs     = `${baseUrl.baseUrl}/media/link_to_doc.png`
+    const photo    = `${baseUrl.baseUrl}/serie.photo`
+    const schema   = `${baseUrl.baseUrl}/serie.schema`
     var photoRatio : number = 1
     var schemaRatio : number = 1
     
     getMeta(photo, (err:any, img:any) => { photoRatio = img.naturalWidth / img.naturalHeight });
     getMeta(schema, (err:any, img:any) => { schemaRatio = img.naturalWidth / img.naturalHeight });
 
-    breakModule.value          = await useFetch('Inv_breake_module/'      + invertor.type_of_break_module.toString() + '/', {} );
-    ambientTemperature.value   = await useFetch('Ambient_temperatures/'   + serie.ambient_temperature.toString() + '/', {} );
-    outputVoltage.value        = await useFetch('Inv_output_voltage/'     + serie.output_voltage.toString() + '/', {} );
-    typeOfOptions.value        = await useFetch('Type_of_options', {} );
+    breakModule.value          = await useFetch('Inv_breake_module/'      + invertor.type_of_break_module.toString() + '/');
+    ambientTemperature.value   = await useFetch('Ambient_temperatures/'   + serie.ambient_temperature.toString() + '/');
+    outputVoltage.value        = await useFetch('Inv_output_voltage/'     + serie.output_voltage.toString() + '/');
+    typeOfOptions.value        = await useFetch('Type_of_options');
 
     const signals_table_header = ['Сигнал','Количество']
     var   signals_table_body:Array<[string, string]>=[['','']]

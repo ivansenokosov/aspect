@@ -21,7 +21,7 @@
     }
 
     async function loadData() {
-        data.value            = await useFetch('Companies/' + props.id, {});
+        data.value            = await useFetch('Companies/' + props.id);
     }
     
     loadData()

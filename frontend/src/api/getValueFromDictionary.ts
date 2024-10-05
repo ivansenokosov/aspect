@@ -1,5 +1,5 @@
 export function getValueFromDictionary(dictionary: any[], id: number, param_name = 'name'):string {
-    const record = dictionary.filter(item => item.id === Number(id))[0]
+    const record = dictionary.find(item => item.id === Number(id))
     if (record) {
       return record[param_name]
     } else {
@@ -7,11 +7,11 @@ export function getValueFromDictionary(dictionary: any[], id: number, param_name
     }    
   }
 
-  export function getRecordFromDictionaray(dictionary: any[], id: number):any {
-    const record = dictionary.filter(item => item.id === Number(id))[0]
+  export function getRecordFromDictionaray(dictionary: any[], id: number):string {
+    const record = dictionary.find(item => item.id === Number(id))
     if (record) {
       return record
     } else {
-      return null
+      return ''
     }    
   }

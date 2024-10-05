@@ -11,7 +11,7 @@
     const props = defineProps(['url','title'])
 
     async function loadData() {
-        data.value = await useFetch(props.url,{})
+        data.value = await useFetch(props.url)
         model.value = data.value.data
     }
 

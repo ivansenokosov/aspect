@@ -6,7 +6,6 @@ from rest_framework import  generics
 from directories.serializers import InvertorsSerializer
 from directories.models import Invertors
 
-
 class StandardResultsSetPagination(PageNumberPagination):
     page_size = 20
     page_size_query_param = 'page_size'

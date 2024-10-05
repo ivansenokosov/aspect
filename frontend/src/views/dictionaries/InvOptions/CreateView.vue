@@ -51,9 +51,9 @@
     }    
 
     async function loadData() {
-        series.value               = await useFetch('Inv_series_dict', {});
-        typeOfOption.value         = await useFetch('Type_of_options', {});
-        items.value                = await useFetch('Items', {});
+        series.value               = await useFetch('Inv_series_dict');
+        typeOfOption.value         = await useFetch('Type_of_options');
+        items.value                = await useFetch('Items');
         loading.value = false
     }
     

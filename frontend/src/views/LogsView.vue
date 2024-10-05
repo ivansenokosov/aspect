@@ -97,11 +97,11 @@
     }
 
     async function loadData() {
-        logs.value          = await useFetch('logs/Logs', {})
-        users.value         = await useFetch('Users', {} );
-        companyUsers.value  = await useFetch('CompanyUsers', {} );
-        companies.value     = await useFetch('Companies', {} );
-        actions.value       = await useFetch('logs/Actions', {} );
+        logs.value          = await useFetch('logs/Logs')
+        users.value         = await useFetch('Users')
+        companyUsers.value  = await useFetch('CompanyUsers')
+        companies.value     = await useFetch('Companies')
+        actions.value       = await useFetch('logs/Actions')
 
         actions.value.data.map(action => {
             actionLabels.value.push(action.name)        // Создаём список действий

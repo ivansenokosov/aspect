@@ -1,10 +1,8 @@
 import AxiosInstance from "./axiosInstance";
 
-const config = { headers: { 'content-type': 'application/json', }, };
-
 export async function updateData(url: string, formData: any) {
     return new Promise ((resolve, reject) => {
-         AxiosInstance.put(url, formData, config)
+         AxiosInstance.put(url, formData)
         .then(function(response) {
             resolve(response)
         })
@@ -16,7 +14,7 @@ export async function updateData(url: string, formData: any) {
 
 export async function insertData(url: string, formData: any) {
     return new Promise ((resolve, reject) => {
-        AxiosInstance.post(url, formData, config)
+        AxiosInstance.post(url, formData)
         .then(function(response) {
             resolve(response)
         })

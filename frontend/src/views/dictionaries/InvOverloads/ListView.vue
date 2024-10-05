@@ -11,7 +11,7 @@
   const data      = ref<IDocument<IInvOverload>>({data:[], error: null, loading: true}) 
 
   async function loadData() {
-    data.value     = await useFetch('Inv_type_of_overload', {} );
+    data.value     = await useFetch('Inv_type_of_overload');
   }
 
   loadData()

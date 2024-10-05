@@ -95,14 +95,14 @@
     }
 
     async function loadData() {
-        manufactoryData.value          = await useFetch('Manufactoty', {} );
-        outputVoltageData.value        = await useFetch('Inv_output_voltage', {} );
-        typeOfControlData.value        = await useFetch('Type_of_control', {} );
-        typeOfPanelData.value          = await useFetch('Inv_type_of_panels', {} );
-        typeOfOverloadData.value       = await useFetch('Inv_overload_dict', {} );
-        typeOfAccuracyFreqData.value   = await useFetch('Inv_accurancy_frenq', {} );
-        ambientTemperatureData.value   = await useFetch('Ambient_temperatures', {} );
-        levelIPData.value              = await useFetch('Level_IP', {} );
+        manufactoryData.value          = await useFetch('Manufactoty');
+        outputVoltageData.value        = await useFetch('Inv_output_voltage');
+        typeOfControlData.value        = await useFetch('Type_of_control');
+        typeOfPanelData.value          = await useFetch('Inv_type_of_panels');
+        typeOfOverloadData.value       = await useFetch('Inv_overload_dict');
+        typeOfAccuracyFreqData.value   = await useFetch('Inv_accurancy_frenq');
+        ambientTemperatureData.value   = await useFetch('Ambient_temperatures');
+        levelIPData.value              = await useFetch('Level_IP');
         loading.value = false
     }
     
@@ -129,13 +129,13 @@
               <div class="col-6">
                   <div class="width:100%"><h3 class="font-semibold">Изображение</h3></div>
                   <img v-if="photo" v-bind:src="String(photo.file_base64data)" width="350">
-                  <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
+                  <img v-else :src='`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`' width="350" height="262"/>
                   <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" customUpload @uploader="upload_photo" :auto="true" chooseLabel="Выбрать" />
               </div>
               <div class="col-6">
                 <div class="width:100%"><h3 class="font-semibold">Схема</h3></div>
                 <img v-if="schema" v-bind:src="String(schema.file_base64data)" width="350">
-                <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
+                <img v-else :src='`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`' width="350" height="262"/>
                 <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="10000000" customUpload @uploader="upload_schema" :auto="true" chooseLabel="Выбрать" />
               </div>
           </div>
