@@ -16,6 +16,7 @@
   import { filterInvertors } from '@/api/filtterInvertors';
   import { useBaseUrl } from '@/stores/baseUrl';
   import AxiosInstance from './../api/axiosInstance'
+  import axios from 'axios' 
 
   const props      = defineProps(['invInputVolage','invTypeOfControl','invVariantOfControl','invEMC','invDC','invBreak','power','error'])
   const user       = useUserStore()
@@ -61,16 +62,24 @@
     invAvalControl.value = await useFetch('Inv_type_of_control')
 
     // загружаем первые 20 ПЧ
-    let res:any = await useFetch('users/invertors2?page=1')
-    count = res.data[0].count
-    data.value.data = res.data[0].results
+    // let res:any = await useFetch('users/invertors2?page=1')
+    // count = res.data[0].count
+    // data.value.data = res.data[0].results
+    // data.value.loading = false
+
+    await axios.get('http://127.0.0.1:3000/invertors')
+    .then((res) => data.value.data = res.data)
+    .catch((error) => console.log(error))
+
+    // console.log('invertors', invertors) 
     data.value.loading = false
+    count = data.value.data.length
 
     discontGroups.value  = await useFetch('discounts/InvDisountGroup')
     await loadDiscounts()      
     dataDisplay.value = data.value.data
     // загружаем оставльные ПЧ фоном
-    loadInvertors()
+    // loadInvertors()
   }
 
   watch(() => [user.userId], async () => {  await loadDiscounts()  })

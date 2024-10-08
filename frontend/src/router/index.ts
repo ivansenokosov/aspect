@@ -26,6 +26,11 @@ const router = createRouter({
       component: () => import('../views/MainView.vue')
     },
     {
+      path: '/express',
+      name: 'express',
+      component: () => import('../views/Express.vue')
+    },
+    {
       path: '/contacts',
       name: 'contacts',
       component: () => import('../views/ContactsView.vue')
