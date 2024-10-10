@@ -31,11 +31,12 @@ export function filterInvertors(data               : IInvertor[],
     invBreak && (invBreakStr.value                       = JSON.stringify(invBreak.map((a:ISimpleDictionary) => a.id.toString())))
     invVariantOfControl && (invVariantOfControlStr.value = JSON.stringify(invVariantOfControl.map((a:ISimpleDictionary) => a.id.toString())))
     // // снчала фильтруем список возможных вариантов контроля для серии
-    const aval = invAvalControl.filter((item) => invVariantOfControlStr.value.includes(item.control.toString()) )
+    const aval = invAvalControl.filter((item) => invVariantOfControlStr.value.includes(item.control.toString()) )   
+
     // формируем строку из доступных серий
     const avalSeriesStr = aval.map(a => a.serie.toString())
 
-    dataDisplay.value = data.filter((item) => (((Number(item.p_heavy_g.replace(',','.')) >= minPower && Number(item.p_heavy_g.replace(',','.')) <= maxPower) || (Number(item.p_pumps_p.replace(',','.')) >= minPower && Number(item.p_pumps_p.replace(',','.')) <= maxPower))
+    dataDisplay.value = data.filter((item) => (((Number(item.p_heavy_g.toString().replace(',','.')) >= minPower && Number(item.p_heavy_g.toString().replace(',','.')) <= maxPower) || (Number(item.p_pumps_p.toString().replace(',','.')) >= minPower && Number(item.p_pumps_p.toString().replace(',','.')) <= maxPower))
                                                       && invInputVolageStr.value.includes(item.input_voltage.toString()) 
                                                       && invTypeOfControlStr.value.includes(item.type_of_control.toString())
                                                       && invEMCStr.value.includes(item.type_of_emc_drossel.toString())

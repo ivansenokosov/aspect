@@ -49,7 +49,7 @@
     const selectedOptions       = ref<IInvOption[]>([])
     const selectedTypeOFOptions = ref<ISimpleDictionary[]>([])
     const optionsPrice          = ref<number>(0)  // итоговая цена выбранных опций
-    const optionsPriceDiscount  = ref<number>(0) // итоговая цена выбранных опций со скидкой
+    const optionsPriceDiscount  = ref<number>(0)  // итоговая цена выбранных опций со скидкой
     const typeOfOptionsStr      = ref<string>('')
     const loading               = ref<boolean>(true)
 
@@ -101,8 +101,8 @@
 
     async function loadOptionDiscounts() {
         if (user.isUser() && props.invertor.id && props.discontGroupId) {
-            optionDiscounts.value = await useFetch('discounts/InvOptionDisount/?group=' + props.discontGroupId)
-            serieDiscounts.value  = await useFetch('discounts/InvSerieDisount/?group=' + props.discontGroupId)
+            optionDiscounts.value = await useFetch('/data/InvOptionDisount/?column=group_id&opeator=equal&value=' + props.discontGroupId)
+            serieDiscounts.value  = await useFetch('/data/InvSerieDisount/?column=group_id&opeator=equal&value=' + props.discontGroupId)
         }  
     }
 
@@ -113,9 +113,10 @@
         saveLog(3,String(props.invertor.serie))
 
         if (props.invertor.id) {
-            typeOfOptions.value  = await useFetch('Type_of_options');
-            serie.value          = await useFetch('Inv_series/' + String(props.invertor.serie))
-            options.value        = await useFetch('Inv_options/?serie=' + String(props.invertor.serie))
+            typeOfOptions.value  = await useFetch('/data/Type_of_options');
+            serie.value          = await useFetch('/data/Inv_series/' + String(props.invertor.serie))
+            options.value        = await useFetch('/data/Inv_options/?column=series&operator=like&value=' + String(props.invertor.serie))  // django url /Inv_options/?serie=' + String(props.invertor.serie)
+
             await loadOptionDiscounts()
             optionsDisplay.value = {...options.value}
             loading.value = false
@@ -192,7 +193,7 @@
             </div>
         </div> <!-- loading -->
 
-        <SelectSimpleList url="Type_of_options" title="Тип опции" v-model="selectedTypeOFOptions" v-if="!loading"/>
+        <SelectSimpleList url="/data/Type_of_options" title="Тип опции" v-model="selectedTypeOFOptions" v-if="!loading"/>
 
         <h1 class="mt-5">Опции ({{ optionsDisplay.data.length }})</h1>
 

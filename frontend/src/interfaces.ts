@@ -1,5 +1,19 @@
 import type { ComputedRef } from 'vue'
 
+export interface IData {
+	url: string
+	redis_prefix: string
+	cached: boolean
+    sql_get_all: string
+	sql_get_one: string
+	sql_update: string
+	sql_insert: string
+	sql_delete: string
+    table: string
+    expire: number | null
+    prepare: Function
+}
+
 export interface IMenuItem {
     label?: string
     route?: string

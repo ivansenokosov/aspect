@@ -97,7 +97,7 @@
     }
 
     async function loadData() {
-        logs.value          = await useFetch('logs/Logs')
+        logs.value          = await useFetch('s')
         users.value         = await useFetch('Users')
         companyUsers.value  = await useFetch('CompanyUsers')
         companies.value     = await useFetch('Companies')

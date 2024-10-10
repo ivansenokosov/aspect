@@ -2,18 +2,17 @@ import express from 'express';
 import Redis from 'ioredis';
 import cors from 'cors';
 import { Database } from 'sqlite3';
-import { getAllData, getData, updateData, deleteData, insertData } from './appController'
+import { getAllData, getData, updateData, deleteData, insertData, getCountUnread } from './appController'
+import { auth, refreshAccessToken } from './users';
 
 const db = new Database('db.sqlite3');
-const router = express.Router();
 const app = express();
 const port = process.env.PORT || 3000;
 
-
 app.use(express.json());
 
-// Create a Redis client
-const redis = new Redis();
+const redis = new Redis(); // Create a Redis client
+
 
 // CORS 
 // const allowedOrigins = ['http://192.168.1.5:5173/','http://127.0.0.1:3000','http://localhost:3000'];
@@ -30,25 +29,14 @@ app.delete('/data/*/:key', (req:express.Request, res:express.Response, next: exp
 app.put   ('/data/*/:key', (req:express.Request, res:express.Response, next: express.NextFunction) => { updateData(req, res, next) });
 app.post  ('/data/*',      (req:express.Request, res:express.Response, next: express.NextFunction) => { insertData(req, res, next) });
 
-// app.put('/companies', (req:express.Request, res:express.Response) => {
-//     res.status(200).send({
-//         data: req
-//     });
-// });
-// app.delete('/companies/:key', (req:express.Request, res:express.Response) => {
-//   res.status(200).send({
-//       data: req
-//   });
-// });
+app.get   ('/interface/countUnread', (req:express.Request, res:express.Response) => { getCountUnread(req, res) });  // Сколько конфигураций ещё не просмотрено
 
-// app.get('/invertors', (req:express.Request, res:express.Response, next: express.NextFunction) => { getAllData(req, res, next) } );
-// app.get('/invertors/:key', (req, res) => {
-//   client.get(req.params.key, (err, reply) => {
-//       res.status(200).send({
-//           data: reply
-//       });
-//   });
-// });
+app.post   ('/user/auth',    (req:express.Request, res:express.Response) => { auth(req, res) });                // Аутентификация, возвращает токены
+app.post   ('/user/refresh', (req:express.Request, res:express.Response) => { refreshAccessToken(req, res) });  // обновляет AccessToken
+
+
+app.get   ('*', (req:express.Request, res:express.Response) => { res.send('wrong path') });  // Сообщение для неверного пути
+
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);

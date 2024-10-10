@@ -2,39 +2,64 @@ import express from 'express';
 import Redis from 'ioredis';
 import Async from 'async'
 import { Database } from 'sqlite3';
-import type { IData  } from './interfaces';
+import type { IData } from './interfaces';
 import { data } from './data';
 
 const db = new Database('./db.sqlite3');
 const redis = new Redis();
 
-/*
-  Function to handle the Index Route
-*/
-// exports.getIndexPage = (req:express.Request, res:express.Response) => {
-//   res.json({ status: 200, message: 'Simple CRUD RESTFUL API using Node JS, Express JS, and Redis.' });
-// };
-
 async function getNextId(table:string):Promise<number> {
   var id:number = 0
   return new Promise((resolve, reject) => {
 
-    db.get('select max(id) maxid from ' + table, [], function(err, row:any) {
+    db.get('select max(id) maxid from ' + table, [], function(err:any, row:any) {
       if (err) { reject(0) }
       resolve(Number(row.maxid) + 1);
     });
   })
 }
 
+const countUnread = async ():Promise<number> => {
+  return new Promise((resolve, reject) => {
+    db.get('select count(id) "count" from d_user_inv_config where staff_opened=0', [], function(err:any, row:any) {
+      if (err) { reject(0) }
+      resolve(row.count)
+    });
+  })
+}
+
+
+const findData = (url:string):IData => {
+  return data.find((item:IData) => item.url.toUpperCase() === url.toUpperCase())!
+}
 
 /* ---------------------------------------------------------------------------------------------------
 --------------------------------------  Получение данных всех записей --------------------------------
 ------------------------------------------------------------------------------------------------------*/
 export const getAllData = (req:express.Request, res:express.Response, next:express.NextFunction) => {
-  const url = req.url.substring(5,req.url.length)
-  const d:IData = data.find((item:IData) => item.url === url)!
+  var path : number = 0
+  
+  path = req.url.indexOf('/',7)
+  if (path<6) { path = req.url.indexOf('?') }
+  if (path<6) { path = req.url.length }
+  const url = req.url.substring(5, path)
+
+
+  const d:IData = findData(url)
 
   if (!d) { return res.json({ status: 400, message: 'getAllData. неверные настройки пути и приложения' }); }
+
+  var sql : string = d.sql_get_all
+  var sql_prefix : string = ' where '
+  if (d.sql_get_all.includes('where')) sql_prefix = ' and '
+
+  if (req.query) { // Если в запросе есть параметры
+    if (req.query.operator === 'equal') 
+      sql += sql_prefix + req.query.column + ' = ' + req.query.value
+    if (req.query.operator === 'like') 
+      sql += sql_prefix + req.query.column + ' like "%' + req.query.value + '%"'
+  }
+
   
   redis.keys(d.redis_prefix + ':*', (err:any, keys:any) => {
     if (err) { return res.json({ status: 400, message: 'не могу получить данные', err }); }
@@ -50,7 +75,7 @@ export const getAllData = (req:express.Request, res:express.Response, next:expre
           res.json(company);
         });
     } else {
-        db.all(d.sql_get_all, [], function(err, rows:any[]) {
+        db.all(sql, [], function(err, rows:any[]) {
             if (err) { return next(err); }
             d.cached && rows.map((row:any) => { // нужно кэшировать
                 d.expire // установлен срок истечения?
@@ -69,7 +94,7 @@ export const getAllData = (req:express.Request, res:express.Response, next:expre
 export const getData = (req:express.Request, res:express.Response, next: express.NextFunction) => {
   const id  = req.params.key;
   const url = req.url.substring(5,req.url.indexOf('/',6))
-  const d:IData = data.find((item:IData) => item.url === url)!
+  const d:IData = findData(url)
 
   if (!d) { return res.json({ status: 400, message: 'getData. неверные настройки пути и приложения' }); }
 
@@ -83,7 +108,10 @@ export const getData = (req:express.Request, res:express.Response, next: express
         });
     } else {
         db.get(d.sql_get_one, [id], function(err:any, row:any) {
-            if (err) { return next(err); }
+            if (err) { 
+              res.status(400).send(err)
+                // return next(err); 
+            }
               d.cached && d.expire // установлен срок истечения?
                           ? redis.set(d.redis_prefix + ':' + row.id, JSON.stringify(row), 'EX', d.expire) 
                           : redis.set(d.redis_prefix + ':' + row.id, JSON.stringify(row))
@@ -99,11 +127,11 @@ export const getData = (req:express.Request, res:express.Response, next: express
 export const deleteData = (req:express.Request, res:express.Response, next: express.NextFunction) => {
   const id  = req.params.key;
   const url = req.url.substring(5,req.url.indexOf('/',6))
-  const d:IData = data.find((item:IData) => item.url === url)!
+  const d:IData = findData(url)
 
   if (!d) { return res.json({ status: 400, message: 'неверные настройки пути и приложения' }); }
 
-  d.cached && redis.del(d.redis_prefix + ':' + id, (error:any, value:any) => { 
+  d.cached && redis.del(d.redis_prefix + ':' + id, (error:any, value:any) => { // Если объект кэшируемый, то удаляем его в кэш
     if (error) return res.json({ status: 400, message: 'что-то пошло не так', error });
   });
 
@@ -119,13 +147,13 @@ export const deleteData = (req:express.Request, res:express.Response, next: expr
 export const updateData = (req:express.Request, res:express.Response, next: express.NextFunction) => {
   const id  = req.params.key;
   const url = req.url.substring(5,req.url.indexOf('/',6))
-  const d:IData = data.find((item:IData) => item.url === url)!
+  const d:IData = findData(url)
 
   if (!d) { return res.json({ status: 400, message: 'неверные настройки пути и приложения' }); }
 
-  d.cached && redis.set(d.redis_prefix + ':' + id, JSON.stringify(req.body));
+  d.cached && redis.set(d.redis_prefix + ':' + id, JSON.stringify(req.body));  // Если объект кэшируемый, то изменяем его в кэше
 
-  const params = d.prepare(req.body, id);
+  const params = d.prepare(req.body, id);  // Преобразовали JSON объекта в параметры для функции вставки
 
   db.run(d.sql_update, params, (error:any, result:any) => { 
       if (error) return res.json({ status: 400, message: 'что-то пошло не так', error });
@@ -139,25 +167,26 @@ export const updateData = (req:express.Request, res:express.Response, next: expr
 ------------------------------------------------------------------------------------------------------*/
 export const insertData = (req:express.Request, res:express.Response, next: express.NextFunction) => {
   const url = req.url.substring(5,req.url.length)
-  const d:IData = data.find((item:IData) => item.url === url)!
+  const d:IData = findData(url)
 
   if (!d) { return res.json({ status: 400, message: 'неверные настройки пути и приложения' }); }
 
    getNextId(d.table).then((id:number) => {
-      d.cached && redis.set(d.redis_prefix + ':' + id, JSON.stringify(req.body));
-      const params = d.prepare(req.body, id)
-      console.log(params)
-      db.run('insert into d_companies (name, inn, address, agreement, email, info, logo, phone, id) values (?,?,?,?,?,?,?,?,?)', params, (error:any, result:any) => { 
+      d.cached && redis.set(d.redis_prefix + ':' + id, JSON.stringify(req.body));  // Если объект кэшируемый, то добавляем его в кэш
+      const params = d.prepare(req.body, id)  // Преобразовали JSON объекта в параметры для функции вставки
+
+      console.log('we are here', d.sql_insert, params)
+      d.sql_insert && db.run(d.sql_insert, params, (error:any, result:any) => { 
           if (error) return res.json({ status: 400, message: 'что-то пошло не так', error });
-          console.log(`A row has been inserted with rowid `, result);
       })
       res.json({ status: 200, message: 'Запись добавлена' })
-
    })
-//  req.body. = id
-  // console.log('id2',id)
-  // console.log(params)
-
-
-  console.log('we are here')
 };
+
+
+/* ---------------------------------------------------------------------------------------------------
+--------------------------------------  Количесвто непрчитанных конфигураций -------------------------
+------------------------------------------------------------------------------------------------------*/
+export const getCountUnread = async (req:express.Request, res:express.Response) => {
+  countUnread().then((n:number) => { res.json({ status: 200, count: n })})  
+}

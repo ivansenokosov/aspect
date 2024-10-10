@@ -10,12 +10,12 @@ export const useUnreadInvConfigs = defineStore('unreadInvConfigs', () => {
     const data = ref<any>(null);
     
     try {
-      const res = await fetch(`${baseUrl.baseUrl}/userconfigs/CountUnread`, {});
+      const res = await fetch(`${baseUrl.baseUrl}/interface/countUnread`, {});
       data.value = await res.json();
     } catch (e) {
       console.log(e);
     } 
-    unreadInvConfigs.value = data.value.length
+    unreadInvConfigs.value = data.value.count
     console.log(unreadInvConfigs.value)
   }  
   return { unreadInvConfigs, count }

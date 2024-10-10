@@ -27,7 +27,7 @@ export const useUserStore = defineStore('user', () => {
   async function loadUser() {
     userId.value &&
     await axios
-    .get(`${baseUrl.baseUrl}/Users/${String(userId.value)}`, {})
+    .get(`${baseUrl.baseUrl}/data/users/${String(userId.value)}`, {}) // django `${baseUrl.baseUrl}/Users/${String(userId.value)}`
     .then((response) => {
       userId.value = response.data.id
       userName.value = response.data.first_name
@@ -41,7 +41,7 @@ export const useUserStore = defineStore('user', () => {
     if (!getToken()) { // Если в приложении нет Access Token
       // console.log('Access token нет в приложении')
       if (token_exists) { // Если в куки есть Refresh token, то обновляем Access Token, 
-        console.log('Refresh token есть в куки')
+        // console.log('Refresh token есть в куки')
         setRefreshToken(cookies.get('token'))
         await refreshTokens() // Обновляем Access Token
         setUserIdByToken()    // Определяем пользователя
@@ -51,7 +51,7 @@ export const useUserStore = defineStore('user', () => {
   }
 // ----------------------------------------------------------------- устанавливает userId по токену авторизации  ----------------------------------------------
   function setUserIdByToken() { 
-    const decoded:any = jwtDecode(token.value)
+    const decoded:any = jwtDecode(refreshToken.value)
     userId.value = decoded.user_id 
     loadUser()
   }
@@ -66,15 +66,14 @@ export const useUserStore = defineStore('user', () => {
       password: password,
     }
     
-    const url = `${baseUrl.baseUrl}/users/api/token/`
+    // const url = `${baseUrl.baseUrl}/users/api/token/`
+    const url = `${baseUrl.baseUrl}/user/auth`
 
     await axios
       .post(url, payload)
       .then((response) => {
           setToken(response.data.access)
           setRefreshToken(response.data.refresh)
-          cookies.set('token',refreshToken.value) // сохраняем в куки значение токена
-
           setUserIdByToken() // Устанавливаем userId по токену
           login.visible = false // закрываем модал
           loadUser() // загружаем пользователя по установленному userId
@@ -90,11 +89,15 @@ export const useUserStore = defineStore('user', () => {
 // ----------------------------------------------------------------- Запись в журнал действия пользователя ----------------------------------------------
   async function saveLog(action: number, params: string) {
     if (isUser()) {    
-        const logData : ILog = {user: userId.value, 
+      let yourDate = new Date()
+      yourDate.toISOString().split('T')[0]
+
+        const logData : ILog = {date: yourDate.toDateString(),
                                 action: action, 
+                                user: userId.value, 
                                 params: params}
         const config = { headers: { 'content-type': 'application/json', }, };
-        const url = `${baseUrl.baseUrl}/logs/Logs/` 
+        const url = `${baseUrl.baseUrl}/data/log` // `${baseUrl.baseUrl}/logs/Logs/` 
         axios.post(url, logData, config)
               .then(function(response) { /*console.log(response);*/ })
               .catch(function(error) { console.log(error); })
@@ -122,7 +125,10 @@ export const useUserStore = defineStore('user', () => {
   function setToken(newToken:string) { token.value = newToken }
 
   function getRefreshToken():string { return refreshToken.value }
-  function setRefreshToken(newRefreshToken:string) { refreshToken.value = newRefreshToken }
+  function setRefreshToken(newRefreshToken:string) { 
+    refreshToken.value = newRefreshToken 
+    cookies.set('token', newRefreshToken) // сохраняем в куки значение токена
+  }
   function getAccessTokenExpDate():number { return Number(jwtDecode(token.value).exp)! }
   function hasRefreshToken () { return Boolean(getRefreshToken()) }
   function isAccessTokenExpired () {
@@ -142,13 +148,15 @@ export const useUserStore = defineStore('user', () => {
     }
 
     try {
-      const response = await axios.post(`${baseUrl.baseUrl}/users/api/token/refresh/`, {refresh: getRefreshToken()}, header)
+      // const response = await axios.post(`${baseUrl.baseUrl}/users/api/token/refresh/`, {refresh: getRefreshToken()}, header) // django
+      const response = await axios.post(`${baseUrl.baseUrl}/user/refresh`, {refresh: getRefreshToken()}, header)
       setToken(response.data.access)
+      setRefreshToken(response.data.refresh)
       return response 
     } catch (error:any) {
       console.log('error', error.response.data.code)
       logout()
-      router.push({ name: 'home' }).catch(() => {})
+      router.push({ name: 'home' })
       throw new Error(error)
     }
   }

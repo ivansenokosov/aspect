@@ -46,20 +46,20 @@
 
   async function loadDiscounts() {
     if (user.isUser()) {
-      userInvDisount.value = await useFetch('discounts/UserInvDisount?user=' + user.getUser().userId.value); 
+      userInvDisount.value = await useFetch('/data/UserInvDisount?user=' + user.getUser().userId.value); 
       discontGroupId.value = userInvDisount.value.data[0].group
     }
   }
 
-  function loadInvertors() {
-    for (let i=2; i<=count/20 + 1; i++) {
-      AxiosInstance.get('/users/invertors2?page=' + i.toString())
-           .then(data2 => data.value.data.push(...data2.data.results))
-    }
-  }
+  // function loadInvertors() {
+  //   for (let i=2; i<=count/20 + 1; i++) {
+  //     AxiosInstance.get('/users/invertors2?page=' + i.toString())
+  //          .then(data2 => data.value.data.push(...data2.data.results))
+  //   }
+  // }
 
   async function loadData() {
-    invAvalControl.value = await useFetch('Inv_type_of_control')
+    invAvalControl.value = await useFetch('/data/Inv_type_of_control')
 
     // загружаем первые 20 ПЧ
     // let res:any = await useFetch('users/invertors2?page=1')
@@ -67,15 +67,11 @@
     // data.value.data = res.data[0].results
     // data.value.loading = false
 
-    await axios.get('http://127.0.0.1:3000/invertors')
-    .then((res) => data.value.data = res.data)
-    .catch((error) => console.log(error))
+    data.value = await useFetch('/data/Invertors')
 
-    // console.log('invertors', invertors) 
-    data.value.loading = false
     count = data.value.data.length
 
-    discontGroups.value  = await useFetch('discounts/InvDisountGroup')
+    discontGroups.value  = await useFetch('/data/InvDisountGroup')
     await loadDiscounts()      
     dataDisplay.value = data.value.data
     // загружаем оставльные ПЧ фоном
@@ -85,7 +81,7 @@
   watch(() => [user.userId], async () => {  await loadDiscounts()  })
 
   watch(discontGroupId, async () => {  
-    serieDiscounts.value = await useFetch('discounts/InvSerieDisount/?group=' + discontGroupId.value)
+    serieDiscounts.value = await useFetch('data/InvSerieDisount/?group_id=' + discontGroupId.value) //  django   serieDiscounts.value = await useFetch('discounts/InvSerieDisount/?group=' + discontGroupId.value)
   })
 
   watch(discontGroupSelected, () => {  
