@@ -165,6 +165,7 @@ export interface IUser {
     is_staff?: boolean
     is_active?: boolean
     is_superuser?: boolean
+    date_joined?: string
 }
 
 export interface IInvInputOuptput {

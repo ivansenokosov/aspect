@@ -9,6 +9,6 @@
 </script>
 
 <template>
-  <UniversalUpdate url="Type_of_options" :id="props.id" title="Тип опции"/>
+  <UniversalUpdate url="/data/Type_of_options" :id="props.id" title="Тип опции"/>
 </template>
 

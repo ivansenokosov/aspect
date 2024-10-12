@@ -16,10 +16,26 @@ import { prepareCompany,
          prepareSerie,
          prepareSimpleDictionary,
          prepareUser,
-         prepareUserInvConfig
+         prepareUserInvConfig,
+         prepareUserDisount
      } from "./prepare"
 
 export const data:IData[] = [
+    
+    {
+        url: '/CompanyUsers', // Работает
+        redis_prefix: 'companyuser',  
+        sql_get_all: 'select id, company_id "company", user_id "user" from d_companyusers', 
+        sql_get_one: 'select id, company_id "company", user_id "user" from d_companyusers where id = ?', 
+        sql_update:  'update d_companyusers set company_id=?, user_id=? where id=?',
+        sql_insert:  'insert into d_companyusers (company_id, user_id, id) values (?,?,?)',
+        sql_delete:  'delete from d_companyusers where id = ?',
+        table:'d_companyusers',
+        cached: false, 
+        expire: null,
+        prepare: prepareCompanyUsers
+    },
+
     {
         url: '/manufactoty', 
         redis_prefix: 'manufactoty',  
@@ -120,7 +136,7 @@ export const data:IData[] = [
     },
 
     {
-        url: '/Ambient_temperatures', 
+        url: '/Ambient_temperatures',  // протестировано
         redis_prefix: 'ambientTemperatures',  
         sql_get_all: 'select * from s_ambient_temperatures', 
         sql_get_one: 'select * from s_ambient_temperatures where id = ?', 
@@ -278,8 +294,8 @@ export const data:IData[] = [
                              type_of_panel_id "type_of_panel",
                              level_IP_id "level_IP",
                              manufactory_id "manufactory",
-                             type_of_control_id "type_of_control"
-                             schema,
+                             type_of_control_id "type_of_control",
+                             schema
                         from s_inv_series`, 
         sql_get_one: `select id, 
                              min_power, 
@@ -350,8 +366,8 @@ export const data:IData[] = [
     {
         url: '/Inv_spec_of_in_out', 
         redis_prefix: 'invSignalInputOutput',  
-        sql_get_all: 'select * from s_inv_spec_of_in_out', 
-        sql_get_one: 'select * from s_inv_spec_of_in_out where id = ?', 
+        sql_get_all: 'select s.id, s.quantity, s.serie_id "serie", s.signal_id "signal", s.info, t.name "signal_str" from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id', 
+        sql_get_one: 'select id, quantity, serie_id "serie", signal_id "signal", info from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id and id = ?', 
         sql_update:         'update s_inv_spec_of_in_out set serie_id=?, signal_id=?, quantity=? where id=?',
         sql_insert:    'insert into s_inv_spec_of_in_out (serie_id, signal_id, quantity, id) values (?,?,?,?)',
         sql_delete:    'delete from s_inv_spec_of_in_out where id = ?',
@@ -390,6 +406,19 @@ export const data:IData[] = [
         cached: false, 
         expire: null,
         prepare: prepareCompany
+    },
+    {
+        url: '/actions', // Протетировано
+        redis_prefix: 'action',  
+        sql_get_all: 'select * from s_actions', 
+        sql_get_one: 'select * from s_actions where id = ?', 
+        sql_update:         'update s_actions set name=? where id=?',
+        sql_insert:    'insert into s_actions (name, id) values (?,?)',
+        sql_delete:    'delete from s_actions where id = ?',
+        table:                     's_actions',
+        cached: false, 
+        expire: null,
+        prepare: prepareSimpleDictionary
     },
     {
         url: '/Inv_options', 
@@ -521,17 +550,17 @@ export const data:IData[] = [
         prepare: () => {}
     },        
     {
-        url: '/Users', 
+        url: '/Users', // Работает
         redis_prefix: '',  
-        sql_get_all: 'select first_name, last_name, username, password, is_superuser, is_staff, is_active, email, id from auth_user', 
-        sql_get_one: 'select first_name, last_name, username, password, is_superuser, is_staff, is_active, email, id from auth_user where id = ?', 
-        sql_update:  '',
-        sql_insert:  '',
-        sql_delete:  '',
+        sql_get_all: 'select first_name, last_name, username, password, is_superuser, is_staff, is_active, email, date_joined, id from auth_user', 
+        sql_get_one: 'select first_name, last_name, username, password, is_superuser, is_staff, is_active, email, date_joined, id from auth_user where id = ?', 
+        sql_update:  'update auth_user set username=?, password=?, first_name=?, last_name=?, email=?, is_staff=?, is_active=?, is_superuser=?, date_joined=?  where id = ?',
+        sql_insert:  'insert into auth_user (username, password, first_name, last_name, email, is_staff, is_active,  is_superuser, date_joined, id) values (?,?,?,?,?,?,?,?,?,?)',
+        sql_delete:  'delete from auth_user where id = ?',
         table:       'auth_user',
         cached: false, 
         expire: null,
-        prepare: () => {}
+        prepare: prepareUser
     },        
     {
         url: '/Prices', 
@@ -562,15 +591,15 @@ export const data:IData[] = [
     {
         url: '/UserInvDisount', 
         redis_prefix: '',  
-        sql_get_all: 'select * from discounts_userinvdisount', 
-        sql_get_one: 'select * from discounts_userinvdisount where id = ?', 
-        sql_update:  '',
-        sql_insert:  '',
+        sql_get_all: 'select id, group_id "group", user_id "user" from discounts_userinvdisount', 
+        sql_get_one: 'select id, group_id "group", user_id "user" from discounts_userinvdisount where id = ?', 
+        sql_update:  'update discounts_userinvdisount set group_id = ?, user_id=? where id = ?',
+        sql_insert:  'insert into discounts_userinvdisount (group_id, user_id, id) values (?,?,?)',
         sql_delete:  'delete from discounts_userinvdisount where id = ?',
         table:       'discounts_userinvdisount',
         cached: false, 
         expire: null,
-        prepare: () => {}
+        prepare: prepareUserDisount
     },      
 
     
@@ -614,10 +643,10 @@ export const data:IData[] = [
     {
         url: '/log', 
         redis_prefix: '',  
-        sql_get_all: 'select * from d_logs', 
-        sql_get_one: 'select * from d_logs where id = ?', 
+        sql_get_all: 'select id, action_id "action", user_id "user", date, params from d_logs', 
+        sql_get_one: 'select id, action_id "action", user_id "user", date, params from d_logs where id = ?', 
         sql_update:  'update d_logs set date = ?, action_id = ?, user_id = ?, params =? where id = ?',
-        sql_insert:  '',//insert into logs (date, action_id, user_id, params, id) values (?,?,?,?,?)',
+        sql_insert:  '', //insert into logs (date, action_id, user_id, params, id) values (?,?,?,?,?)',
         sql_delete:  'delete from d_logs where id = ?',
         table:       'd_logs',
         cached: false, 
@@ -636,6 +665,33 @@ export const data:IData[] = [
         cached: false, 
         expire: null,
         prepare: prepareInvSerieDisount
+    },      
+    {
+        url: '/InvOptionDisount', 
+        redis_prefix: '',  
+        sql_get_all: 'select id, discount, group_id "group", option_id "option" from discounts_invoptiondisount', 
+        sql_get_one: 'select id, discount, group_id "group", option_id "option" from discounts_invoptiondisount where id = ?', 
+        sql_update:         'update discounts_invoptiondisount set discount = ?, group_id = ?, serie_id = ? where id = ?',
+        sql_insert:    'insert into discounts_invoptiondisount (discount, group_id, serie_id, id) values (?,?,?,?)',
+        sql_delete:  '  delete from discounts_invoptiondisount where id = ?',
+        table:                     'discounts_invoptiondisount',
+        cached: false, 
+        expire: null,
+        prepare: prepareInvSerieDisount
+    },      
+    
+    {
+        url: '/UserInvConfg', 
+        redis_prefix: '',  
+        sql_get_all: 'select id, date, options, invertor_id "invertor", user_id "user", staff_opened, invertor_discount, invertor_price, options_disccounts, options_prices, info from d_user_inv_config', 
+        sql_get_one: 'select id, date, options, invertor_id "invertor", user_id "user", staff_opened, invertor_discount, invertor_price, options_disccounts, options_prices, info from d_user_inv_config where id = ?', 
+        sql_update:         'update d_user_inv_config set discount = ?, group_id = ?, serie_id = ? where id = ?',
+        sql_insert:    'insert into d_user_inv_config (date, user_id, invertor_id, invertor_price, invertor_discount, options, options_prices, options_disccounts, info, staff_opened, id) values (?,?,?,?,?,?,?,?,?,?,?)',
+        sql_delete:  '  delete from d_user_inv_config where id = ?',
+        table:                     'd_user_inv_config',
+        cached: false, 
+        expire: null,
+        prepare: prepareUserInvConfig
     },      
     
 ]

@@ -14,14 +14,14 @@
     const props = defineProps(['id'])
 
     const submission = async () => {
-        const url:string =  'Companies/' + props.id + '/'
+        const url:string =  `/data/Companies/${props.id}`
         deleteData(url).then(() =>{
             router.push('/dictionaries/Companies/List')
         })
     }
 
     async function loadData() {
-        data.value            = await useFetch('Companies/' + props.id);
+        data.value            = await useFetch(`/data/Companies/${props.id}`);
     }
     
     loadData()

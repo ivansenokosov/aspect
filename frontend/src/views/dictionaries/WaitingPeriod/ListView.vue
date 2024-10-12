@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Waiting_period" title="Сроки ожидания"/>
+  <UniversalList url="/data/Waiting_period" title="Сроки ожидания"/>
 </template>
 

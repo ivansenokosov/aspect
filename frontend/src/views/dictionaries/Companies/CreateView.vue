@@ -9,12 +9,12 @@
     import { insertData } from '@/api/dataActions';
 
     const router = useRouter()
-    const data   = ref<ICompany>({id: 0, name:'',inn:'',address:'',email:'',phone:'',info:'',agreement:''})
+    const data   = ref<ICompany>({id: 0, name:'',inn:'',address:'',email:'',phone:'',info:'',agreement:'', logo:''})
     const saving = ref<boolean>(false)
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Companies/' 
+        const url:string =  '/data/Companies' 
         insertData(url, data.value).then(() => {
             router.push('/dictionaries/Companies/List')
         })

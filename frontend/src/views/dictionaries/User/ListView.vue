@@ -19,11 +19,11 @@
 
 
   async function loadData() {
-    data.value              = await useFetch('Users');
-    companies.value         = await useFetch('Companies');
-    companyUsers.value      = await useFetch('CompanyUsers');
-    discountGroups.value    = await useFetch('discounts/InvDisountGroup');
-    userInvDiscounts.value  = await useFetch('discounts/UserInvDisount');
+    data.value              = await useFetch('/data/Users');
+    companies.value         = await useFetch('/data/Companies');
+    companyUsers.value      = await useFetch('/data/CompanyUsers');
+    discountGroups.value    = await useFetch('/data/InvDisountGroup');
+    userInvDiscounts.value  = await useFetch('/data/UserInvDisount');
     loading.value         = false        
   }
 

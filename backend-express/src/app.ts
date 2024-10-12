@@ -3,7 +3,8 @@ import Redis from 'ioredis';
 import cors from 'cors';
 import { Database } from 'sqlite3';
 import { getAllData, getData, updateData, deleteData, insertData, getCountUnread } from './appController'
-import { auth, refreshAccessToken } from './users';
+import { auth, logoutUser  } from './users';
+import { refreshAccessToken, verifyJWT } from './jwt';
 
 const db = new Database('db.sqlite3');
 const app = express();
@@ -21,21 +22,21 @@ const redis = new Redis(); // Create a Redis client
 // };
 // app.use(cors(options));
 app.use(cors());
+app.use(express.static('assets'));
 
+app.get   ('/data/*/:key', (req:express.Request, res:express.Response, next: express.NextFunction) => { verifyJWT(req, res, next).then(()=> getData(req, res, next)).catch(()=>{res.send('no data')}) } );
+app.get   ('/data/*',      (req:express.Request, res:express.Response, next: express.NextFunction) => { verifyJWT(req, res, next).then(()=> getAllData(req, res, next)).catch(()=>{res.send('no data')}) });
+app.delete('/data/*/:key', (req:express.Request, res:express.Response, next: express.NextFunction) => { verifyJWT(req, res, next).then(()=> deleteData(req, res, next)).catch(()=>{res.send('no data')}) });
+app.put   ('/data/*/:key', (req:express.Request, res:express.Response, next: express.NextFunction) => { verifyJWT(req, res, next).then(()=> updateData(req, res, next)).catch(()=>{res.send('no data')}) });
+app.post  ('/data/*',      (req:express.Request, res:express.Response, next: express.NextFunction) => { verifyJWT(req, res, next).then(()=> insertData(req, res, next)).catch(()=>{res.send('no data')}) });
 
-app.get   ('/data/*/:key', (req:express.Request, res:express.Response, next: express.NextFunction) => { getData   (req, res, next) });
-app.get   ('/data/*',      (req:express.Request, res:express.Response, next: express.NextFunction) => { getAllData(req, res, next) });
-app.delete('/data/*/:key', (req:express.Request, res:express.Response, next: express.NextFunction) => { deleteData(req, res, next) });
-app.put   ('/data/*/:key', (req:express.Request, res:express.Response, next: express.NextFunction) => { updateData(req, res, next) });
-app.post  ('/data/*',      (req:express.Request, res:express.Response, next: express.NextFunction) => { insertData(req, res, next) });
+app.get   ('/interface/countUnread', (req:express.Request, res:express.Response) => { getCountUnread(req, res) });  // Сколько конфигураций ещё не просмотрено   
 
-app.get   ('/interface/countUnread', (req:express.Request, res:express.Response) => { getCountUnread(req, res) });  // Сколько конфигураций ещё не просмотрено
+app.post   ('/user/auth',         (req:express.Request, res:express.Response) => { auth(req, res) });                // Аутентификация, возвращает токены
+app.post   ('/user/refresh',      (req:express.Request, res:express.Response) => { refreshAccessToken(req, res) });  // обновляет AccessToken
+app.post   ('/user/logout/:key',  (req:express.Request, res:express.Response) => { logoutUser(req, res) });          // Удаляет из пользователя информацию о токене
 
-app.post   ('/user/auth',    (req:express.Request, res:express.Response) => { auth(req, res) });                // Аутентификация, возвращает токены
-app.post   ('/user/refresh', (req:express.Request, res:express.Response) => { refreshAccessToken(req, res) });  // обновляет AccessToken
-
-
-app.get   ('*', (req:express.Request, res:express.Response) => { res.send('wrong path') });  // Сообщение для неверного пути
+app.get   ('*', (req:express.Request, res:express.Response) => { res.send(`${req.url} is wrong path`) });  // Сообщение для неверного пути
 
 
 app.listen(port, () => {

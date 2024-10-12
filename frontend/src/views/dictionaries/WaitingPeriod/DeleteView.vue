@@ -10,6 +10,6 @@
 </script>
 
 <template>
-  <UniversalDelete url="Waiting_period" :id="props.id" title="Срок ожидания"/>
+  <UniversalDelete url="/data/Waiting_period" :id="props.id" title="Срок ожидания"/>
 </template>
 

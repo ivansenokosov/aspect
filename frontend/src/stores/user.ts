@@ -36,18 +36,28 @@ export const useUserStore = defineStore('user', () => {
     })
   }
 // -----------------------------------------------------------------  проверяет был ли пользователь авторизован  ----------------------------------------------
-  async function checkIsAuth() {
+  async function checkIsAuth():Promise<number> {
     const token_exists: boolean = cookies.isKey('token')
-    if (!getToken()) { // Если в приложении нет Access Token
-      // console.log('Access token нет в приложении')
-      if (token_exists) { // Если в куки есть Refresh token, то обновляем Access Token, 
-        // console.log('Refresh token есть в куки')
-        setRefreshToken(cookies.get('token'))
-        await refreshTokens() // Обновляем Access Token
-        setUserIdByToken()    // Определяем пользователя
-        loadUser()            // Загружаем данные по пользователю
-      } 
-    }
+    return new Promise((resolve, reject) => {
+      if (!getToken()) { // Если в приложении нет Access Token
+        // console.log('Access token нет в приложении')
+        if (token_exists) { // Если в куки есть Refresh token, то обновляем Access Token, 
+          // console.log('Refresh token есть в куки')
+          setRefreshToken(cookies.get('token'))
+          refreshTokens().then(() => {
+            setUserIdByToken()    // Определяем пользователя
+            loadUser()            // Загружаем данные по пользователю
+            resolve(userId.value)
+          }) // Обновляем Access Token
+
+        } else {
+          reject(0)
+        }
+      } else {
+        console.log('Пользователь не авторизован')
+        reject(0)
+      }
+    })
   }
 // ----------------------------------------------------------------- устанавливает userId по токену авторизации  ----------------------------------------------
   function setUserIdByToken() { 
@@ -89,10 +99,9 @@ export const useUserStore = defineStore('user', () => {
 // ----------------------------------------------------------------- Запись в журнал действия пользователя ----------------------------------------------
   async function saveLog(action: number, params: string) {
     if (isUser()) {    
-      let yourDate = new Date()
-      yourDate.toISOString().split('T')[0]
+      let yourDate = new Date().toDateString()
 
-        const logData : ILog = {date: yourDate.toDateString(),
+        const logData : ILog = {date: yourDate,
                                 action: action, 
                                 user: userId.value, 
                                 params: params}
@@ -104,8 +113,9 @@ export const useUserStore = defineStore('user', () => {
     }
   }
 // ----------------------------------------------------------------- Выход ----------------------------------------------
-  function logout() {
+  async function logout() {
     saveLog(2,'')
+    const response = await axios.post(`${baseUrl.baseUrl}/user/logout/${userId.value}`, {})
     userId.value = 0
     userName.value = ''
     userIsStaff.value = false
@@ -155,8 +165,9 @@ export const useUserStore = defineStore('user', () => {
       return response 
     } catch (error:any) {
       console.log('error', error.response.data.code)
-      logout()
-      router.push({ name: 'home' })
+      const response = await axios.post(`${baseUrl.baseUrl}/user/logout`, header)
+      await logout()
+      router.push('/')
       throw new Error(error)
     }
   }

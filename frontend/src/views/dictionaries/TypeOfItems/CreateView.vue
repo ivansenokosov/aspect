@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Type_of_items" title="Тип элемента"/>
+  <UniversalCreate url="/data/Type_of_items" title="Тип элемента"/>
 </template>
 

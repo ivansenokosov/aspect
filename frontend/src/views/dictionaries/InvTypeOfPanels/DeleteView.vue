@@ -10,6 +10,6 @@
 </script>
 
 <template>
-  <UniversalDelete url="Inv_type_of_panels" :id="props.id" title="Панель"/>
+  <UniversalDelete url="/data/Inv_type_of_panels" :id="props.id" title="Панель"/>
 </template>
 

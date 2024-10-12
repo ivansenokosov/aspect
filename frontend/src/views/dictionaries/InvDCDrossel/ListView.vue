@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Inv_DC_drossel" title="DC дроссели"/>
+  <UniversalList url="/data/Inv_DC_drossel" title="DC дроссели"/>
 </template>
 

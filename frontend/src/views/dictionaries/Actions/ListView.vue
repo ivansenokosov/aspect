@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="logs/Actions" title="Действия журналирования"/>
+  <UniversalList url="/data/Actions" title="Действия журналирования"/>
 </template>
 

@@ -10,11 +10,15 @@ const baseUrl = useBaseUrl()
 
 export async function saveLog(action: number, params: string) {
     if (user.isUser()) {    
-        const date    = Date.now()
-        const logData : ILog = {user: user.userId, action: action, params: params}
+        const date    = Date.now().toString()
+
+        const logData : ILog = {date: date, 
+                                user: user.userId, 
+                                action: action, 
+                                params: params}
         const config = { headers: { 'content-type': 'application/json', }, };
 
-        const res = await AxiosInstance.post('/data/log/', logData, config)
+        const res = await AxiosInstance.post('/data/log', logData, config)
                                        .then(function(response) { /* console.log(response); */ })
                                        .catch(function(error) { console.log(error); })
     }

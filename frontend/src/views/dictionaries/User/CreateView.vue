@@ -10,17 +10,20 @@
     import Password from 'primevue/password';
     import { useUserStore } from '@/stores/user';
     import { insertData } from '@/api/dataActions';
+    import moment from 'moment'
 
     const router = useRouter()
     const user   = useUserStore()
-    const data   = ref<IUser>({username:'', password:'', first_name:'', last_name:'', email:'', is_active:true, is_staff:false, is_superuser: false})
+    const data   = ref<IUser>({username:'', password:'', first_name:'', last_name:'', email:'', is_active:true, is_staff:false, is_superuser: false, date_joined:''})
     const saving = ref<boolean>(false)
 
     const submission = () => {
         saving.value = true
-        const url:string =  'Users/' 
+        const url:string =  '/data/Users' 
+        data.value.date_joined = moment().format('YYYY-MM-DD')
         insertData(url,data.value).then((response:any) => {
-           router.push('/dictionaries/Users/Update/' + response.data.id + '/')
+           console.log(response.data.id)
+           router.push(`/dictionaries/Users/Update/${response.data.id}`)
         })
         saving.value = false
     }

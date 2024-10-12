@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Manufactoty" title="Производители"/>
+  <UniversalCreate url="/data/Manufactoty" title="Производители"/>
 </template>
 

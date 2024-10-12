@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Variants_of_control" title="Способы управления"/>
+  <UniversalList url="/data/Variants_of_control" title="Способы управления"/>
 </template>
 

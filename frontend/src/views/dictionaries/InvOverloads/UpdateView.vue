@@ -17,7 +17,7 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Inv_type_of_overload/' + props.id + '/'
+        const url:string =  `/data/Inv_type_of_overload/${props.id}`
         updateData(url, {"p_mode":data.value.data[0].p_mode, "g_mode": data.value.data[0].g_mode}).then(() => {
             toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
         })
@@ -25,7 +25,7 @@
     }
 
     async function loadData() {
-        data.value            = await useFetch('Inv_type_of_overload/' + props.id);
+        data.value            = await useFetch(`/data/Inv_type_of_overload/${props.id}`);
     }
     
     loadData()

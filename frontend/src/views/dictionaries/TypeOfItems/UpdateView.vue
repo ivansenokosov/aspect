@@ -9,6 +9,6 @@
 </script>
 
 <template>
-  <UniversalUpdate url="Type_of_items" :id="props.id" title="Тип элемента"/>
+  <UniversalUpdate url="/data/Type_of_items" :id="props.id" title="Тип элемента"/>
 </template>
 

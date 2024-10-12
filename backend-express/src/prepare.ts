@@ -11,6 +11,7 @@ import type { ICompany,
               IUser,
               IInvInputOuptput,
               IInvSignalInputOutput,
+              IUserDiscount,
               IInvSerieDisount,
               IInvOptionDisount,
               ICompanyUsers,
@@ -111,16 +112,17 @@ export function prepareItem(data:IItem, id:number) {
 }
 
 export function prepareUserInvConfig(data:IUserInvConfig, id:number) {
-    var params:Array<string|number|boolean> =  [data.invertor, 
+    var params:Array<string|number|boolean> =  [data.date, 
+                                                data.user,
+                                                data.invertor, 
                                                 data.invertor_price,
                                                 data.invertor_discount,
                                                 data.options, 
                                                 data.options_prices,
                                                 data.options_disccounts, 
-                                                data.date, 
-                                                data.user,
-                                                data.staff_opened,
-                                                data.info]
+                                                data.info,
+                                                data.staff_opened]
+
     id && params.push(id)
     return params
 }
@@ -133,7 +135,8 @@ export function prepareUser(data:IUser, id:number) {
                                                 data.email,
                                                 data.is_staff, 
                                                 data.is_active, 
-                                                data.is_superuser]
+                                                data.is_superuser,
+                                                data.date_joined]
     id && params.push(id)
     return params
 }
@@ -156,6 +159,14 @@ export function prepareInvSignalInputOutput(data:IInvSignalInputOutput, id:numbe
 }
 
 // ------------------------------- Скидки ------------------------------- 
+
+export function prepareUserDisount(data:IUserDiscount, id:number) {
+    var params:Array<string|number|boolean> =  [data.group,
+                                                data.user]
+    id && params.push(id)
+    return params
+}
+
 
 export function prepareInvSerieDisount(data:IInvSerieDisount, id:number) {
     var params:Array<string|number|boolean> =  [data.group, 

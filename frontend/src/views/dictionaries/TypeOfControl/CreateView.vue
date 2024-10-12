@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Type_of_control" title="Тип управления"/>
+  <UniversalCreate url="/data/Type_of_control" title="Тип управления"/>
 </template>
 

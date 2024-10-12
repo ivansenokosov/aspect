@@ -10,6 +10,6 @@
 </script>
 
 <template>
-  <UniversalDelete url="Inv_DC_drossel" :id="props.id" title="DC дроссель"/>
+  <UniversalDelete url="/data/Inv_DC_drossel" :id="props.id" title="DC дроссель"/>
 </template>
 

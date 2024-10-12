@@ -34,7 +34,7 @@
     const saving          = ref<boolean>(false)
     const loading         = ref<boolean>(true)
     const path            = ref<string>('')      
-    const url:string      = 'discounts/InvDisountGroup'
+    const url:string      = '/data/InvDisountGroup'
     const title:string    = 'Группа скидок'
 
     const submission = async () => {
@@ -42,11 +42,11 @@
         updateData(url + '/' + props.id + '/', {"name": data.value.data[0].name})         // сохраняем группу скидок
 
         seriesDiscount.value.data.map((item:IInvSerieDisount) => {
-          updateData('discounts/InvSerieDisount/' + item.id.toString() + '/', item)  // сохраняем скидки для серий
+          updateData('/data/InvSerieDisount/' + item.id.toString() + '/', item)  // сохраняем скидки для серий
         })
 
         optionsDiscount.value.data.map((item:IInvOptionDisount) => {
-          updateData('discounts/InvOptionDisount/' + item.id.toString() + '/', item)
+          updateData('/data/InvOptionDisount/' + item.id.toString() + '/', item)
         })
 
         saving.value = false
@@ -54,17 +54,17 @@
     }
 
     async function loadSeriesDisount() {
-      seriesDiscount.value  = await useFetch('discounts/InvSerieDisount/?group=' + props.id);  
+      seriesDiscount.value  = await useFetch('/data/InvSerieDisount/?column=group_id&operator=equal&value=' + props.id);  
     }    
 
     async function loadOptionsDisount() {
-      optionsDiscount.value  = await useFetch('discounts/InvOptionDisount/?group=' + props.id);
+      optionsDiscount.value  = await useFetch('/data/InvOptionDisount/?column=group_id&operator=equal&value=' + props.id);
     }    
 
     async function loadData() {
         data.value             = await useFetch(url + '/' + props.id);
-        series.value           = await useFetch('Inv_series');
-        options.value          = await useFetch('Type_of_options');
+        series.value           = await useFetch('/data/Inv_series');
+        options.value          = await useFetch('/data/Type_of_options');
         await loadSeriesDisount()
         await loadOptionsDisount()
         path.value = getPath(route.path)        

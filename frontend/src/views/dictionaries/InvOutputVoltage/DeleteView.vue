@@ -10,6 +10,6 @@
 </script>
 
 <template>
-  <UniversalDelete url="Inv_output_voltage" :id="props.id" title="Выходные напряжения"/>
+  <UniversalDelete url="/data/Inv_output_voltage" :id="props.id" title="Выходные напряжения"/>
 </template>
 

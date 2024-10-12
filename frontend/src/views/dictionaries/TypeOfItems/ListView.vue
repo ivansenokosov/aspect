@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Type_of_items" title="Типы элементов"/>
+  <UniversalList url="/data/Type_of_items" title="Типы элементов"/>
 </template>
 

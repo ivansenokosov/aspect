@@ -9,6 +9,6 @@
 </script>
 
 <template>
-  <UniversalUpdate url="Waiting_period" :id="props.id" title="Срок ожидания"/>
+  <UniversalUpdate url="/data/Waiting_period" :id="props.id" title="Срок ожидания"/>
 </template>
 

@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Inv_accurancy_frenq" title="Точность регулирования частоты"/>
+  <UniversalCreate url="/data/Inv_accurancy_frenq" title="Точность регулирования частоты"/>
 </template>
 

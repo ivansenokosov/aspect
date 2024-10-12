@@ -9,6 +9,7 @@
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
     import { getPath } from '@/api/getPath';
+    import { insertData } from '@/api/dataActions'
 
 
     const router = useRouter()
@@ -21,20 +22,18 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  props.url + '/' 
-        const config = { headers: { 'content-type': 'application/json', }, };
+        const url:string =  props.url
 
-        const formData = new FormData();        
+        await insertData(url, {name: data.value.name})
+                .then(function(response) {
+                        console.log('responnse', response)
+                        toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
+                        router.push('/dictionaries/' + path.value + '/List')
+                    })
+                .catch(function(error) {
+                        console.log(error);
+                    })
 
-        formData.append("name", data.value.name)
-
-        const res = await AxiosInstance.post(url, formData, config)
-          .then(function(response) {
-            toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
-            router.push('/dictionaries/' + path.value + '/List')
-        }).catch(function(error) {
-          console.log(error);
-        })
         saving.value = false
     }
 

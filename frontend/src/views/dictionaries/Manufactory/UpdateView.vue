@@ -9,6 +9,6 @@
 </script>
 
 <template>
-  <UniversalUpdate url="Manufactoty" :id="props.id" title="Производитель"/>
+  <UniversalUpdate url="/data/Manufactoty" :id="props.id" title="Производитель"/>
 </template>
 

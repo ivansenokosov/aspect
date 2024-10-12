@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Ambient_temperatures" title="Температуры окружающей среды"/>
+  <UniversalList url="/data/Ambient_temperatures" title="Температуры окружающей среды"/>
 </template>
 

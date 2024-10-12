@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Inv_breake_module" title="Тормозной модуль"/>
+  <UniversalCreate url="/data/Inv_breake_module" title="Тормозной модуль"/>
 </template>
 

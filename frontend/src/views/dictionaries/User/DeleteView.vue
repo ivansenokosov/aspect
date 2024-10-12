@@ -15,12 +15,12 @@
     const props  = defineProps(['id'])
 
     const submission = async () => {
-        const url:string =  'Users/' + props.id + '/'
+        const url:string =  '/data/Users/' + props.id
         deleteData(url).then(() => {router.push('/dictionaries/Users/List')})    
     }
 
     async function loadData() {
-        data.value            = await useFetch('Users/' + props.id);
+        data.value            = await useFetch('data/Users/' + props.id);
     }
     
     onMounted(() => {loadData()})

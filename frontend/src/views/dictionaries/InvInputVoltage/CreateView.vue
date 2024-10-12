@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Inv_input_voltage" title="Входное напряжение"/>
+  <UniversalCreate url="/data/Inv_input_voltage" title="Входное напряжение"/>
 </template>
 

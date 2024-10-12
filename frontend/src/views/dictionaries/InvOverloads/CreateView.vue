@@ -13,7 +13,7 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Inv_type_of_overload/' 
+        const url:string =  '/data/Inv_type_of_overload' 
         insertData(url,{"g_mode": data.value.g_mode, "p_mode": data.value.p_mode}).then(() => {
             router.push('/dictionaries/InvOverloads/List')
         })

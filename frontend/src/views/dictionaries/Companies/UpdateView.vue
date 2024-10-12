@@ -15,6 +15,7 @@
     import FileUpload from 'primevue/fileupload';
     import DataTable from 'primevue/datatable';
     import Column from 'primevue/column';
+    import { updateData } from '@/api/dataActions'
 
     const baseUrl      = useBaseUrl()
     const data         = ref<IDocument<ICompany>>({data:[], error: null, loading: true})
@@ -29,27 +30,25 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Companies/' + props.id + '/'
-        const config = { headers: { 'content-type': 'multipart/form-data', }, };
+        const url:string =  `/data/Companies/${props.id}`
 
-        const formData = new FormData();        
+        const payload = {"name" : data.value.data[0].name,
+                          "inn" : data.value.data[0].inn,
+                          "address": data.value.data[0].address,
+                          "agreement": data.value.data[0].agreement,
+                          "email" : data.value.data[0].email,
+                          "info" : data.value.data[0].info,
+                          "logo": '',
+                          "phone": data.value.data[0].phone}
 
-        formData.append("name", data.value.data[0].name)
-        formData.append("inn", data.value.data[0].inn)
-        formData.append("address", data.value.data[0].address)
-        formData.append("agreement", data.value.data[0].agreement)
-        formData.append("info", data.value.data[0].info)
-        formData.append("phone", data.value.data[0].phone)
-        formData.append("email", data.value.data[0].email)
+        // logo.value.length>5 && logo.value.file_blob && formData.append("logo", logo.value.file_blob, String(logo.value.file_name))
 
-        logo.value && logo.value.file_blob && formData.append("logo", logo.value.file_blob, String(logo.value.file_name))
-
-        const res = await AxiosInstance.put(url, formData, config)
+        updateData(url, payload)
           .then(function(response) {
 //          console.log(response);
           toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
         }).catch(function(error) {
-          console.log(error);
+           console.log(error);
         })
         saving.value = false
     }
@@ -59,9 +58,9 @@
     }
     
     async function loadData() {
-        data.value            = await useFetch('Companies/' + props.id);
-        companyUsers.value    = await useFetch('CompanyUsers/?company=' + props.id)
-        usersAll.value        = await useFetch('Users')
+        data.value            = await useFetch(`/data/Companies/${props.id}`);
+        companyUsers.value    = await useFetch(`/data/CompanyUsers?column=company&operator=equal&value=${props.id}`)
+        usersAll.value        = await useFetch('/data/Users')
         usersAll.value.data.map(user => {
             companyUsers.value.data.map(cu => {
                 if (user.id == cu.user) {
@@ -71,7 +70,7 @@
         })
 
         if (data.value.data[0].logo) {
-            logo.value = await loadFile(baseUrl.baseUrl + data.value.data[0].logo)
+            logo.value = await loadFile(`${baseUrl.baseUrl}/${data.value.data[0].logo}`)
         }
 
     }
@@ -93,8 +92,8 @@
 
                 <div class="field pt-5">
                     <div class="width:100%"><h3 class="font-semibold">Логотип</h3></div>
-                    <img v-if="logo" v-bind:src="String(logo.file_base64data)" width="350">
-                    <img v-else :src="`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`" width="350" height="262"/>
+                    <img v-if="data.data[0].logo.length>5" v-bind:src="String(logo.file_base64data)" width="350">
+                    <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
                     <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" customUpload @uploader="upload_logo" :auto="true" chooseLabel="Выбрать" />
                 </div>
                 

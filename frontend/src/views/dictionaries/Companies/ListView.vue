@@ -14,7 +14,7 @@
   const data = ref<IDocument<ICompany>>({data:[], error: null, loading: true}) 
 
   async function loadData() {
-    data.value = await useFetch('Companies');
+    data.value = await useFetch('/data/Companies');
   }
 
   const filters = ref({
@@ -60,8 +60,8 @@
 
         <Column field="logo"      header=""             style="width: 10%">
           <template #body="{ data }">
-            <img v-if="data.logo" :src="`${baseUrl.baseUrl}/${data.logo}`" width="100">
-            <img v-else :src="`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`" width="100"/>
+            <img v-if="data.logo.length>4" :src="`${baseUrl.baseUrl}/${data.logo}`" width="100">
+            <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="100"/>
           </template>          
         </Column>
         <Column field="name" header="Наименование" sortable style="width: 15%">

@@ -10,6 +10,6 @@
 </script>
 
 <template>
-  <UniversalDelete url="Ambient_temperatures" :id="props.id" title="Температура окружающей среды"/>
+  <UniversalDelete url="/data/Ambient_temperatures" :id="props.id" title="Температура окружающей среды"/>
 </template>
 

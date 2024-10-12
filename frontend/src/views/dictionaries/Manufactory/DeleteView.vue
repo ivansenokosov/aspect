@@ -10,6 +10,6 @@
 </script>
 
 <template>
-  <UniversalDelete url="Manufactoty" :id="props.id" title="Производители"/>
+  <UniversalDelete url="/data/Manufactoty" :id="props.id" title="Производители"/>
 </template>
 

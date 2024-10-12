@@ -10,6 +10,6 @@
 </script>
 
 <template>
-  <UniversalDelete url="Inv_accurancy_frenq" :id="props.id" title="Точность регулирования частоты"/>
+  <UniversalDelete url="/data/Inv_accurancy_frenq" :id="props.id" title="Точность регулирования частоты"/>
 </template>
 

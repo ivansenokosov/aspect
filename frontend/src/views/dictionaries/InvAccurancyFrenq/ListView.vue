@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Inv_accurancy_frenq" title="Точности регулирования частоты"/>
+  <UniversalList url="/data/Inv_accurancy_frenq" title="Точности регулирования частоты"/>
 </template>
 

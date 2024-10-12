@@ -9,6 +9,6 @@
 </script>
 
 <template>
-  <UniversalUpdate url="Inv_breake_module" :id="props.id" title="Тормозной модуль"/>
+  <UniversalUpdate url="/data/Inv_breake_module" :id="props.id" title="Тормозной модуль"/>
 </template>
 

@@ -37,18 +37,18 @@
     const props = defineProps(['id'])
 
     const submission = async () => {
-        const url:string =  'Invertors/' + props.id + '/'
+        const url:string =  `/data/Invertors/${props.id}`
         deleteData(url)
     }
 
     async function loadData() {
-        data.value            = await useFetch('Invertors/' + props.id);
-        series.value          = await useFetch('Inv_series_dict');
-        invInputVoltage.value = await useFetch('Inv_input_voltage');
-        sizes.value           = await useFetch('Inv_sizes_dict');
-        invBreakModule.value  = await useFetch('Inv_breake_module');
-        invDC.value           = await useFetch('Inv_DC_drossel');
-        invEMC.value          = await useFetch('Inv_EMC_drossel');
+        data.value            = await useFetch(`/data/Invertors/${props.id}`);
+        series.value          = await useFetch('/data/Inv_series_dict');
+        invInputVoltage.value = await useFetch('/data/Inv_input_voltage');
+        sizes.value           = await useFetch('/data/Inv_sizes_dict');
+        invBreakModule.value  = await useFetch('/data/Inv_breake_module');
+        invDC.value           = await useFetch('/data/Inv_DC_drossel');
+        invEMC.value          = await useFetch('/data/Inv_EMC_drossel');
 
         invSerieData.value        = series.value.data.find(item => item.id === data.value.data[0].serie)!
         invDCdata.value           = invDC.value.data.find(item => item.id === data.value.data[0].type_of_dc_drossel)!

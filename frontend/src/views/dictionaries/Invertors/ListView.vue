@@ -22,11 +22,11 @@
   const loading   = ref<boolean>(true)
 
   async function loadData() {
-    data.value     = await useFetch('Invertors');
-    invDC.value    = await useFetch('Inv_DC_drossel');
-    invEMC.value   = await useFetch('Inv_EMC_drossel');
-    invBreak.value = await useFetch('Inv_breake_module');
-    series.value   = await useFetch('Inv_series');
+    data.value     = await useFetch('/data/Invertors');
+    invDC.value    = await useFetch('/data/Inv_DC_drossel');
+    invEMC.value   = await useFetch('/data/Inv_EMC_drossel');
+    invBreak.value = await useFetch('/data/Inv_breake_module');
+    series.value   = await useFetch('/data/Inv_series');
 
     series.value.data.map(item => seriesStr.value.push(item.name))
     loading.value = false

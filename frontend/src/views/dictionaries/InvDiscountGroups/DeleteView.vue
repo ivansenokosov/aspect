@@ -10,6 +10,6 @@
 </script>
 
 <template>
-  <UniversalDelete url="discounts/InvDisountGroup" :id="props.id" title="Группа скидок"/>
+  <UniversalDelete url="/data/InvDisountGroup" :id="props.id" title="Группа скидок"/>
 </template>
 

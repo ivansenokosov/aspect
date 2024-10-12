@@ -15,14 +15,14 @@
     const props           = defineProps(['id'])
 
     const submission = async () => {
-        const url:string =  'Inv_type_of_overload/' + props.id + '/'
+        const url:string =  `/data/Inv_type_of_overload/${props.id}`
         deleteData(url).then(() => {
             router.push('/dictionaries/InvOverloads/List')
         })
     }
 
     async function loadData() {
-        data.value            = await useFetch('Inv_type_of_overload/' + props.id);
+        data.value            = await useFetch(`/data/Inv_type_of_overload/${props.id}`);
     }
     
     loadData()

@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Inv_input_voltage" title="Входные напряжения"/>
+  <UniversalList url="/data/Inv_input_voltage" title="Входные напряжения"/>
 </template>
 

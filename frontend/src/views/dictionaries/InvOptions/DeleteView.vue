@@ -23,7 +23,7 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Inv_options/' + props.id + '/'
+        const url:string =  `/data/Inv_options/${props.id}`
         deleteData(url).then(() => {
             router.push('dictionaries/InvOptions/List')
         })
@@ -31,9 +31,9 @@
     }
 
     async function loadData() {
-        invOption.value            = await useFetch('Inv_options/' + props.id);
-        series.value               = await useFetch('Inv_series_dict');
-        typeOfOption.value         = await useFetch('Type_of_options');
+        invOption.value            = await useFetch(`/data/Inv_options/${props.id}`);
+        series.value               = await useFetch('/data/Inv_series_dict');
+        typeOfOption.value         = await useFetch('/data/Type_of_options');
 
         seriesForm.value = series.value.data.filter(item => invOption.value.data[0].series.toString().includes(item.id.toString()))
         optionForm.value = typeOfOption.value.data.filter(item => invOption.value.data[0].option === item.id)[0]

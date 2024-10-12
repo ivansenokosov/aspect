@@ -7,11 +7,10 @@ import { useLoginStore } from '@/stores/login'
 const checkAuth = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const user = useUserStore()
   const loginModal = useLoginStore()
-  if (!user.isUser()) {
-    loginModal.visible = true
-  } else {
-    next() // Пусть идёт, куда хотел
-  }
+  console.log('ид пользователя установлен:', user.isUser())
+  user.isUser() ? next() : loginModal.visible = true
+      //  Если пользователь авторизован, пусть идёт, куда хотел
+      //  Если пользователь не авторизован, открываем модал авторизации
 }
 
 const router = createRouter({

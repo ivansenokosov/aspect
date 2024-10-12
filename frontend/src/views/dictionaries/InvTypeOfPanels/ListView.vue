@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Inv_type_of_panels" title="Панели"/>
+  <UniversalList url="/data/Inv_type_of_panels" title="Панели"/>
 </template>
 

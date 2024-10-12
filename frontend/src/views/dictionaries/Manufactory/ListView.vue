@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Manufactoty" title="Производители"/>
+  <UniversalList url="/data/Manufactoty" title="Производители"/>
 </template>
 

@@ -26,7 +26,7 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Inv_options/'
+        const url:string =  '/data/Inv_options'
         const config = { headers: { 'content-type': 'application/json', }, };
         var seriesStr : String = ''
 
@@ -51,9 +51,9 @@
     }    
 
     async function loadData() {
-        series.value               = await useFetch('Inv_series_dict');
-        typeOfOption.value         = await useFetch('Type_of_options');
-        items.value                = await useFetch('Items');
+        series.value               = await useFetch('/data/Inv_series_dict');
+        typeOfOption.value         = await useFetch('/data/Type_of_options');
+        items.value                = await useFetch('/data/Items');
         loading.value = false
     }
     

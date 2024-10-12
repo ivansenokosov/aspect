@@ -10,6 +10,6 @@
 </script>
 
 <template>
-  <UniversalDelete url="Variants_of_control" :id="props.id" title="Способ управления"/>
+  <UniversalDelete url="/data/Variants_of_control" :id="props.id" title="Способ управления"/>
 </template>
 

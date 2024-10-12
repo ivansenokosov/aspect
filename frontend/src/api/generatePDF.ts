@@ -3,10 +3,10 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import { dejavuFont } from "./dejavuFont";
 import { useBaseUrl } from "@/stores/baseUrl";
-import type { IInvertor, IInvOption, IInvSerie, IInvSignalInputOutput, IFile } from '@/interfaces';
 import { priceFormat } from "./priceFormat";
-import type { IDocument, ISimpleDictionary } from "@/interfaces";
 import { useFetch } from './useFetch';
+import type { IInvertor, IInvOption, IInvSerie, IInvSignalInputOutput } from '@/interfaces';
+import type { IDocument, ISimpleDictionary } from "@/interfaces";
 import { getValueFromDictionary } from './getValueFromDictionary';
 
 const baseUrl              = useBaseUrl()
@@ -38,57 +38,61 @@ export async function generatePDF(invertor: IInvertor,
                             ) {
     const filename = "aspect"
     const pdf      = new jsPDF({orientation: "portrait", unit: "px", format: "a4"});
-    const logo     = `${baseUrl.baseUrl}/media/logos/aspect_logo.jpg`
-    const docs     = `${baseUrl.baseUrl}/media/link_to_doc.png`
-    const photo    = `${baseUrl.baseUrl}/serie.photo`
-    const schema   = `${baseUrl.baseUrl}/serie.schema`
+    const logo     = `${baseUrl.baseUrl}/logos/aspect_logo.jpg`
+    const docs     = `${baseUrl.baseUrl}/link_to_doc.png`
+    const photo    = `${baseUrl.baseUrl}/${serie.photo}`
+    const schema   = `${baseUrl.baseUrl}/${serie.schema}`
     var photoRatio : number = 1
     var schemaRatio : number = 1
     
-    getMeta(photo, (err:any, img:any) => { photoRatio = img.naturalWidth / img.naturalHeight });
+    getMeta(photo,  (err:any, img:any) => { photoRatio = img.naturalWidth / img.naturalHeight });
     getMeta(schema, (err:any, img:any) => { schemaRatio = img.naturalWidth / img.naturalHeight });
 
-    breakModule.value          = await useFetch('Inv_breake_module/'      + invertor.type_of_break_module.toString() + '/');
-    ambientTemperature.value   = await useFetch('Ambient_temperatures/'   + serie.ambient_temperature.toString() + '/');
-    outputVoltage.value        = await useFetch('Inv_output_voltage/'     + serie.output_voltage.toString() + '/');
-    typeOfOptions.value        = await useFetch('Type_of_options');
+    breakModule.value          = await useFetch('/data/Inv_breake_module/'      + invertor.type_of_break_module.toString() + '/');
+    ambientTemperature.value   = await useFetch('/data/Ambient_temperatures/'   + serie.ambient_temperature.toString() + '/');
+    outputVoltage.value        = await useFetch('/data/Inv_output_voltage/'     + serie.output_voltage.toString() + '/');
+    typeOfOptions.value        = await useFetch('/data/Type_of_options');
 
     const signals_table_header = ['Сигнал','Количество']
     var   signals_table_body:Array<[string, string]>=[['','']]
 
-    const options_table_header = ['Наименование','Описание','Доп.описание','Тип','Цена']
-    var   options_table_body:Array<[string, string, string, string, string]>=[['','','','','']]
+    const options_table_header = ['Наименование','Описание','Доп.описание','Тип']
+        if (print_price) options_table_header.push('Цена')
+
+    var   options_table_body:Array<[string, string, string, string, string?]>=[['','','','','']]
 
     const invertor_table_header = ['Параметр','Значение']
-    var   invertor_table_body:Array<[string, string]>=[
-                                                         ['Тип оборудования','Преобразователь частоты'],
-                                                         ['Цена преобразователя (с НДС)', priceFormat(Number(invertor.price)) + ' руб.'],
-                                                         ['Цена выбранных опций (с НДС)', priceFormat(optionsPrice) + ' руб.'],
-                                                         ['Итого (с НДС)', priceFormat(Number(invertor.price) + optionsPrice) + ' руб.' ], // не сделано
-                                                         ['Наименование', invertor.name],
-                                                         ['Серия', serie.name],
-                                                         ['Мощность', 'Режим G: ' + invertor.p_heavy_g + ` кВт,
-Режим P: ` +  invertor.p_pumps_p + ' кВт'], 
-                                                         ['Ток', 'Режим G: ' + invertor.current_g + ` А, 
-Режим P: ` +  invertor.current_p + ' А'], // отформатировать
-                                                         ['Перегрузочная способность', 'Режиим G: ' + invertor.overload_g_mode + `
+    var   invertor_table_body:Array<[string, string]>=[]
+
+        invertor_table_body.push(['Тип оборудования','Преобразователь частоты'])
+        if (print_price) {
+            invertor_table_body.push(['Цена преобразователя (с НДС)', priceFormat(Number(invertor.price)) + ' руб.'])
+            invertor_table_body.push(['Цена выбранных опций (с НДС)', priceFormat(optionsPrice) + ' руб.'])
+            invertor_table_body.push(['Итого (с НДС)', priceFormat(Number(invertor.price) + optionsPrice) + ' руб.' ])
+        }                                                         
+        invertor_table_body.push(['Наименование', invertor.name])
+        invertor_table_body.push(['Серия', serie.name])
+        invertor_table_body.push(['Мощность', 'Режим G: ' + invertor.p_heavy_g + ` кВт,
+Режим P: ` +  invertor.p_pumps_p + ' кВт'])
+invertor_table_body.push(['Ток', 'Режим G: ' + invertor.current_g + ` А, 
+Режим P: ` +  invertor.current_p + ' А']) 
+invertor_table_body.push(['Перегрузочная способность', 'Режиим G: ' + invertor.overload_g_mode + `
 Режим P: ` + invertor.overload_p_mode + `
-(не  чаще 1 раза в 10 мин)`], 
-                                                         ['Диапазон напряжений на входе', invertor.input_voltage_str || ''],
-                                                         ['Диапазон напряжений на выходе', outputVoltage.value.data[0].name],
-                                                         ['Метод управления', invertor.type_of_control_str || ''],
-                                                         ['Способ управления', invControl],
-                                                         ['Точность регулирования частоты', invertor.type_of_accuracy_freq || ''],
-                                                         ['Тип панели', invertor.type_of_panel_str || ''],
-                                                         ['EMC дроссель', invertor.type_of_emc_drossel_str || ''],
-                                                         ['DC дроссель', invertor.type_of_dc_drossel_str || ''],
-                                                         ['Тормозной модуль', breakModule.value.data[0].name],
-                                                         ['Уровень защиты', invertor.level_IP_str || ''],
-                                                         ['Температура окр. среды', ambientTemperature.value.data[0].name],
-                                                         ['Доступные опции', availableOptions],
-                                                         ['Дополнительное описание', serie.description],
-                                                         ['Прозизводитель', invertor.manufactory_str + '/Аспект']
-                                                        ]
+(не  чаще 1 раза в 10 мин)`])
+        invertor_table_body.push(['Диапазон напряжений на входе', invertor.input_voltage_str || ''])
+        invertor_table_body.push(['Диапазон напряжений на выходе', outputVoltage.value.data[0].name])
+        invertor_table_body.push(['Метод управления', invertor.type_of_control_str || ''])
+        invertor_table_body.push(['Способ управления', invControl])
+        invertor_table_body.push(['Точность регулирования частоты', invertor.type_of_accuracy_freq || ''])
+        invertor_table_body.push(['Тип панели', invertor.type_of_panel_str || ''])
+        invertor_table_body.push(['EMC дроссель', invertor.type_of_emc_drossel_str || ''])
+        invertor_table_body.push(['DC дроссель', invertor.type_of_dc_drossel_str || ''])
+        invertor_table_body.push(['Тормозной модуль', breakModule.value.data[0].name])
+        invertor_table_body.push(['Уровень защиты', invertor.level_IP_str || ''])
+        invertor_table_body.push(['Температура окр. среды', ambientTemperature.value.data[0].name])
+        invertor_table_body.push(['Доступные опции', availableOptions])
+        invertor_table_body.push(['Дополнительное описание', serie.description])
+        invertor_table_body.push(['Прозизводитель', invertor.manufactory_str + '/Аспект'])
      
 
     
@@ -129,12 +133,19 @@ export async function generatePDF(invertor: IInvertor,
 
 
 // ------------------------------------------------- Выбранные опции
-optionsSelected.forEach((item:IInvOption, index:number) => options_table_body[index]= [item.name, // Наименование
-                                                                                       item.full_title, // Описание
-                                                                                       item.short_title, // Доп.описание
-                                                                                       getValueFromDictionary(typeOfOptions.value.data, item.option), // Тип
-                                                                                       calcPrice(Number(item.price), Number(item.discount)).toString() // Цена
-                                                                                       ]) 
+optionsSelected.forEach((item:IInvOption, index:number) => {
+    if (print_price)
+        options_table_body[index]= [item.name, // Наименование
+                                    item.full_title, // Описание
+                                    item.short_title, // Доп.описание
+                                    getValueFromDictionary(typeOfOptions.value.data, item.option), // Тип
+                                    calcPrice(Number(item.price), Number(item.discount)).toString()] // Цена
+    else 
+        options_table_body[index]= [item.name, // Наименование
+        item.full_title, // Описание
+        item.short_title, // Доп.описание
+        getValueFromDictionary(typeOfOptions.value.data, item.option)] // Тип
+}) 
 
     pdf.addPage()
     pdf.text("Выбранные опции", 50, 50)

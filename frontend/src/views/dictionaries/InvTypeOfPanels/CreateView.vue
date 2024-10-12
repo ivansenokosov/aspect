@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Inv_type_of_panels" title="Панель"/>
+  <UniversalCreate url="/data/Inv_type_of_panels" title="Панель"/>
 </template>
 

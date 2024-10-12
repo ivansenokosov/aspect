@@ -57,7 +57,7 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Inv_series/'
+        const url:string =  '/data/Inv_series'
         const config = { headers: { 'content-type': 'multipart/form-data', }, };
 
         const formData = new FormData();        
@@ -95,14 +95,14 @@
     }
 
     async function loadData() {
-        manufactoryData.value          = await useFetch('Manufactoty');
-        outputVoltageData.value        = await useFetch('Inv_output_voltage');
-        typeOfControlData.value        = await useFetch('Type_of_control');
-        typeOfPanelData.value          = await useFetch('Inv_type_of_panels');
-        typeOfOverloadData.value       = await useFetch('Inv_overload_dict');
-        typeOfAccuracyFreqData.value   = await useFetch('Inv_accurancy_frenq');
-        ambientTemperatureData.value   = await useFetch('Ambient_temperatures');
-        levelIPData.value              = await useFetch('Level_IP');
+        manufactoryData.value          = await useFetch('/data/Manufactoty');
+        outputVoltageData.value        = await useFetch('/data/Inv_output_voltage');
+        typeOfControlData.value        = await useFetch('/data/Type_of_control');
+        typeOfPanelData.value          = await useFetch('/data/Inv_type_of_panels');
+        typeOfOverloadData.value       = await useFetch('/data/Inv_overload_dict');
+        typeOfAccuracyFreqData.value   = await useFetch('/data/Inv_accurancy_frenq');
+        ambientTemperatureData.value   = await useFetch('/data/Ambient_temperatures');
+        levelIPData.value              = await useFetch('/data/Level_IP');
         loading.value = false
     }
     

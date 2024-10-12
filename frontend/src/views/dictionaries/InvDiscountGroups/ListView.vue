@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="discounts/InvDisountGroup" title="Группы скидок"/>
+  <UniversalList url="/data/InvDisountGroup" title="Группы скидок"/>
 </template>
 

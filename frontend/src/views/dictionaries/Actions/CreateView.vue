@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="logs/Actions" title="Действие журналирования"/>
+  <UniversalCreate url="/data/Actions" title="Действие журналирования"/>
 </template>
 

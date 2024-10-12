@@ -9,6 +9,6 @@
 </script>
 
 <template>
-  <UniversalUpdate url="Inv_input_voltage" :id="props.id" title="Входное напряжение"/>
+  <UniversalUpdate url="/data/Inv_input_voltage" :id="props.id" title="Входное напряжение"/>
 </template>
 

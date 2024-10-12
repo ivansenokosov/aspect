@@ -9,6 +9,6 @@
 </script>
 
 <template>
-  <UniversalUpdate url="Inv_DC_drossel" :id="props.id" title="DC дроссель"/>
+  <UniversalUpdate url="/data/Inv_DC_drossel" :id="props.id" title="DC дроссель"/>
 </template>
 

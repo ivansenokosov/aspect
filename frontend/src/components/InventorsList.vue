@@ -46,7 +46,7 @@
 
   async function loadDiscounts() {
     if (user.isUser()) {
-      userInvDisount.value = await useFetch('/data/UserInvDisount?user=' + user.getUser().userId.value); 
+      userInvDisount.value = await useFetch('/data/UserInvDisount?column=user_id&operator=equal&value=' + user.getUser().userId.value); 
       discontGroupId.value = userInvDisount.value.data[0].group
     }
   }

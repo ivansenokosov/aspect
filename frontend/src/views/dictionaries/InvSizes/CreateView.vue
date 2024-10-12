@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Inv_sizes" title="Размер"/>
+  <UniversalCreate url="/data/Inv_sizes" title="Размер"/>
 </template>
 

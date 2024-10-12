@@ -23,7 +23,7 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Inv_spec_of_in_out/' + props.id + '/'
+        const url:string =  `/data/Inv_spec_of_in_out/${props.id}`
         const config = { headers: { 'content-type': 'application/json', }, };
 
         AxiosInstance.delete(url,{})
@@ -34,9 +34,9 @@
     }
 
     async function loadData() {
-        data.value       = await useFetch('Inv_spec_of_in_out');
-        signals.value    = await useFetch('Inv_type_of_signals');
-        series.value     = await useFetch('Inv_series_dict');
+        data.value       = await useFetch('/data/Inv_spec_of_in_out');
+        signals.value    = await useFetch('/data/Inv_type_of_signals');
+        series.value     = await useFetch('/data/Inv_series_dict');
         serie.value      = data.value.data[0].serie
         signal.value     = data.value.data[0].signal
         loading.value    = false

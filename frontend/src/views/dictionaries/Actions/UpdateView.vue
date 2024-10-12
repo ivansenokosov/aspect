@@ -9,6 +9,6 @@
 </script>
 
 <template>
-  <UniversalUpdate url="logs/Actions" :id="props.id" title="Действие журналирования"/>
+  <UniversalUpdate url="/data/Actions" :id="props.id" title="Действие журналирования"/>
 </template>
 

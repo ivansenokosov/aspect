@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Type_of_options" title="Тип опции"/>
+  <UniversalCreate url="/data/Type_of_options" title="Тип опции"/>
 </template>
 

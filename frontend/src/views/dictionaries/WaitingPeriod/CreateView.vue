@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Waiting_period" title="Срок ожидания"/>
+  <UniversalCreate url="/data/Waiting_period" title="Срок ожидания"/>
 </template>
 

@@ -18,7 +18,7 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Inv_type_of_control/' 
+        const url:string =  '/data/Inv_type_of_control' 
         const config = { headers: { 'content-type': 'application/json', }, };
 
         const res = await AxiosInstance.post(url, {"control": control.value, "serie": serie.value}, config)
@@ -31,8 +31,8 @@
     }
 
     async function loadData() {
-        series.value   = await useFetch('Inv_series_dict');
-        controls.value = await useFetch('Variants_of_control');
+        series.value   = await useFetch('/data/Inv_series_dict');
+        controls.value = await useFetch('/data/Variants_of_control');
         loading.value  = false
     }
     

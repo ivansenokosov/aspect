@@ -33,18 +33,20 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string  =  'Users/' + props.id + '/'
-        const url2:string =  'discounts/UserInvDisount'
+        const url:string  =  `/data/Users/${props.id}` 
+        const url2:string =  '/data/UserInvDisount'
 
-        updateData(url, data.value.data[0]).then(()=>{
-            toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные пользователя обновлены', life: 3000 });
-        })
+        updateData(url, data.value.data[0])
+             .then(()=> { 
+                toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные пользователя обновлены', life: 3000 }) })
 
         // проверяем наличие записи в CompanyUsers для этого пользователя
         if (company.value) {
             filtered.value = companyUsers.value.data.filter(item => item.user === Number(props.id))
-            companyUser.value = {user: props.id, company: company.value}
-            filtered.value.length > 0 ? updateData('CompanyUsers/' + filtered.value[0].id + '/', companyUser.value) : insertData('CompanyUsers/', companyUser.value)
+            companyUser.value = {company: company.value, user: props.id}
+
+            filtered.value.length > 0 ? updateData(`/data/CompanyUsers/${filtered.value[0].id}`, companyUser.value) 
+                                      : insertData('/data/CompanyUsers', companyUser.value)
         }
 
         //-------------------- Сохраняем группу скидок
@@ -52,31 +54,36 @@
             const formData = {"user": props.id, "group": group.value.id.toString()}      
 
             userInvDiscounts.value.data.length>0 ? 
-                updateData(url2 + '/' +  userInvDiscounts.value.data[0].id + '/', formData).then( () => {
+                updateData(`${url2}/${userInvDiscounts.value.data[0].id}`, formData).then( () => {
                     toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные группы скидок обновлены', life: 3000 });
                 }) 
                 : 
-                insertData(url2 + '/', formData)
+                insertData(url2, formData)
         }
 
         saving.value = false
     }
 
     async function loadData() {
-        data.value            = await useFetch('Users/' + props.id);
-        companies.value       = await useFetch('Companies');
-        companyUsers.value    = await useFetch('CompanyUsers');
+        data.value            = await useFetch(`/data/Users/${props.id}`);
+        companies.value       = await useFetch('/data/Companies');
+        companyUsers.value    = await useFetch('/data/CompanyUsers');
 
-        filtered.value        = companyUsers.value.data.filter(item => item.user === Number(props.id))
-        if (filtered.value.length>0) {
-            company.value = filtered.value[0].company
+        try {
+            company.value = companyUsers.value.data.find(item => item.user === Number(props.id)).company
+        } catch {
+            company.value = 0
         }
 
         // Загражаем то, что нужно для группы скидок
-        groups.value            = await useFetch('discounts/InvDisountGroup');
-        userInvDiscounts.value  = await useFetch('discounts/UserInvDisount?user=' + props.id);
+        groups.value            = await useFetch('/data/InvDisountGroup');
+        userInvDiscounts.value  = await useFetch('/data/UserInvDisount?column=user&operator=equal&value=' + props.id);
         if (userInvDiscounts.value.data) {
-            group.value = groups.value.data.find(item => item.id === userInvDiscounts.value.data[0].group)
+            try {
+                group.value = groups.value.data.find(item => item.id === userInvDiscounts.value.data[0].group)
+            } catch {
+                group.value = 0
+            }
         }
 
         loading.value         = false
@@ -141,7 +148,7 @@
         </div>
 
         <div class="field pt-5">
-            <MyAutocomplete v-model="company" :options="companies.data" :value="company" label="Организация"/>
+            <MyAutocomplete v-model="company" :options="companies.data" :value="2" label="Организация"/>
         </div>
 
         <div class="field pt-5"> 

@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Level_IP" title="Уровни защиты"/>
+  <UniversalList url="/data/Level_IP" title="Уровни защиты"/>
 </template>
 

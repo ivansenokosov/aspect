@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="discounts/InvDisountGroup" title="Группы скидок"/>
+  <UniversalCreate url="/data/InvDisountGroup" title="Группы скидок"/>
 </template>
 

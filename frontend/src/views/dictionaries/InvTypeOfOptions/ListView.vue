@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Type_of_options" title="Типы опций"/>
+  <UniversalList url="/data/Type_of_options" title="Типы опций"/>
 </template>
 

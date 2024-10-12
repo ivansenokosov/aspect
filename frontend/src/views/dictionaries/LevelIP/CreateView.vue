@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Level_IP" title="Уровень защиты"/>
+  <UniversalCreate url="/data/Level_IP" title="Уровень защиты"/>
 </template>
 

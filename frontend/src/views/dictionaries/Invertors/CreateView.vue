@@ -59,7 +59,7 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  'Invertors/' 
+        const url:string =  '/data/Invertors' 
         const config = { headers: { 'content-type': 'application/json', }, };
 
         const formData = new FormData();        
@@ -92,13 +92,13 @@
     }    
 
     async function loadData() {
-        items.value           = await useFetch('Items');
-        series.value          = await useFetch('Inv_series_dict');
-        invInputVoltage.value = await useFetch('Inv_input_voltage');
-        sizes.value           = await useFetch('Inv_sizes_dict');
-        invBreakModule.value  = await useFetch('Inv_breake_module');
-        invDC.value           = await useFetch('Inv_DC_drossel');
-        invEMC.value          = await useFetch('Inv_EMC_drossel');
+        items.value           = await useFetch('/data/Items');
+        series.value          = await useFetch('/data/Inv_series_dict');
+        invInputVoltage.value = await useFetch('/data/Inv_input_voltage');
+        sizes.value           = await useFetch('/data/Inv_sizes_dict');
+        invBreakModule.value  = await useFetch('/data/Inv_breake_module');
+        invDC.value           = await useFetch('/data/Inv_DC_drossel');
+        invEMC.value          = await useFetch('/data/Inv_EMC_drossel');
         loading.value = false
     }
     

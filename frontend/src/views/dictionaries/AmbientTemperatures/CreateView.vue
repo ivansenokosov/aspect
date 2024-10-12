@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Ambient_temperatures" title="Температура окружающей среды"/>
+  <UniversalCreate url="/data/Ambient_temperatures" title="Температура окружающей среды"/>
 </template>
 

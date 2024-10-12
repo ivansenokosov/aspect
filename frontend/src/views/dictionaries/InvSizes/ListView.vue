@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Inv_sizes" title="Размеры"/>
+  <UniversalList url="/data/Inv_sizes" title="Размеры"/>
 </template>
 

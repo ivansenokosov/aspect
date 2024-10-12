@@ -27,6 +27,7 @@
     import { saveLog } from '@/api/log';
     import { getDiscountSerie, getDiscountOption, getInvPrice, getOptionPrice } from '@/api/utils';
 
+    import moment from 'moment'
 
     const baseUrl       = useBaseUrl()
     const user          = useUserStore()
@@ -56,7 +57,7 @@
     async function addUserInvConfig() {
       if (user.isUser()) {
         saving.value = true
-        const url:string =  'userconfigs/UserInvConfg/'
+        const url:string =  '/data/UserInvConfg'
         const config = { headers: { 'content-type': 'application/json', }, };
         const selectedOptionsStr = ref<string[]>([])
         const selectedOptionsPricesStr = ref<string[]>([])
@@ -71,6 +72,9 @@
         }
         const formData = new FormData();        
 
+        const date = moment().format('YYYY-MM-DD')
+
+        formData.append("date",               date)
         formData.append("user",               String(user.getUser().userId.value))
         formData.append("invertor",           String(props.invertor.id))
         formData.append("invertor_price",     String(props.invertor.price))
@@ -78,9 +82,14 @@
         formData.append("options",            JSON.stringify(selectedOptionsStr.value.map(item => item)))
         formData.append("options_prices",     JSON.stringify(selectedOptionsPricesStr.value.map(item => item)))
         formData.append("options_disccounts", JSON.stringify(selectedOptionsDiscountStr.value.map(item => item)))
+        formData.append("info",'')
+        formData.append("staff_opened",0)
+
+        console.log('отправляем запрос')
         
         const res = await AxiosInstance.post(url, formData, config)
                                        .then(function(response) {
+                                            console.log('response',response)
                                             saveLog(4, String(response.data.id))
                                             toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
                                             router.push('inv_config/?id=' + response.data.id)
@@ -143,8 +152,8 @@
     <Dialog v-model:visible="dialogOpened" :style="{ width: '1280px' }" :header="invertor.name" :modal="true">
         <div class="grid" v-if="!loading">
             <div class="col-4">
-                <img v-if="serie.data[0].photo" :src="`${baseUrl.baseUrl}${serie.data[0].photo}`" height="350" class="ml-5  ">
-                <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="350" height="262"/>
+                <img v-if="serie.data[0].photo" :src="`${baseUrl.baseUrl}/${serie.data[0].photo}`" height="350" class="ml-5  ">
+                <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
             </div>
             <div class="col-8" >
                 <div class="formgrid grid">

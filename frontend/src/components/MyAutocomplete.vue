@@ -15,7 +15,9 @@
     }
 
     watch(innermodel, () => {
-        if (model.value) { model.value = innermodel.value.id }
+        if (innermodel.value) { 
+            model.value = innermodel.value.id 
+        }
     })
 
     onMounted(() => {        

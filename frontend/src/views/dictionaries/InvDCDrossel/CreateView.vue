@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalCreate url="Inv_DC_drossel" title="DC дроссель"/>
+  <UniversalCreate url="/data/Inv_DC_drossel" title="DC дроссель"/>
 </template>
 

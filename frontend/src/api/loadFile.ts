@@ -1,7 +1,7 @@
 import type { IFile } from "@/interfaces";
 
 const fetchImage = async <T extends Blob>(url:string): Promise <T> => {
-  const response : any= await fetch(url)
+  const response : any = await fetch(url)
   const blob : Blob = await response.blob()
   return blob as T
 }

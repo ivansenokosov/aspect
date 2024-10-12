@@ -3,6 +3,6 @@
 </script>
 
 <template>
-  <UniversalList url="Inv_breake_module" title="Тормозные модули"/>
+  <UniversalList url="/data/Inv_breake_module" title="Тормозные модули"/>
 </template>
 

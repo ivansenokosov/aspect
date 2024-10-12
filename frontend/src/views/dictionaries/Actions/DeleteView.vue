@@ -10,6 +10,6 @@
 </script>
 
 <template>
-  <UniversalDelete url="logs/Actions" :id="props.id" title="Действие журналирования"/>
+  <UniversalDelete url="/data/Actions" :id="props.id" title="Действие журналирования"/>
 </template>
 

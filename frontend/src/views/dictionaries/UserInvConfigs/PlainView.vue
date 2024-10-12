@@ -90,13 +90,13 @@
 
   const submission = async () => {
       saving.value = true
-      const url:string =  'userconfigs/UserInvConfg/' + id.value.toString() + '/'
+      const url:string =  '/data/UserInvConfg/' + id.value.toString() + '/'
       updateData(url, invConfig.value.data[0]).then(() => {toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });})
       saving.value = false
   }
 
   async function setRead() { // установка флага, что конфигурация просмотрена
-      const url:string =  'userconfigs/UserInvConfg/' + id.value.toString() + '/'
+      const url:string =  '/data/UserInvConfg/' + id.value.toString() + '/'
       invConfig.value.data[0].staff_opened = true
       updateData(url, invConfig.value.data[0])
   }
@@ -105,17 +105,17 @@
     saveLog(9, '')
 
     id.value                   = Number(route.query.id)
-    invConfig.value            = await useFetch('userconfigs/UserInvConfg/' + id.value.toString() + '/')
-    invertor.value             = await useFetch('Invertors/' + invConfig.value.data[0].invertor + '/')
-    serie.value                = await useFetch('Inv_series/' + invertor.value.data[0].serie)
-    options.value              = await useFetch('Inv_options/?serie=' + serie.value.data[0].id)
-    typeOfOptions.value        = await useFetch('Type_of_options');
-    outputVoltage.value        = await useFetch('Inv_output_voltage/'     + serie.value.data[0].output_voltage.toString() + '/');
-    breakModule.value          = await useFetch('Inv_breake_module/'      + invertor.value.data[0].type_of_break_module.toString() + '/');
-    ambientTemperature.value   = await useFetch('Ambient_temperatures/'   + serie.value.data[0].ambient_temperature.toString() + '/');
-    signals.value              = await useFetch('Inv_spec_of_in_out/?serie=' + invertor.value.data[0].serie.toString());
-    InvTypeOfControl.value     = await useFetch('Inv_type_of_control');
-    invVariantOfControl.value  = await useFetch('Variants_of_control');
+    invConfig.value            = await useFetch('/data/UserInvConfg/' + id.value.toString() + '/')
+    invertor.value             = await useFetch('/data/Invertors/' + invConfig.value.data[0].invertor + '/')
+    serie.value                = await useFetch('/data/Inv_series/' + invertor.value.data[0].serie)
+    options.value              = await useFetch('/data/Inv_options/?serie=' + serie.value.data[0].id)
+    typeOfOptions.value        = await useFetch('/data/Type_of_options');
+    outputVoltage.value        = await useFetch('/data/Inv_output_voltage/'     + serie.value.data[0].output_voltage.toString() + '/');
+    breakModule.value          = await useFetch('/data/Inv_breake_module/'      + invertor.value.data[0].type_of_break_module.toString() + '/');
+    ambientTemperature.value   = await useFetch('/data/Ambient_temperatures/'   + serie.value.data[0].ambient_temperature.toString() + '/');
+    signals.value              = await useFetch('/data/Inv_spec_of_in_out?column=serie_id&operator=equal&value=' + invertor.value.data[0].serie.toString());
+    InvTypeOfControl.value     = await useFetch('/data/Inv_type_of_control');
+    invVariantOfControl.value  = await useFetch('/data/Variants_of_control');
 
     optionsJSON.value   = JSON.parse(invConfig.value.data[0].options);
     pricesJSON.value    = JSON.parse(invConfig.value.data[0].options_prices);
@@ -204,13 +204,13 @@
         
         <div class="mt-5">
           <img v-if="serie.data[0].photo" :src="`${baseUrl.baseUrl}/${serie.data[0].photo}`" height="350">
-          <img v-else :src="`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`" width="350" height="262"/>
+          <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
         </div>
       </div>
 
       <div class="col-5 mt-5">
         <img v-if="serie.data[0].schema" :src="`${baseUrl.baseUrl}/${serie.data[0].schema}`" width="600">
-        <img v-else :src="`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`" width="350" height="262"/>
+        <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
       </div>
 
 

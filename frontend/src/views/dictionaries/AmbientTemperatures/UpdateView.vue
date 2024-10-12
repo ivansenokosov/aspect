@@ -9,6 +9,6 @@
 </script>
 
 <template>
-  <UniversalUpdate url="Ambient_temperatures" :id="props.id" title="Температура окружающей среды"/>
+  <UniversalUpdate url="/data/Ambient_temperatures" :id="props.id" title="Температура окружающей среды"/>
 </template>
 
