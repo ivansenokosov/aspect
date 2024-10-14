@@ -29,4 +29,3 @@ app.use(ToastService);
 app.use(ConfirmationService);
 app.directive('focustrap', FocusTrap);
 app.mount('#app')
-

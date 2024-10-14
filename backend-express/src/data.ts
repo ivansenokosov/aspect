@@ -649,7 +649,7 @@ export const data:IData[] = [
         sql_get_all: 'select id, action_id "action", user_id "user", date, params from d_logs', 
         sql_get_one: 'select id, action_id "action", user_id "user", date, params from d_logs where id = ?', 
         sql_update:  'update d_logs set date = ?, action_id = ?, user_id = ?, params =? where id = ?',
-        sql_insert:  '', //insert into logs (date, action_id, user_id, params, id) values (?,?,?,?,?)',
+        sql_insert:  'insert into d_logs (date, action_id, user_id, params, id) values (?,?,?,?,?)',
         sql_delete:  'delete from d_logs where id = ?',
         table:       'd_logs',
         cached: false, 

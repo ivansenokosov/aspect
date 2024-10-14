@@ -81,7 +81,7 @@
   watch(() => [user.userId], async () => {  await loadDiscounts()  })
 
   watch(discontGroupId, async () => {  
-    serieDiscounts.value = await useFetch('data/InvSerieDisount/?group_id=' + discontGroupId.value) //  django   serieDiscounts.value = await useFetch('discounts/InvSerieDisount/?group=' + discontGroupId.value)
+    serieDiscounts.value = await useFetch(`/data/InvSerieDisount?column=group_id&operator=equal&value=${discontGroupId.value}`)
   })
 
   watch(discontGroupSelected, () => {  

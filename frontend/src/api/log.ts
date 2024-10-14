@@ -4,14 +4,15 @@ import { useUserStore } from "@/stores/user"
 import { useBaseUrl } from '@/stores/baseUrl'
 import AxiosInstance from "./axiosInstance"
 import type { ILog } from "@/interfaces"
+import moment from "moment"
 
 const user    = useUserStore()
 const baseUrl = useBaseUrl()
 
 export async function saveLog(action: number, params: string) {
     if (user.isUser()) {    
-        const date    = Date.now().toString()
-
+        const date = moment().format('YYYY-MM-DD HH:mm:ss')
+        
         const logData : ILog = {date: date, 
                                 user: user.userId, 
                                 action: action, 

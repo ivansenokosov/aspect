@@ -7,6 +7,7 @@ import { useLoginStore } from '@/stores/login';
 import axios from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import { useRouter } from 'vue-router';
+import moment from 'moment';
 
 const router = useRouter()
 
@@ -99,9 +100,9 @@ export const useUserStore = defineStore('user', () => {
 // ----------------------------------------------------------------- Запись в журнал действия пользователя ----------------------------------------------
   async function saveLog(action: number, params: string) {
     if (isUser()) {    
-      let yourDate = new Date().toDateString()
+        const date = moment().format('YYYY-MM-DD HH:mm:ss')
 
-        const logData : ILog = {date: yourDate,
+        const logData : ILog = {date: date,
                                 action: action, 
                                 user: userId.value, 
                                 params: params}
@@ -165,7 +166,7 @@ export const useUserStore = defineStore('user', () => {
       return response 
     } catch (error:any) {
       console.log('error', error.response.data.code)
-      const response = await axios.post(`${baseUrl.baseUrl}/user/logout`, header)
+      const response = await axios.post(`${baseUrl.baseUrl}/user/logout/${userId.value}`, header)
       await logout()
       router.push('/')
       throw new Error(error)

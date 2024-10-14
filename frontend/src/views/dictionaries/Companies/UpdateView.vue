@@ -16,21 +16,29 @@
     import DataTable from 'primevue/datatable';
     import Column from 'primevue/column';
     import { updateData } from '@/api/dataActions'
+    import axios from 'axios'
 
-    const baseUrl      = useBaseUrl()
-    const data         = ref<IDocument<ICompany>>({data:[], error: null, loading: true})
-    const props        = defineProps(['id'])
-    const saving       = ref<boolean>(false)
-    const toast        = useToast(); 
-    const logo         = ref<IFile>()
-    const companyUsers = ref<IDocument<ICompanyUsers>>({data:[], error: null, loading: true})
-    const usersAll     = ref<IDocument<IUser>>({data:[], error: null, loading: true})
-    const users        = ref<IUser[]>([])
+    const baseUrl        = useBaseUrl()
+    const data           = ref<IDocument<ICompany>>({data:[], error: null, loading: true})
+    const props          = defineProps(['id'])
+    const saving         = ref<boolean>(false)
+    const toast          = useToast(); 
+    const logo           = ref<IFile>()
+    const companyUsers   = ref<IDocument<ICompanyUsers>>({data:[], error: null, loading: true})
+    const usersAll       = ref<IDocument<IUser>>({data:[], error: null, loading: true})
+    const users          = ref<IUser[]>([])
+    const logo_filename  = ref<string>('')    
 
+    async function onLogoSelect(event) {
+        const formData = new FormData();
+        formData.append("file", event.files[0]);
+        await axios.post(`${baseUrl.baseUrl}/upload_logo`, formData)
+                    .then((res:any) => logo_filename.value=`/logos/${res.data.file.filename}`)
+                    .catch((err:any) => console.log(err))
+    }
 
     const submission = async () => {
         saving.value = true
-        const url:string =  `/data/Companies/${props.id}`
 
         const payload = {"name" : data.value.data[0].name,
                           "inn" : data.value.data[0].inn,
@@ -38,12 +46,12 @@
                           "agreement": data.value.data[0].agreement,
                           "email" : data.value.data[0].email,
                           "info" : data.value.data[0].info,
-                          "logo": '',
+                          "logo": logo_filename.value,
                           "phone": data.value.data[0].phone}
 
         // logo.value.length>5 && logo.value.file_blob && formData.append("logo", logo.value.file_blob, String(logo.value.file_name))
 
-        updateData(url, payload)
+        updateData(`/data/Companies/${props.id}`, payload)
           .then(function(response) {
 //          console.log(response);
           toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
@@ -71,6 +79,7 @@
 
         if (data.value.data[0].logo) {
             logo.value = await loadFile(`${baseUrl.baseUrl}/${data.value.data[0].logo}`)
+            logo_filename.value = data.value.data[0].logo
         }
 
     }
@@ -94,7 +103,8 @@
                     <div class="width:100%"><h3 class="font-semibold">Логотип</h3></div>
                     <img v-if="data.data[0].logo.length>5" v-bind:src="String(logo.file_base64data)" width="350">
                     <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
-                    <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" customUpload @uploader="upload_logo" :auto="true" chooseLabel="Выбрать" />
+                    <FileUpload mode="basic" @select="onLogoSelect" @uploader="upload_logo" customUpload :auto="true" chooseLabel="Выбрать" severity="primary" />
+
                 </div>
                 
                 <div class="field pt-5">

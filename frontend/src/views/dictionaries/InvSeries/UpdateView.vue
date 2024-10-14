@@ -15,6 +15,7 @@
     import uploadFile from '@/api/uploadFile';
     import loadFile from '@/api/loadFile';
     import { updateData } from '@/api/dataActions'
+    import axios from 'axios'
 
     const baseUrl                = useBaseUrl()
     const toast                  = useToast(); 
@@ -42,10 +43,34 @@
     const max_power              = ref<Number>()
     const photo                  = ref<IFile>()
     const schema                 = ref<IFile>()
-    const saving = ref<boolean>(false)
+    const saving                 = ref<boolean>(false)
+    const file                   = ref<any>(null)
+    const photo_filename         = ref<string>('')
+    const schema_filename        = ref<string>('')
+
+
+    
+    async function onPhotoSelect(event) {
+        const formData = new FormData();
+        formData.append("file", event.files[0]);
+        await axios.post(`${baseUrl.baseUrl}/upload_inv_photo`, formData)
+                    .then((res:any) => photo_filename.value=`/inv_series/${res.data.file.filename}`)
+                    .catch((err:any) => console.log(err))
+    }
+
+    async function onSchemaSelect(event) {
+        const formData = new FormData();
+        formData.append("file", event.files[0]);
+        await axios.post(`${baseUrl.baseUrl}/upload_inv_schema`, formData)
+                    .then((res:any) => schema_filename.value=`/inv_series_schema/${res.data.file.filename}`)
+                    .catch((err:any) => console.log(err))
+    }
+
 
     const submission = async () => {
         saving.value = true
+
+        const formData = new FormData() 
 
         const payload: IInvSerie = {name: data.value.data[0].name,
                                     description: data.value.data[0].description,
@@ -59,15 +84,11 @@
                                     level_IP: levelIP.value.id,
                                     min_power: String(min_power.value),
                                     max_power: String(max_power.value),
-                                    photo: '',
-                                    schema: ''}
-
-        // photo.value && photo.value.file_blob && formData.append("photo", photo.value.file_blob, String(photo.value.file_name))
-        // schema.value && schema.value.file_blob && formData.append("schema", schema.value.file_blob, String(schema.value.file_name))
+                                    photo: photo_filename.value,
+                                    schema: schema_filename.value}
 
         updateData(`/data/Inv_series/${props.id}`, payload)
             .then(function(response) {
-                          //          console.log(response);
                                     toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
                                     })
             .catch(function(error) {
@@ -76,7 +97,7 @@
         saving.value = false
     }
 
-    const upload_photo = async (event:any) => { 
+    const upload_photo = async (event:any) => {   
         photo.value = await uploadFile(event)
     }
     const upload_schema = async (event:any) => { 
@@ -109,9 +130,11 @@
 
         if (data.value.data[0].photo) {
             photo.value = await loadFile(`${baseUrl.baseUrl}/${data.value.data[0].photo}`)
+            photo_filename.value = data.value.data[0].photo
         }
         if (data.value.data[0].schema) {
             schema.value = await loadFile(`${baseUrl.baseUrl}/${data.value.data[0].schema}`)
+            schema_filename.value = data.value.data[0].schema
         }
 
     }
@@ -148,13 +171,14 @@
                   <div class="width:100%"><h3 class="font-semibold">Изображение</h3></div>
                   <img v-if="photo" v-bind:src="String(photo.file_base64data)" width="350">
                   <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
-                  <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" customUpload @uploader="upload_photo" :auto="true" chooseLabel="Выбрать" />
+                  <FileUpload mode="basic" @select="onPhotoSelect" @uploader="upload_photo" customUpload :auto="true" chooseLabel="Выбрать" severity="primary" />
+
               </div>
               <div class="col-6">
                 <div class="width:100%"><h3 class="font-semibold">Схема</h3></div>
                 <img v-if="schema" v-bind:src="String(schema.file_base64data)" width="350">
                 <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
-                <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="10000000" customUpload @uploader="upload_schema" :auto="true" chooseLabel="Выбрать" />
+                <FileUpload mode="basic" @select="onSchemaSelect" @uploader="upload_schema" customUpload :auto="true" chooseLabel="Выбрать" severity="primary" />
               </div>
           </div>
         </div> 

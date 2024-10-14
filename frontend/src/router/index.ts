@@ -4,7 +4,7 @@ import { useUserStore } from '@/stores/user'
 import { useLoginStore } from '@/stores/login'
 
 
-const checkAuth = (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
+const checkAuth = async (to: RouteLocationNormalized, from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const user = useUserStore()
   const loginModal = useLoginStore()
   console.log('ид пользователя установлен:', user.isUser())
