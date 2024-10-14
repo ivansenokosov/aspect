@@ -37,7 +37,7 @@ export const data:IData[] = [
     },
 
     {
-        url: '/manufactoty', 
+        url: '/manufactoty', // Протестировано
         redis_prefix: 'manufactoty',  
         sql_get_all: 'select * from s_manufactory', 
         sql_get_one: 'select * from s_manufactory where id = ?', 
@@ -51,7 +51,7 @@ export const data:IData[] = [
     },
 
     {
-        url: '/inv_input_voltage', 
+        url: '/inv_input_voltage', // Протестировано
         redis_prefix: 'invInputVoltage',  
         sql_get_all: 'select * from s_inv_input_voltage', 
         sql_get_one: 'select * from s_inv_input_voltage where id = ?', 
@@ -79,7 +79,7 @@ export const data:IData[] = [
     },
 
     {
-        url: '/level_ip', 
+        url: '/level_ip', // Протестировано
         redis_prefix: 'levelIP',  
         sql_get_all: 'select * from s_level_ip', 
         sql_get_one: 'select * from s_level_ip where id = ?', 
@@ -93,7 +93,7 @@ export const data:IData[] = [
     },
 
     {
-        url: '/Inv_type_of_overload', 
+        url: '/Inv_type_of_overload', // Протестировано
         redis_prefix: 'invTypeOfOverload',  
         sql_get_all: 'select * from s_inv_type_of_overload', 
         sql_get_one: 'select * from s_inv_type_of_overload where id = ?', 
@@ -108,7 +108,7 @@ export const data:IData[] = [
 
 
     {
-        url: '/Inv_type_of_signals', 
+        url: '/Inv_type_of_signals', // Протестировано
         redis_prefix: 'invTypeOfSignals',  
         sql_get_all: 'select * from s_inv_type_of_signals', 
         sql_get_one: 'select * from s_inv_type_of_signals where id = ?', 
@@ -122,14 +122,14 @@ export const data:IData[] = [
     },
 
     {
-        url: '/Inv_type_of_panels', 
-        redis_prefix: 'invTypeOfPanels',  
-        sql_get_all: 'select * from s_inv_type_of_panels', 
-        sql_get_one: 'select * from s_inv_type_of_panels where id = ?', 
-        sql_update:         'update s_inv_type_of_panels set name=? where id=?',
-        sql_insert:    'insert into s_inv_type_of_panels (name, id) values (?,?)',
-        sql_delete:    'delete from s_inv_type_of_panels where id = ?',
-        table:                     's_inv_type_of_panels',
+        url: '/Inv_type_of_panels', // Протестировано
+        redis_prefix: 'invTypeOfPanel',  
+        sql_get_all: 'select * from s_inv_type_of_panel', 
+        sql_get_one: 'select * from s_inv_type_of_panel where id = ?', 
+        sql_update:         'update s_inv_type_of_panel set name=? where id=?',
+        sql_insert:    'insert into s_inv_type_of_panel (name, id) values (?,?)',
+        sql_delete:    'delete from s_inv_type_of_panel where id = ?',
+        table:                     's_inv_type_of_panel',
         cached: false, 
         expire: null,
         prepare: prepareSimpleDictionary
@@ -149,7 +149,7 @@ export const data:IData[] = [
         prepare: prepareSimpleDictionary
     },
     {
-        url: '/Inv_accurancy_frenq', 
+        url: '/Inv_accurancy_frenq', // Протестировано
         redis_prefix: 'invAccurancyFrenq',  
         sql_get_all: 'select * from s_inv_accurancy_frenq', 
         sql_get_one: 'select * from s_inv_accurancy_frenq where id = ?', 
@@ -162,7 +162,7 @@ export const data:IData[] = [
         prepare: prepareSimpleDictionary
     },
     {
-        url: '/Type_of_control', 
+        url: '/Type_of_control', // Протестировано
         redis_prefix: 'TypeOfControl',  
         sql_get_all: 'select * from s_type_of_control', 
         sql_get_one: 'select * from s_type_of_control where id = ?', 
@@ -175,7 +175,7 @@ export const data:IData[] = [
         prepare: prepareSimpleDictionary
     },
     {
-        url: '/Variants_of_control', 
+        url: '/Variants_of_control', // Протестировано
         redis_prefix: 'variantsOfControl',  
         sql_get_all: 'select * from s_variant_of_control', 
         sql_get_one: 'select * from s_variant_of_control where id = ?', 
@@ -188,7 +188,7 @@ export const data:IData[] = [
         prepare: prepareSimpleDictionary
     },
     {
-        url: '/Inv_breake_module', 
+        url: '/Inv_breake_module', // Протестировано
         redis_prefix: 'invBreakeModule',  
         sql_get_all: 'select * from s_inv_breake_module', 
         sql_get_one: 'select * from s_inv_breake_module where id = ?', 
@@ -201,7 +201,7 @@ export const data:IData[] = [
         prepare: prepareSimpleDictionary
     },
     {
-        url: '/Inv_DC_drossel', 
+        url: '/Inv_DC_drossel', // Протестировано
         redis_prefix: 'invDCDrossel',  
         sql_get_all: 'select * from s_inv_dc_drossel', 
         sql_get_one: 'select * from s_inv_dc_drossel where id = ?', 
@@ -214,7 +214,7 @@ export const data:IData[] = [
         prepare: prepareSimpleDictionary
     },
     {
-        url: '/Inv_EMC_drossel', 
+        url: '/Inv_EMC_drossel', // Протестировано
         redis_prefix: 'invEMCDrossel',  
         sql_get_all: 'select * from s_inv_emc_drossel', 
         sql_get_one: 'select * from s_inv_emc_drossel where id = ?', 
@@ -240,7 +240,7 @@ export const data:IData[] = [
         prepare: () => {}  /// Не сделано -------------------------------------------------------
     },
     {
-        url: '/Type_of_options', 
+        url: '/Type_of_options', // Протестировано
         redis_prefix: 'typeOfOption',  
         sql_get_all: 'select * from s_type_of_options', 
         sql_get_one: 'select * from s_type_of_options where id = ?', 
@@ -253,7 +253,7 @@ export const data:IData[] = [
         prepare: prepareSimpleDictionary
     },
     {
-        url: '/Type_of_items', 
+        url: '/Type_of_items', // Протестировано
         redis_prefix: 'typeOfItem',  
         sql_get_all: 'select * from s_type_of_items', 
         sql_get_one: 'select * from s_type_of_items where id = ?', 
@@ -266,7 +266,7 @@ export const data:IData[] = [
         prepare: prepareSimpleDictionary
     },
     {
-        url: '/Waiting_period', 
+        url: '/Waiting_period', // Протестировано
         redis_prefix: 'waitingPeriod',  
         sql_get_all: 'select * from s_waiting_time', 
         sql_get_one: 'select * from s_waiting_time where id = ?', 
@@ -279,7 +279,7 @@ export const data:IData[] = [
         prepare: prepareSimpleDictionary
     },    
     {
-        url: '/Inv_series', 
+        url: '/Inv_series',                     // Протестириовано
         redis_prefix: 'invSerie',  
         sql_get_all: `select id, 
                              min_power, 
@@ -315,35 +315,35 @@ export const data:IData[] = [
                         from s_inv_series
                         where id = ?`, 
         sql_update:         `update s_inv_series set name=?, 
-                                                    description=?, 
-                                                    manufactory_id=?, 
-                                                    output_voltage_id=?, 
-                                                    type_of_control_id=?, 
-                                                    type_of_panel_id=?, 
-                                                    type_of_overload_id=?, 
-                                                    type_of_accuracy_freq_id=?, 
-                                                    ambient_temperature_id=?,
-                                                    level_id_id=?,
-                                                    min_power=?,
-                                                    max_power=?,
-                                                    photo=?,
-                                                    schema=?
-                                              where id=?`,
+                                                     description=?, 
+                                                     manufactory_id=?, 
+                                                     output_voltage_id=?, 
+                                                     type_of_control_id=?, 
+                                                     type_of_panel_id=?, 
+                                                     type_of_overload_id=?, 
+                                                     type_of_accuracy_freq_id=?, 
+                                                     ambient_temperature_id=?,
+                                                     level_IP_id=?,
+                                                     min_power=?,
+                                                     max_power=?,
+                                                     photo=?,
+                                                     schema=?
+                                               where id=?`,
         sql_insert:    `insert into s_inv_series (name, 
-                                                 description, 
-                                                 manufactory_id, 
-                                                 output_voltage_id, 
-                                                 type_of_control_id, 
-                                                 type_of_panel_id, 
-                                                 type_of_overload_id, 
-                                                 type_of_accuracy_freq_id, 
-                                                 ambient_temperature_id
-                                                 level_id_id,
-                                                 min_power,
-                                                 max_power,
-                                                 photo,
-                                                 schema,
-                                                 id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                                                  description, 
+                                                  manufactory_id, 
+                                                  output_voltage_id, 
+                                                  type_of_control_id, 
+                                                  type_of_panel_id, 
+                                                  type_of_overload_id, 
+                                                  type_of_accuracy_freq_id, 
+                                                  ambient_temperature_id,
+                                                  level_IP_id,
+                                                  min_power,
+                                                  max_power,
+                                                  photo,
+                                                  schema,
+                                                  id) values (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         sql_delete:    'delete from s_inv_series where id = ?',
         table:                     's_inv_series',
         cached: false, 
@@ -364,10 +364,10 @@ export const data:IData[] = [
         prepare: prepareInvAvalControl
     },
     {
-        url: '/Inv_spec_of_in_out', 
+        url: '/Inv_spec_of_in_out',  // Протестировано
         redis_prefix: 'invSignalInputOutput',  
         sql_get_all: 'select s.id, s.quantity, s.serie_id "serie", s.signal_id "signal", s.info, t.name "signal_str" from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id', 
-        sql_get_one: 'select id, quantity, serie_id "serie", signal_id "signal", info from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id and id = ?', 
+        sql_get_one: 'select s.id, quantity, serie_id "serie", signal_id "signal", info from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id and s.id = ?', 
         sql_update:         'update s_inv_spec_of_in_out set serie_id=?, signal_id=?, quantity=? where id=?',
         sql_insert:    'insert into s_inv_spec_of_in_out (serie_id, signal_id, quantity, id) values (?,?,?,?)',
         sql_delete:    'delete from s_inv_spec_of_in_out where id = ?',
@@ -379,8 +379,8 @@ export const data:IData[] = [
     {
         url: '/Items', 
         redis_prefix: 'item',  
-        sql_get_all: 'select * from d_items', 
-        sql_get_one: 'select * from d_items where id = ?', 
+        sql_get_all: 'select id, name, quantity, type_id "type", waiting_period_id "waiting_period" from d_items', 
+        sql_get_one: 'select id, name, quantity, type_id "type", waiting_period_id "waiting_period" from d_items where id = ?', 
         sql_update:         `update d_items set type_id=?,
                                                 name=?,
                                                 quantity=?, 
@@ -395,7 +395,7 @@ export const data:IData[] = [
     },
 
     {
-        url: '/companies', 
+        url: '/companies', // Протетировано
         redis_prefix: 'company',  
         sql_get_all: 'select * from d_companies', 
         sql_get_one: 'select * from d_companies where id = ?', 
@@ -421,7 +421,7 @@ export const data:IData[] = [
         prepare: prepareSimpleDictionary
     },
     {
-        url: '/Inv_options', 
+        url: '/Inv_options', // протестировано
         redis_prefix: 'invOption',  
         sql_get_all: `select io.id, 
                              p.price, 
@@ -462,7 +462,8 @@ export const data:IData[] = [
                        where io.item_id = i.id
                          and i.id = p.item_id
                          and i.waiting_period_id = t.id
-                         and too.id = io.option_id where id = ?`, 
+                         and too.id = io.option_id 
+                         and io.id = ?`, 
         sql_update:         'update d_inv_options set item_id=?, name=?, short_title=?, full_title=?, series=?, option_id=? where id=?',
         sql_insert:    'insert into d_inv_options (item_id, name, short_title, full_title, series, option_id, id) values (?,?,?,?,?,?,?)',
         sql_delete:    'delete from d_inv_options where id = ?',
@@ -485,7 +486,7 @@ export const data:IData[] = [
         prepare: () => {}
     },
     {
-        url: '/Inv_sizes_dict', 
+        url: '/Inv_sizes_dict', // протестировано
         redis_prefix: 'invSize',  
         sql_get_all: 'select name,id from s_size_of_invertors', 
         sql_get_one: 'select name,id from s_size_of_invertors where id = ?', 
@@ -498,10 +499,10 @@ export const data:IData[] = [
         prepare: () => {}
     },    
     {
-        url: '/Inv_series_dict', 
+        url: '/Inv_series_dict', //---
         redis_prefix: 'invSize',  
-        sql_get_all: 'select name,id from s_size_of_invertors', 
-        sql_get_one: 'select name,id from s_size_of_invertors where id = ?', 
+        sql_get_all: 'select name,id from s_inv_series', 
+        sql_get_one: 'select name,id from s_inv_series where id = ?', 
         sql_update:  '',
         sql_insert:  '',
         sql_delete:  '',
@@ -511,10 +512,10 @@ export const data:IData[] = [
         prepare: () => {}
     },        
     {
-        url: '/Inv_overload_dict', 
+        url: '/Inv_overload_dict', //---
         redis_prefix: 'invInvOverload',  
-        sql_get_all: 'select "Режим G: " || g_mode || ". Режим P: " || p_mode "name", id from s_inv_type_of_overload', 
-        sql_get_one: 'select "Режим G: " || g_mode || ". Режим P: " || p_mode "name", id from s_inv_type_of_overload where id = ?', 
+        sql_get_all: 'select "Режим G: " || coalesce(g_mode,"") || ". Режим P: " || coalesce(p_mode,"") "name", id from s_inv_type_of_overload', 
+        sql_get_one: 'select "Режим G: " || coalesce(g_mode,"") || ". Режим P: " || coalesce(p_mode,"") "name", id from s_inv_type_of_overload where id = ?', 
         sql_update:  '',
         sql_insert:  '',
         sql_delete:  '',
@@ -524,8 +525,8 @@ export const data:IData[] = [
         prepare: () => {}
     },        
     {
-        url: '/Invertor_dict', 
-        redis_prefix: 'invInvOverload',  
+        url: '/Invertor_dict', //---
+        redis_prefix: '',  
         sql_get_all: 'select name, id from d_invertors', 
         sql_get_one: 'select name, id from d_invertors where id = ?', 
         sql_update:  '',
@@ -537,7 +538,7 @@ export const data:IData[] = [
         prepare: () => {}
     },        
     {
-        url: '/UsersDict', 
+        url: '/UsersDict', //---
         redis_prefix: '',  
         sql_get_all: 'select fisrt_name, last_name, id from auth_user', 
         sql_get_one: 'select fisrt_name, last_name, id from auth_user where id = ?', 
@@ -563,7 +564,7 @@ export const data:IData[] = [
         prepare: prepareUser
     },        
     {
-        url: '/Prices', 
+        url: '/Prices', //---
         redis_prefix: '',  
         sql_get_all: 'select * from d_prices', 
         sql_get_one: 'select * from d_prices where id = ?', 
@@ -580,13 +581,13 @@ export const data:IData[] = [
         redis_prefix: '',  
         sql_get_all: 'select * from discounts_invdisountgroup', 
         sql_get_one: 'select * from discounts_invdisountgroup where id = ?', 
-        sql_update:  '',
-        sql_insert:  '',
-        sql_delete:  'delete from discounts_invdisountgroup where id = ?',
-        table:       'discounts_invdisountgroup',
+        sql_update:         'update discounts_invdisountgroup set name=? where id=?',
+        sql_insert:    'insert into discounts_invdisountgroup (name, id) values (?,?)',        
+        sql_delete:    'delete from discounts_invdisountgroup where id = ?',
+        table:                     'discounts_invdisountgroup',
         cached: false, 
         expire: null,
-        prepare: () => {}
+        prepare: prepareSimpleDictionary
     },      
     {
         url: '/UserInvDisount', 
@@ -604,10 +605,11 @@ export const data:IData[] = [
 
     
     {
-        url: '/invertors', 
+        url: '/invertors', // 
         redis_prefix: 'invertor', 
         sql_get_all: invertorSQL,
         sql_get_one: invertorSQL + ' and id = ?',
+
         sql_update: `update d_invertors set   item_id=?, 
                                               serie_id=?, 
                                               input_voltage_id=?, 
@@ -633,7 +635,8 @@ export const data:IData[] = [
                                               p_pumps_p,
                                               current_g,
                                               current_p,
-                                              id) values (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+                                              id) 
+                                      values (?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         sql_delete: 'delete from d_invertors where id = ?',
         table: 'd_invertors',
         cached: true,  
@@ -658,8 +661,8 @@ export const data:IData[] = [
         redis_prefix: '',  
         sql_get_all: 'select id, discount, group_id "group", serie_id "serie" from discounts_invseriedisount', 
         sql_get_one: 'select id, discount, group_id "group", serie_id "serie" from discounts_invseriedisount where id = ?', 
-        sql_update:         'update discounts_invseriedisount set discount = ?, group_id = ?, serie_id = ? where id = ?',
-        sql_insert:    'insert into discounts_invseriedisount (discount, group_id, serie_id, id) values (?,?,?,?)',
+        sql_update:         'update discounts_invseriedisount set group_id = ?, serie_id = ?, discount = ? where id = ?',
+        sql_insert:    'insert into discounts_invseriedisount (group_id, serie_id, discount, id) values (?,?,?,?)',
         sql_delete:  '  delete from discounts_invseriedisount where id = ?',
         table:                     'discounts_invseriedisount',
         cached: false, 
@@ -671,21 +674,21 @@ export const data:IData[] = [
         redis_prefix: '',  
         sql_get_all: 'select id, discount, group_id "group", option_id "option" from discounts_invoptiondisount', 
         sql_get_one: 'select id, discount, group_id "group", option_id "option" from discounts_invoptiondisount where id = ?', 
-        sql_update:         'update discounts_invoptiondisount set discount = ?, group_id = ?, serie_id = ? where id = ?',
-        sql_insert:    'insert into discounts_invoptiondisount (discount, group_id, serie_id, id) values (?,?,?,?)',
+        sql_update:         'update discounts_invoptiondisount set group_id = ?, option_id = ?, discount = ? where id = ?',
+        sql_insert:    'insert into discounts_invoptiondisount (group_id, option_id, discount, id) values (?,?,?,?)',
         sql_delete:  '  delete from discounts_invoptiondisount where id = ?',
         table:                     'discounts_invoptiondisount',
         cached: false, 
         expire: null,
-        prepare: prepareInvSerieDisount
+        prepare: prepareInvOptionDisount
     },      
     
     {
-        url: '/UserInvConfg', 
+        url: '/UserInvConfg', // протестировано
         redis_prefix: '',  
         sql_get_all: 'select id, date, options, invertor_id "invertor", user_id "user", staff_opened, invertor_discount, invertor_price, options_disccounts, options_prices, info from d_user_inv_config', 
         sql_get_one: 'select id, date, options, invertor_id "invertor", user_id "user", staff_opened, invertor_discount, invertor_price, options_disccounts, options_prices, info from d_user_inv_config where id = ?', 
-        sql_update:         'update d_user_inv_config set discount = ?, group_id = ?, serie_id = ? where id = ?',
+        sql_update:         'update d_user_inv_config set date=?, user_id=?, invertor_id=?, invertor_price=?, invertor_discount=?, options=?, options_prices=?, options_disccounts=?, info=?, staff_opened=? where id = ?',
         sql_insert:    'insert into d_user_inv_config (date, user_id, invertor_id, invertor_price, invertor_discount, options, options_prices, options_disccounts, info, staff_opened, id) values (?,?,?,?,?,?,?,?,?,?,?)',
         sql_delete:  '  delete from d_user_inv_config where id = ?',
         table:                     'd_user_inv_config',

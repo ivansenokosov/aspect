@@ -13,11 +13,13 @@
     import { useBaseUrl } from '@/stores/baseUrl'
     import uploadFile from '@/api/uploadFile';
     import { useRouter } from 'vue-router';
+    import { insertData } from '@/api/dataActions'
 
     const baseUrl                = useBaseUrl()
     const router                 = useRouter()
 
-    const data                   = ref<IInvSerie>({id:0, name: '', 
+    const data                   = ref<IInvSerie>({id:0, 
+                                                   name: '', 
                                                    description: '', 
                                                    manufactory: 0, 
                                                    output_voltage: 0, 
@@ -57,32 +59,30 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  '/data/Inv_series'
-        const config = { headers: { 'content-type': 'multipart/form-data', }, };
 
-        const formData = new FormData();        
-
-        formData.append("name", data.value.name)
-        formData.append("description", data.value.description)
-        formData.append("manufactory", String(manufactory.value.id))
-        formData.append("output_voltage", String(outputVoltage.value.id))
-        formData.append("type_of_control", String(typeOfControl.value.id))
-        formData.append("type_of_panel", String(typeOfPanel.value.id))
-        formData.append("type_of_overload", String(typeOfOverload.value.id))
-        formData.append("type_of_accuracy_freq", String(typeOfAccuracyFreq.value.id))
-        formData.append("ambient_temperature", String(ambientTemperature.value.id))
-        formData.append("level_IP", String(levelIP.value.id))
-        formData.append("min_power", String(min_power.value))
-        formData.append("max_power", String(max_power.value))
+        const payload : IInvSerie = {name: data.value.name,
+                                     description: data.value.description,
+                                     manufactory: manufactory.value.id,
+                                     output_voltage: outputVoltage.value.id,
+                                     type_of_control: typeOfControl.value.id,
+                                     type_of_panel: typeOfPanel.value.id,
+                                     type_of_overload: typeOfOverload.value.id,
+                                     type_of_accuracy_freq: typeOfAccuracyFreq.value.id,
+                                     ambient_temperature: ambientTemperature.value.id,
+                                     level_IP: levelIP.value.id,
+                                     min_power: String(min_power.value),
+                                     max_power: String(max_power.value),
+                                     photo:'',
+                                     schema:''}
     
-        photo.value && photo.value.file_blob && formData.append("photo", photo.value.file_blob, String(photo.value.file_name))
-        schema.value && schema.value.file_blob && formData.append("schema", schema.value.file_blob, String(schema.value.file_name))
+        // photo.value && photo.value.file_blob && formData.append("photo", photo.value.file_blob, String(photo.value.file_name))
+        // schema.value && schema.value.file_blob && formData.append("schema", schema.value.file_blob, String(schema.value.file_name))
 
-        const res = await AxiosInstance.post(url, formData, config)
+        insertData('/data/Inv_series', payload)
           .then(function(response) {
-            router.push('Inv_series/' + response.data.id)
+            router.push(`/dictionaries/InvSeries/Update/${response.data.id}`)
         }).catch(function(error) {
-          console.log(error);
+            console.log(error);
         })
         saving.value = false
     }
@@ -129,13 +129,13 @@
               <div class="col-6">
                   <div class="width:100%"><h3 class="font-semibold">Изображение</h3></div>
                   <img v-if="photo" v-bind:src="String(photo.file_base64data)" width="350">
-                  <img v-else :src='`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`' width="350" height="262"/>
+                  <img v-else :src='`${baseUrl.baseUrl}/inv_series/no_photo.jpg`' width="350" height="262"/>
                   <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" customUpload @uploader="upload_photo" :auto="true" chooseLabel="Выбрать" />
               </div>
               <div class="col-6">
                 <div class="width:100%"><h3 class="font-semibold">Схема</h3></div>
                 <img v-if="schema" v-bind:src="String(schema.file_base64data)" width="350">
-                <img v-else :src='`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`' width="350" height="262"/>
+                <img v-else :src='`${baseUrl.baseUrl}/inv_series/no_photo.jpg`' width="350" height="262"/>
                 <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="10000000" customUpload @uploader="upload_schema" :auto="true" chooseLabel="Выбрать" />
               </div>
           </div>

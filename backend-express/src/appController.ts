@@ -99,23 +99,20 @@ export const getData = (req:express.Request, res:express.Response, next: express
           res.status(200).send(JSON.parse(value))
         });
     } else {
-        sql_get(d.sql_get_one, [id]).then((row:any) => {
-              d.cached && d.expire // установлен срок истечения?
-              ? redis.set(d.redis_prefix + ':' + row.id, JSON.stringify(row), 'EX', d.expire) 
-              : redis.set(d.redis_prefix + ':' + row.id, JSON.stringify(row))
+        sql_get(d.sql_get_one, [id])
+          .then((row:any) => {
+                                d.cached && d.expire // установлен срок истечения?
+                                ? redis.set(d.redis_prefix + ':' + row.id, JSON.stringify(row), 'EX', d.expire) 
+                                : redis.set(d.redis_prefix + ':' + row.id, JSON.stringify(row))
 
-              res.status(200).send(row)
-        })
+                                console.log('sql выполнен успешно', d.sql_get_one, [id])    
+                                res.status(200).send(row)
+                             })
         .catch((err) => {
-              res.status(400).send(err)
-        }) 
+                            console.log('ошибка выполнения sql', err)    
+                            res.status(400).send(err)
+                        }) 
 
-        // db.get(d.sql_get_one, [id], function(err:any, row:any) {
-        //     if (err) { 
-        //       res.status(400).send(err)
-        //         // return next(err); 
-        //     }
-        // });
     }
   });
 };

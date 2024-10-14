@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
-    import AxiosInstance from '@/api/axiosInstance';
     import type { IDocument, ISimpleDictionary, IInvInputOuptput } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
@@ -9,6 +8,7 @@
     import FloatLabel from 'primevue/floatlabel';
     import MyAutocomplete from '@/components/MyAutocomplete.vue';
     import { useRouter } from 'vue-router';
+    import { deleteData } from '@/api/dataActions'
 
     const data    = ref<IDocument<IInvInputOuptput>>({data:[], error: null, loading: true}) // Входы/Выходы
     const signals = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) // Сигналы
@@ -23,10 +23,8 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  `/data/Inv_spec_of_in_out/${props.id}`
-        const config = { headers: { 'content-type': 'application/json', }, };
 
-        AxiosInstance.delete(url,{})
+        deleteData(`/data/Inv_spec_of_in_out/${props.id}`)
                      .then((res) => {
                         router.push('/dictionaries/InputOutput/List')
                      })
@@ -34,7 +32,7 @@
     }
 
     async function loadData() {
-        data.value       = await useFetch('/data/Inv_spec_of_in_out');
+        data.value       = await useFetch(`/data/Inv_spec_of_in_out/${props.id}`);
         signals.value    = await useFetch('/data/Inv_type_of_signals');
         series.value     = await useFetch('/data/Inv_series_dict');
         serie.value      = data.value.data[0].serie

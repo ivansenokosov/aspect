@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
-    import AxiosInstance from '@/api/axiosInstance';
     import type { IDocument, IInvertor, IInvSerie, ISimpleDictionary } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
@@ -11,6 +10,7 @@
     import Select from 'primevue/select';
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
+    import { updateData } from '@/api/dataActions'
 
     const data            = ref<IDocument<IInvertor>>({data:[], error: null, loading: true})
     const series          = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
@@ -39,31 +39,30 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  `/data/Invertors/${props.id}`
-        const config = { headers: { 'content-type': 'application/json', }, };
 
-        const formData = new FormData();        
+        const payload:IInvertor = {item : String(data.value.data[0].item),
+                                   name:  data.value.data[0].name,
+                                   serie: String(invSerieData.value.id),
+                                   size:  String(invSizeData.value.id),
+                                   type_of_emc_drossel: String(invEMCdata.value.id),
+                                   type_of_dc_drossel: String(invDCdata.value.id),
+                                   type_of_break_module: String(invBreakModuleData.value.id),
+                                   input_voltage: String(invInputVoltageData.value.id),
+                                   p_heavy_g: String(p_heavy_g.value ?? ''),
+                                   p_pumps_p: String(p_pumps_p.value ?? ''),
+                                   current_p: String(current_p.value ?? ''),
+                                   current_g: String(current_g.value ?? '')}
+                                  
+        console.log(payload)
 
-        formData.append("item", String(data.value.data[0].item))
-        formData.append("name", data.value.data[0].name)
-        formData.append("serie", String(invSerieData.value.id))
-        formData.append("size", String(invSizeData.value.id))
-        formData.append("type_of_emc_drossel", String(invEMCdata.value.id))
-        formData.append("type_of_dc_drossel", String(invDCdata.value.id))
-        formData.append("type_of_break_module", String(invBreakModuleData.value.id))
-        formData.append("input_voltage", String(invInputVoltageData.value.id))
-        formData.append("p_heavy_p", String(p_heavy_g.value))
-        formData.append("p_pumps_p", String(p_pumps_p.value))
-        formData.append("current_p", String(current_p.value))
-        formData.append("current_g", String(current_g.value))
-
-        const res = await AxiosInstance.put(url, formData, config)
-          .then(function(response) {
-//          console.log(response);
-          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
-        }).catch(function(error) {
-          console.log(error);
-        })
+        await updateData(`/data/Invertors/${props.id}`, payload)
+                   .then(function(response) {
+                          console.log(response);
+                          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
+                        })
+                    .catch(function(error) {
+                          console.log(error);
+                        })
         saving.value = false
     }
 
@@ -124,6 +123,7 @@
         </div>
 
         <div class="field pt-5">
+          {{ invSerieData.id }}
             <FloatLabel>
               <Select v-model="invSerieData" :options="series.data" optionLabel="name" placeholder="Серия" class="w-full md:w-56" />
               <label for="serie">Серия</label>

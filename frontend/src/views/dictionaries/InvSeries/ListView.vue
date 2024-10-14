@@ -61,8 +61,8 @@
         <Column field="name" header="Серия" sortable style="width: 10%"></Column>
         <Column header="Изображение" width="10%">
           <template #body="{ data }">
-            <img v-if="data.photo" :src="`${baseUrl.baseUrl}${data.photo}`" width="100">
-            <img v-else :src="`${baseUrl.baseUrl}media/inv_series/no_photo.jpg`" width="100"/>
+            <img v-if="data.photo" :src="`${baseUrl.baseUrl}/${data.photo}`" width="100">
+            <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="100"/>
           </template>          
         </Column>
         <Column header="Мощность" width="10%">

@@ -50,7 +50,8 @@ export function prepareInvOverload(data:IInvOverload, id:number) {
 }
 
 export function prepareInvertor(data:IInvertor, id:number) {
-    var params:Array<string|number> = [data.item, data.serie, 
+    var params:Array<string|number> = [data.item, 
+                                       data.serie, 
                                        data.input_voltage, 
                                        data.size, 
                                        data.type_of_break_module, 
@@ -177,8 +178,8 @@ export function prepareInvSerieDisount(data:IInvSerieDisount, id:number) {
 }
 
 export function prepareInvOptionDisount(data:IInvOptionDisount, id:number) {
-    var params:Array<string|number|boolean> =  [data.option, 
-                                                data.serie,
+    var params:Array<string|number|boolean> =  [data.group, 
+                                                data.option,
                                                 data.discount]
     id && params.push(id)
     return params

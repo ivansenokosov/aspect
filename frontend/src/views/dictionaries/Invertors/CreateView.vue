@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
-    import AxiosInstance from '@/api/axiosInstance';
     import type { IDocument, IInvertor, IInvSerie, ISimpleDictionary, IItem } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
@@ -12,6 +11,7 @@
     import Toast from 'primevue/toast';
     import AutoComplete from 'primevue/autocomplete';
     import { useToast } from "primevue/usetoast";
+    import { insertData } from '@/api/dataActions'
 
     const data            = ref<IInvertor>({id:0, 
                                             item: 0, 
@@ -22,11 +22,11 @@
                                             type_of_dc_drossel: 0, 
                                             type_of_emc_drossel: 0, 
                                             name: '', 
-                                            p_heavy_g: '',
-                                            p_pumps_p: '',
-                                            current_g: '',
-                                            current_p: '',
-                                            type_of_control: ''})
+                                            p_heavy_g: '0',
+                                            p_pumps_p: '0',
+                                            current_g: '0',
+                                            current_p: '0',
+                                            type_of_control: 0})
     const items           = ref<IDocument<IItem>>({data:[], error: null, loading: true})
     const series          = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
     const invInputVoltage = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
@@ -59,30 +59,26 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  '/data/Invertors' 
-        const config = { headers: { 'content-type': 'application/json', }, };
 
-        const formData = new FormData();        
+        const payload:IInvertor =  {item: item.value.id,
+                                    name: data.value.name,
+                                    serie: invSerieData.value.id,
+                                    size: invSizeData.value.id,
+                                    type_of_emc_drossel: invEMCdata.value.id,
+                                    type_of_dc_drossel: invDCdata.value.id,
+                                    type_of_break_module: invBreakModuleData.value.id,
+                                    input_voltage: invInputVoltageData.value.id,
+                                    p_heavy_g: String(p_heavy_g.value),
+                                    p_pumps_p: String(p_pumps_p.value),
+                                    current_p: String(current_p.value),
+                                    current_g: String(current_g.value)}
 
-        formData.append("item", String(item.value.id))
-        formData.append("name", data.value.name)
-        formData.append("serie", String(invSerieData.value.id))
-        formData.append("size", String(invSizeData.value.id))
-        formData.append("type_of_emc_drossel", String(invEMCdata.value.id))
-        formData.append("type_of_dc_drossel", String(invDCdata.value.id))
-        formData.append("type_of_break_module", String(invBreakModuleData.value.id))
-        formData.append("input_voltage", String(invInputVoltageData.value.id))
-        formData.append("p_heavy_p", String(p_heavy_g.value))
-        formData.append("p_pumps_p", String(p_pumps_p.value))
-        formData.append("current_p", String(current_p.value))
-        formData.append("current_g", String(current_g.value))
-
-        const res = await AxiosInstance.post(url, formData, config)
+        insertData('/data/Invertors', payload)
           .then(function(response) {
-          console.log(response);
-          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
+              console.log(response);
+              toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
         }).catch(function(error) {
-          console.log(error);
+              console.log(error);
         })
         saving.value = false
     }
@@ -168,7 +164,7 @@
             <div class="col">
               <div class="field pt-5">
                 <FloatLabel>
-                <InputNumber id="p_heavy_g" v-model="p_heavy_g" class="w-full"/>
+                  <InputNumber id="p_heavy_g" v-model="p_heavy_g" class="w-full"/>
                 <label for="p_heavy_g">p_heavy_g</label>
               </FloatLabel>
               </div>

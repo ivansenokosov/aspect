@@ -45,7 +45,7 @@
         saving.value = true
         const url:string =  `/data/Inv_series/${props.id}`
         deleteData(url).then(() => {
-          router.push('dictionaries/InvSeries/List')
+          router.push('/dictionaries/InvSeries/List')
         })
         saving.value = false
     }
@@ -112,12 +112,12 @@
               <div class="col-6">
                   <div class="width:100%"><h3 class="font-semibold">Изображение</h3></div>
                   <img v-if="photo" v-bind:src="String(photo.file_base64data)" width="350">
-                  <img v-else :src="`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`" width="350" height="262"/>
+                  <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
               </div>
               <div class="col-6">
                 <div class="width:100%"><h3 class="font-semibold">Схема</h3></div>
                 <img v-if="schema" v-bind:src="String(schema.file_base64data)" width="350">
-                <img v-else :src="`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`" width="350" height="262"/>
+                <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
               </div>
           </div>
         </div> 

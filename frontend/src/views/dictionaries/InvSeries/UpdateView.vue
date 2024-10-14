@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
-    import AxiosInstance from '@/api/axiosInstance';
     import type { IDocument, IInvSerie, ISimpleDictionary, IFile } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
@@ -15,6 +14,7 @@
     import { useBaseUrl } from '@/stores/baseUrl'
     import uploadFile from '@/api/uploadFile';
     import loadFile from '@/api/loadFile';
+    import { updateData } from '@/api/dataActions'
 
     const baseUrl                = useBaseUrl()
     const toast                  = useToast(); 
@@ -46,34 +46,33 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  `/data/Inv_series/${props.id}`
-        const config = { headers: { 'content-type': 'multipart/form-data', }, };
 
-        const formData = new FormData();        
+        const payload: IInvSerie = {name: data.value.data[0].name,
+                                    description: data.value.data[0].description,
+                                    manufactory: manufactory.value.id,
+                                    output_voltage: outputVoltage.value.id,
+                                    type_of_control: typeOfControl.value.id,
+                                    type_of_panel: typeOfPanel.value.id,
+                                    type_of_overload: typeOfOverload.value.id,
+                                    type_of_accuracy_freq: typeOfAccuracyFreq.value.id,
+                                    ambient_temperature: ambientTemperature.value.id,
+                                    level_IP: levelIP.value.id,
+                                    min_power: String(min_power.value),
+                                    max_power: String(max_power.value),
+                                    photo: '',
+                                    schema: ''}
 
-        formData.append("name", data.value.data[0].name)
-        formData.append("description", data.value.data[0].description)
-        formData.append("manufactory", String(manufactory.value.id))
-        formData.append("output_voltage", String(outputVoltage.value.id))
-        formData.append("type_of_control", String(typeOfControl.value.id))
-        formData.append("type_of_panel", String(typeOfPanel.value.id))
-        formData.append("type_of_overload", String(typeOfOverload.value.id))
-        formData.append("type_of_accuracy_freq", String(typeOfAccuracyFreq.value.id))
-        formData.append("ambient_temperature", String(ambientTemperature.value.id))
-        formData.append("level_IP", String(levelIP.value.id))
-        formData.append("min_power", String(min_power.value))
-        formData.append("max_power", String(max_power.value))
+        // photo.value && photo.value.file_blob && formData.append("photo", photo.value.file_blob, String(photo.value.file_name))
+        // schema.value && schema.value.file_blob && formData.append("schema", schema.value.file_blob, String(schema.value.file_name))
 
-        photo.value && photo.value.file_blob && formData.append("photo", photo.value.file_blob, String(photo.value.file_name))
-        schema.value && schema.value.file_blob && formData.append("schema", schema.value.file_blob, String(schema.value.file_name))
-
-        const res = await AxiosInstance.put(url, formData, config)
-          .then(function(response) {
-//          console.log(response);
-          toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
-        }).catch(function(error) {
-          console.log(error);
-        })
+        updateData(`/data/Inv_series/${props.id}`, payload)
+            .then(function(response) {
+                          //          console.log(response);
+                                    toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
+                                    })
+            .catch(function(error) {
+                                    console.log(error);
+                                })
         saving.value = false
     }
 
@@ -100,6 +99,7 @@
         typeOfControl.value            = typeOfControlData.value.data.find(item => item.id === data.value.data[0].type_of_control)!
         typeOfPanel.value              = typeOfPanelData.value.data.find(item => item.id === data.value.data[0].type_of_panel)!
         typeOfOverload.value           = typeOfOverloadData.value.data.find(item => item.id === data.value.data[0].type_of_overload)!
+
         typeOfAccuracyFreq.value       = typeOfAccuracyFreqData.value.data.find(item => item.id === data.value.data[0].type_of_accuracy_freq)!
         ambientTemperature.value       = ambientTemperatureData.value.data.find(item => item.id === data.value.data[0].ambient_temperature)!
         levelIP.value                  = levelIPData.value.data.find(item => item.id === data.value.data[0].level_IP)!
@@ -108,10 +108,10 @@
         max_power.value = Number(data.value.data[0].max_power)
 
         if (data.value.data[0].photo) {
-            photo.value = await loadFile(baseUrl.baseUrl + data.value.data[0].photo)
+            photo.value = await loadFile(`${baseUrl.baseUrl}/${data.value.data[0].photo}`)
         }
         if (data.value.data[0].schema) {
-            schema.value = await loadFile(baseUrl.baseUrl + data.value.data[0].schema)
+            schema.value = await loadFile(`${baseUrl.baseUrl}/${data.value.data[0].schema}`)
         }
 
     }
@@ -127,7 +127,6 @@
         loading ...
     </div>
     <div v-else class="pt-5">
-
         <div class="field pt-5">
             <FloatLabel>
                 <InputNumber id="id" v-model="data.data[0].id" disabled class="w-full"/>
@@ -148,13 +147,13 @@
               <div class="col-6">
                   <div class="width:100%"><h3 class="font-semibold">Изображение</h3></div>
                   <img v-if="photo" v-bind:src="String(photo.file_base64data)" width="350">
-                  <img v-else :src="`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`" width="350" height="262"/>
+                  <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
                   <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="1000000" customUpload @uploader="upload_photo" :auto="true" chooseLabel="Выбрать" />
               </div>
               <div class="col-6">
                 <div class="width:100%"><h3 class="font-semibold">Схема</h3></div>
                 <img v-if="schema" v-bind:src="String(schema.file_base64data)" width="350">
-                <img v-else :src="`${baseUrl.baseUrl}/media/inv_series/no_photo.jpg`" width="350" height="262"/>
+                <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
                 <FileUpload mode="basic" name="demo[]" url="/api/upload" accept="image/*" :maxFileSize="10000000" customUpload @uploader="upload_schema" :auto="true" chooseLabel="Выбрать" />
               </div>
           </div>

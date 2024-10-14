@@ -19,6 +19,7 @@
   import InputText from 'primevue/inputtext';
   import { saveLog } from '@/api/log';
   import { getOptionNames, getCompanyName } from '@/api/utils';
+  import { deleteData } from '@/api/dataActions'
 
   const user         = useUserStore()
   const data         = ref<IDocument<IUserInvConfig>>({data:[], error: null, loading: true}) 
@@ -73,7 +74,7 @@
             severity: 'danger'
         },
         accept: () => {
-           AxiosInstance.delete('userconfigs/UserInvConfg/'+id.toString(),{})
+           deleteData(`/data/UserInvConfg/${id}`)
                      .then((res) => {
                       loadData()
                       toast.add({ severity: 'info', summary: 'Подтверждено', detail: 'Конфигурация удалена', life: 3000 });

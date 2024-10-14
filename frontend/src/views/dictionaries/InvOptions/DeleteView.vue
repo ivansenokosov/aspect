@@ -23,10 +23,11 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  `/data/Inv_options/${props.id}`
-        deleteData(url).then(() => {
-            router.push('dictionaries/InvOptions/List')
-        })
+        deleteData(`/data/Inv_options/${props.id}`)
+             .then(() => {
+                            router.push('/dictionaries/InvOptions/List')
+                         })
+
         saving.value = false
     }
 

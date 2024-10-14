@@ -32,12 +32,12 @@
         seriesForm.value.map(item => seriesStr += item.id + ',')
         seriesStr = seriesStr.substring(0, seriesStr.length - 1)
 
-        const formData = {"item"       : String(invOption.value.data[0].item),
-                          "name"       : invOption.value.data[0].name,
-                          "short_title": invOption.value.data[0].short_title,
-                          "full_title" : invOption.value.data[0].full_title,
-                          "series"     : seriesStr,
-                          "option"     : String(optionForm.value.id)}
+        const formData = {item       : invOption.value.data[0].item,
+                          name       : invOption.value.data[0].name,
+                          short_title: invOption.value.data[0].short_title,
+                          full_title : invOption.value.data[0].full_title,
+                          series     : seriesStr,
+                          option     : optionForm.value.id}
 
         updateData(url, formData).then(() => {
             toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });

@@ -72,12 +72,6 @@
           </template>
         </Column>
 
-        <Column field="price" header="Цена" sortable style="width: 15%">
-          <template #body="{ data }">
-              {{ data.quantity }}
-          </template>
-        </Column>
-
 
         <Column field="quantity" header="Количество" sortable style="width: 15%">
           <template #body="{ data }">

@@ -10,6 +10,7 @@
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
     import MyAutocomplete from '@/components/MyAutocomplete.vue';
+    import { updateData } from '@/api/dataActions'
 
     const data    = ref<IDocument<IInvInputOuptput>>({data:[], error: null, loading: true}) // Входы/Выходы
     const signals = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) // Сигналы
@@ -24,22 +25,23 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  `/data/Inv_spec_of_in_out/${props.id}`
-        const config = { headers: { 'content-type': 'application/json', }, };
 
-        const res = await AxiosInstance
-          .put(url, {"serie": serie.value, "signal": signal.value, "quantity": data.value.data[0].quantity, info: ''}, config)
+        const payload: IInvInputOuptput = {"serie": serie.value, 
+                                           "signal": signal.value, 
+                                           "quantity": data.value.data[0].quantity}
+
+        updateData(`/data/Inv_spec_of_in_out/${props.id}`, payload)
           .then(function(response) { toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 }); })
           .catch(function(error) { console.log(error); })
         saving.value = false
     }
 
     async function loadData() {
-        data.value       = await useFetch('/data/Inv_spec_of_in_out');
+        data.value       = await useFetch(`/data/Inv_spec_of_in_out/${props.id}`);
         signals.value    = await useFetch('/data/Inv_type_of_signals');
         series.value     = await useFetch('/data/Inv_series_dict');
         serie.value      = data.value.data[0].serie
-        signal.value      = data.value.data[0].signal
+        signal.value     = data.value.data[0].signal
         loading.value    = false
     }
     

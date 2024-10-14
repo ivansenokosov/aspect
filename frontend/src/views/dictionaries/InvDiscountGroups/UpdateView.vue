@@ -39,14 +39,14 @@
 
     const submission = async () => {
         saving.value = true
-        updateData(url + '/' + props.id + '/', {"name": data.value.data[0].name})         // сохраняем группу скидок
+        updateData(`${url}/${props.id}`, {"name": data.value.data[0].name})         // сохраняем группу скидок
 
         seriesDiscount.value.data.map((item:IInvSerieDisount) => {
-          updateData('/data/InvSerieDisount/' + item.id.toString() + '/', item)  // сохраняем скидки для серий
+          updateData(`/data/InvSerieDisount/${item.id}`, item)  // сохраняем скидки для серий
         })
 
         optionsDiscount.value.data.map((item:IInvOptionDisount) => {
-          updateData('/data/InvOptionDisount/' + item.id.toString() + '/', item)
+          updateData(`/data/InvOptionDisount/${item.id}`, item)
         })
 
         saving.value = false
@@ -62,7 +62,7 @@
     }    
 
     async function loadData() {
-        data.value             = await useFetch(url + '/' + props.id);
+        data.value             = await useFetch(`${url}/${props.id}`);
         series.value           = await useFetch('/data/Inv_series');
         options.value          = await useFetch('/data/Type_of_options');
         await loadSeriesDisount()
@@ -101,9 +101,9 @@
           <div class="formgrid grid">
             <div class="field col">
               <h1>Серии</h1>
-              <Button label="Пересоздать серии" @click="() => {
-                createSeries(props.id, series.data, seriesDiscount.data)
-                loadSeriesDisount()
+              <Button label="Пересоздать серии" @click="async () => {
+                await createSeries(props.id, series.data, seriesDiscount.data)
+                await loadSeriesDisount()
               }"/>
               <DataTable :value="seriesDiscount.data" 
                      tableStyle="min-width: 50rem"  
@@ -136,9 +136,9 @@
             </div>
             <div class="field col">
               <h1>Опции</h1>
-              <Button label="Пересоздать опции" @click="() => {
-                createOptions(props.id, options.data, optionsDiscount.data)
-                loadOptionsDisount()
+              <Button label="Пересоздать опции" @click="async () => {
+                await createOptions(props.id, options.data, optionsDiscount.data)
+                await loadOptionsDisount()
               }"/>
               <DataTable :value="optionsDiscount.data" 
                      tableStyle="min-width: 50rem" 

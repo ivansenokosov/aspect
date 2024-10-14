@@ -90,8 +90,7 @@
 
   const submission = async () => {
       saving.value = true
-      const url:string =  '/data/UserInvConfg/' + id.value.toString() + '/'
-      updateData(url, invConfig.value.data[0]).then(() => {toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });})
+      updateData(`/data/UserInvConfg/${id.value}`, invConfig.value.data[0]).then(() => {toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });})
       saving.value = false
   }
 

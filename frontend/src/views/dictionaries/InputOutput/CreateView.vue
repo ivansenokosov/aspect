@@ -10,6 +10,7 @@
     import { useToast } from "primevue/usetoast";
     import MyAutocomplete from '@/components/MyAutocomplete.vue';
     import { useRouter } from 'vue-router';
+    import { insertData } from '@/api/dataActions'
 
     const data    = ref<IInvInputOuptput>({id:0, serie:0, signal:0, quantity:0, info:''}) // Входы/Выходы
     const signals = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) // Сигналы
@@ -24,9 +25,10 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  '/data/Inv_spec_of_in_out'
-        const config = { headers: { 'content-type': 'application/json', }, };
-        const res = await AxiosInstance.post(url, {"serie": serie.value, "signal": signal.value, "quantity": data.value.quantity, info: ''}, config)
+
+        const payload:IInvInputOuptput =  {"serie": serie.value, "signal": signal.value, "quantity": data.value.quantity}
+
+        insertData('/data/Inv_spec_of_in_out', payload)
           .then(function(response) {
           router.push('/dictionaries/InputOutput/List')
         }).catch(function(error) {

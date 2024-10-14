@@ -195,8 +195,8 @@ export interface IInvSerieDisount {
 
 export interface IInvOptionDisount {
     id:number
+    group: number
     option: number
-    serie: number
     discount: number
   }
 

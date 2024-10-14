@@ -33,15 +33,15 @@
         seriesForm.value.map(item => seriesStr += item.id + ',')
         seriesStr = seriesStr.substring(0, seriesStr.length - 1)
 
-        const formData = {"item"       : item.value.toString(),
+        const formData = {"item"       : item.value,
                           "name"       : invOption.value.name,
                           "short_title": invOption.value.short_title,
                           "full_title" : invOption.value.full_title,
                           "series"     : seriesStr,
-                          "option"     : String(optionForm.value.id)}
+                          "option"     : optionForm.value.id}
 
         insertData(url, formData).then((response:any) => {
-            router.push(url + response.data.id)
+            router.push(`/dictionaries/InvOptions/Update/${response.data.id}`)
         })
         saving.value = false
     }
@@ -68,10 +68,6 @@
     <div v-else class="pt-5">
         <div class="field pt-5">
             <MyAutocomplete v-model="item" optionLabel="id" :options="items.data" label="item" value="1"/>
-            <!-- <FloatLabel>
-                <AutoComplete v-model="itemForm" dropdown :suggestions="itemsDisplay" optionLabel="id" placeholder="item" @complete="search" class="w-full md:w-56" />
-                <label for="item">item</label>
-            </FloatLabel> -->
         </div>
 
         <div class="field pt-5">
