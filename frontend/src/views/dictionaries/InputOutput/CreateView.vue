@@ -12,7 +12,7 @@
     import { useRouter } from 'vue-router';
     import { insertData } from '@/api/dataActions'
 
-    const data    = ref<IInvInputOuptput>({id:0, serie:0, signal:0, quantity:0, info:''}) // Входы/Выходы
+    const data    = ref<IInvInputOuptput>({id:0, serie_id:0, signal_id:0, quantity:0, info:''}) // Входы/Выходы
     const signals = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) // Сигналы
     const series  = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) // Серии
     const signal  = ref<number>(0)
@@ -26,7 +26,10 @@
     const submission = async () => {
         saving.value = true
 
-        const payload:IInvInputOuptput =  {"serie": serie.value, "signal": signal.value, "quantity": data.value.quantity}
+        const payload:IInvInputOuptput =  {serie_id: serie.value, 
+                                           signal_id: signal.value, 
+                                           quantity: data.value.quantity, 
+                                           id:0}
 
         insertData('/data/Inv_spec_of_in_out', payload)
           .then(function(response) {

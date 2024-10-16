@@ -42,8 +42,8 @@
         series.value   = await useFetch('/data/Inv_series_dict');
         controls.value = await useFetch('/data/Variants_of_control');
 
-        serie.value    = data.value.data[0].serie
-        control.value  = data.value.data[0].control
+        serie.value    = data.value.data[0].serie_id
+        control.value  = data.value.data[0].control_id
         loading.value  = false
     }
     

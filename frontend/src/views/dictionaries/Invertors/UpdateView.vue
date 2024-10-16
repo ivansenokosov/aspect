@@ -53,11 +53,8 @@
                                    current_p: String(current_p.value ?? ''),
                                    current_g: String(current_g.value ?? '')}
                                   
-        console.log(payload)
-
         await updateData(`/data/Invertors/${props.id}`, payload)
                    .then(function(response) {
-                          console.log(response);
                           toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
                         })
                     .catch(function(error) {
@@ -123,7 +120,6 @@
         </div>
 
         <div class="field pt-5">
-          {{ invSerieData.id }}
             <FloatLabel>
               <Select v-model="invSerieData" :options="series.data" optionLabel="name" placeholder="Серия" class="w-full md:w-56" />
               <label for="serie">Серия</label>

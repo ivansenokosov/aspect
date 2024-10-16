@@ -21,7 +21,7 @@
     const data             = ref<IDocument<IUser>>({data:[], error: null, loading: true})
     const companies        = ref<IDocument<ICompany>>({data:[], error: null, loading: true})
     const companyUsers     = ref<IDocument<ICompanyUsers>>({data:[], error: null, loading: true})
-    const companyUser      = ref<ICompanyUsers>({user:0, company:0})
+    const companyUser      = ref<ICompanyUsers>({user_id:0, company_id:0})
     const filtered         = ref<ICompanyUsers[]>([])
     const groups           = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) 
     const group            = ref<ISimpleDictionary>()
@@ -42,7 +42,7 @@
 
         // проверяем наличие записи в CompanyUsers для этого пользователя
         if (company.value) {
-            filtered.value = companyUsers.value.data.filter(item => item.user === Number(props.id))
+            filtered.value = companyUsers.value.data.filter(item => item.user_id === Number(props.id))
             companyUser.value = {company: company.value, user: props.id}
 
             filtered.value.length > 0 ? updateData(`/data/CompanyUsers/${filtered.value[0].id}`, companyUser.value) 
@@ -70,7 +70,8 @@
         companyUsers.value    = await useFetch('/data/CompanyUsers');
 
         try {
-            company.value = companyUsers.value.data.find(item => item.user === Number(props.id)).company
+            const cu:CompanyUsers = companyUsers.value.data.find(item => item.user_id === Number(props.id))
+            if (cu) company.value = cu.company_id
         } catch {
             company.value = 0
         }
@@ -80,13 +81,13 @@
         userInvDiscounts.value  = await useFetch('/data/UserInvDisount?column=user&operator=equal&value=' + props.id);
         if (userInvDiscounts.value.data) {
             try {
-                group.value = groups.value.data.find(item => item.id === userInvDiscounts.value.data[0].group)
+                group.value = groups.value.data.find(item => item.id === userInvDiscounts.value.data[0].group_id)
             } catch {
-                group.value = 0
+                group.value = {name:'', id:0}
             }
         }
 
-        loading.value         = false
+        loading.value = false
     }
 
     loadData()
@@ -148,7 +149,7 @@
         </div>
 
         <div class="field pt-5">
-            <MyAutocomplete v-model="company" :options="companies.data" :value="2" label="Организация"/>
+            <MyAutocomplete v-model="company" :options="companies.data" :value="company" label="Организация"/>
         </div>
 
         <div class="field pt-5"> 

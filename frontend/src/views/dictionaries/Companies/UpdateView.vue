@@ -29,7 +29,7 @@
     const users          = ref<IUser[]>([])
     const logo_filename  = ref<string>('')    
 
-    async function onLogoSelect(event) {
+    async function onLogoSelect(event:any) {
         const formData = new FormData();
         formData.append("file", event.files[0]);
         await axios.post(`${baseUrl.baseUrl}/upload_logo`, formData)
@@ -71,7 +71,7 @@
         usersAll.value        = await useFetch('/data/Users')
         usersAll.value.data.map(user => {
             companyUsers.value.data.map(cu => {
-                if (user.id == cu.user) {
+                if (user.id == cu.user_id) {
                     users.value.push(user)
                 }
             })
@@ -101,7 +101,7 @@
 
                 <div class="field pt-5">
                     <div class="width:100%"><h3 class="font-semibold">Логотип</h3></div>
-                    <img v-if="data.data[0].logo.length>5" v-bind:src="String(logo.file_base64data)" width="350">
+                    <img v-if="data.data[0].logo.length>5" v-bind:src="String(logo.file_base64data!)" width="350">
                     <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
                     <FileUpload mode="basic" @select="onLogoSelect" @uploader="upload_logo" customUpload :auto="true" chooseLabel="Выбрать" severity="primary" />
 

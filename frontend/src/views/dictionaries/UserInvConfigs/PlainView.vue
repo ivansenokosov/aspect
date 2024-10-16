@@ -18,6 +18,7 @@
   import axios from "axios";
   import { getValueFromDictionary } from "@/api/getValueFromDictionary";
   import { useUserStore } from "@/stores/user";
+  import { useWebSocketStore } from "@/stores/user";
   import moment from 'moment'
   import OverlayBadge from "primevue/overlaybadge";
   import Textarea from "primevue/textarea";
@@ -157,6 +158,7 @@
 
     if (invConfig.value.data[0].staff_opened === false && user.isStaff()) { 
       await setRead()
+      ws.sendMessage({username: 'qqq',message:'mmm',timestamp:1}) // отправляем сообщение об изменении непрочитанных конфигураций
     }
 
     docNumber.value = invConfig.value.data[0].user.toString() + '/' +  invConfig.value.data[0].id.toString() + ' от ' + moment(invConfig.value.data[0].date).format('DD.MM.YYYY')
@@ -308,7 +310,7 @@
         <div class="field grid">
           <label class="col-fixed font-semibold" style="width:200px">Точность регулирования частоты</label>
           <div class="col">
-            {{ invertor.data[0].type_of_accuracy_freq }}
+            {{ invertor.data[0].type_of_accuracy_freq_str }}
           </div>
         </div>            
 

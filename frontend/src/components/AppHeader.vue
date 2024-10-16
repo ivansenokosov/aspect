@@ -1,19 +1,24 @@
 <script setup lang="ts">
     import { useUserStore } from '@/stores/user';
-    import { ref, computed } from 'vue'   
+    import { ref, computed, watch, onUnmounted, onMounted } from 'vue'   
     import Menubar from 'primevue/menubar';
     import Badge from 'primevue/badge';
     import Button from 'primevue/button';
     import type { IMenuItem } from '@/interfaces';
     import { useLoginStore } from '@/stores/login';
     import { useUnreadInvConfigs } from '@/stores/unreadInvConfig';
+    import { useWebSocketStore } from '@/stores/ws';
     import AuthModal from './AuthModal.vue';
     
-    const user  = useUserStore()
+    const user       = useUserStore()
     const invUnread  = useUnreadInvConfigs()
     const loginModal = useLoginStore();
+    const ws         = useWebSocketStore()
 
-    invUnread.count()
+    onMounted(() => invUnread.count()) // при загрузке определеяем количесвто неоткрытых конфигураций
+    onUnmounted(() => ws.closeConnection())
+    watch(() => [ws.message], () => invUnread.count()) // при получении сообщения определеяем количесвто неоткрытых конфигураций
+    
 
 const menuItems = ref<IMenuItem[]>([
     {

@@ -26,9 +26,9 @@
     const submission = async () => {
         saving.value = true
 
-        const payload: IInvInputOuptput = {"serie": serie.value, 
-                                           "signal": signal.value, 
-                                           "quantity": data.value.data[0].quantity}
+        const payload: IInvInputOuptput = {serie_id: serie.value, 
+                                           signal_id: signal.value, 
+                                           quantity: data.value.data[0].quantity}
 
         updateData(`/data/Inv_spec_of_in_out/${props.id}`, payload)
           .then(function(response) { toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 }); })
@@ -40,8 +40,8 @@
         data.value       = await useFetch(`/data/Inv_spec_of_in_out/${props.id}`);
         signals.value    = await useFetch('/data/Inv_type_of_signals');
         series.value     = await useFetch('/data/Inv_series_dict');
-        serie.value      = data.value.data[0].serie
-        signal.value     = data.value.data[0].signal
+        serie.value      = data.value.data[0].serie_id
+        signal.value     = data.value.data[0].signal_id
         loading.value    = false
     }
     

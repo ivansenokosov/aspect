@@ -57,7 +57,7 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="item" v-model="data.data[0].serie" :value="getValueFromDictionary(series.data, data.data[0].serie)" disabled class="w-full"/>
+                <InputText id="item" v-model="data.data[0].serie_id" :value="getValueFromDictionary(series.data, data.data[0].serie_id)" disabled class="w-full"/>
                 <label for="id">Серия</label>
             </FloatLabel>
         </div>
@@ -65,7 +65,7 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="item" v-model="data.data[0].control" :value="getValueFromDictionary(controls.data, data.data[0].control)" disabled class="w-full"/>
+                <InputText id="item" v-model="data.data[0].control_id" :value="getValueFromDictionary(controls.data, data.data[0].control_id)" disabled class="w-full"/>
                 <label for="title">Способ упралвеия</label>
             </FloatLabel>
         </div>

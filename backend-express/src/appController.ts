@@ -5,6 +5,7 @@ import { Database } from 'sqlite3';
 import type { IData } from './interfaces';
 import { data } from './data';
 import { getNextId, sql_get, sql_all, sql_run } from './sql';
+import { prepareJSON } from './prepare';
 
 const db = new Database('./db.sqlite3');
 const redis = new Redis();
@@ -147,7 +148,6 @@ export const updateData = (req:express.Request, res:express.Response, next: expr
 
   if (!d) { return res.json({ status: 400, message: 'неверные настройки пути и приложения' }); }
 
-  d.cached && redis.set(d.redis_prefix + ':' + id, JSON.stringify(req.body));  // Если объект кэшируемый, то изменяем его в кэше
 
   const params = d.prepare(req.body, id);  // Преобразовали JSON объекта в параметры для функции вставки
 
@@ -155,6 +155,12 @@ export const updateData = (req:express.Request, res:express.Response, next: expr
 
   sql_run(d.sql_update, params)
     .then((result) => {
+        const document = prepareJSON(req.body, Number(id)) // Если в принятом JSON объекте есть id, оставляем как есть, если нет, добавляем
+        console.log('обновляю кэш', document)
+        d.cached && redis.set(d.redis_prefix + ':' + id, JSON.stringify(document));  // Если объект кэшируемый, то изменяем его и в кэше
+
+
+
         console.log('result', result)
         res.status(200).json({ message: 'Запись изменена', reslult: result })
       })

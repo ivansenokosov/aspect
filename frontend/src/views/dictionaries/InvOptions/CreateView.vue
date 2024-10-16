@@ -15,7 +15,7 @@
     const series          = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
     const items           = ref<IDocument<IItem>>({data:[], error: null, loading: true})
     const typeOfOption    = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
-    const invOption       = ref<IInvOption>({id:0, item:0, name: '', short_title: '', full_title: '', series: 0, option: 0})
+    const invOption       = ref<IInvOption>({id:0, item_id:0, name: '', short_title: '', full_title: '', series: '0', option_id: 0})
     const itemsDisplay    = ref<IItem[]>([]);
     const optionForm      = ref<ISimpleDictionary>({name: '', id: 0})
     const seriesForm      = ref<IInvSerie[]>([])
@@ -33,12 +33,12 @@
         seriesForm.value.map(item => seriesStr += item.id + ',')
         seriesStr = seriesStr.substring(0, seriesStr.length - 1)
 
-        const formData = {"item"       : item.value,
-                          "name"       : invOption.value.name,
-                          "short_title": invOption.value.short_title,
-                          "full_title" : invOption.value.full_title,
-                          "series"     : seriesStr,
-                          "option"     : optionForm.value.id}
+        const formData = {item_id       : item.value,
+                          name          : invOption.value.name,
+                          short_title   : invOption.value.short_title,
+                          full_title    : invOption.value.full_title,
+                          series        : seriesStr,
+                          option_id     : optionForm.value.id}
 
         insertData(url, formData).then((response:any) => {
             router.push(`/dictionaries/InvOptions/Update/${response.data.id}`)

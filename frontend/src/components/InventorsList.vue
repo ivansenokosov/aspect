@@ -51,31 +51,17 @@
     }
   }
 
-  // function loadInvertors() {
-  //   for (let i=2; i<=count/20 + 1; i++) {
-  //     AxiosInstance.get('/users/invertors2?page=' + i.toString())
-  //          .then(data2 => data.value.data.push(...data2.data.results))
-  //   }
-  // }
-
-  async function loadData() {
+    async function loadData() {
     invAvalControl.value = await useFetch('/data/Inv_type_of_control')
 
-    // загружаем первые 20 ПЧ
-    // let res:any = await useFetch('users/invertors2?page=1')
-    // count = res.data[0].count
-    // data.value.data = res.data[0].results
-    // data.value.loading = false
-
-    data.value = await useFetch('/data/Invertors')
+      data.value = await useFetch('/data/Invertors')
 
     count = data.value.data.length
 
     discontGroups.value  = await useFetch('/data/InvDisountGroup')
     await loadDiscounts()      
     dataDisplay.value = data.value.data
-    // загружаем оставльные ПЧ фоном
-    // loadInvertors()
+  
   }
 
   watch(() => [user.userId], async () => {  await loadDiscounts()  })

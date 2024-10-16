@@ -38,7 +38,7 @@ export function prepareSimpleDictionary(data:ISimpleDictionary, id:number) {
 }
 
 export function prepareInvAvalControl(data:IInvAvalControl, id:number) {
-    var params:Array<string|number> = [data.serie, data.control]
+    var params:Array<string|number> = [data.serie_id, data.control_id]
     id && params.push(id)
     return params
 }
@@ -50,13 +50,13 @@ export function prepareInvOverload(data:IInvOverload, id:number) {
 }
 
 export function prepareInvertor(data:IInvertor, id:number) {
-    var params:Array<string|number> = [data.item, 
-                                       data.serie, 
-                                       data.input_voltage, 
-                                       data.size, 
-                                       data.type_of_break_module, 
-                                       data.type_of_dc_drossel, 
-                                       data.type_of_emc_drossel,
+    var params:Array<string|number> = [data.item_id, 
+                                       data.serie_id, 
+                                       data.input_voltage_id, 
+                                       data.size_id, 
+                                       data.type_of_break_module_id, 
+                                       data.type_of_dc_drossel_id, 
+                                       data.type_of_emc_drossel_id,
                                        data.name,
                                        data.p_heavy_g,
                                        data.p_pumps_p,
@@ -76,14 +76,14 @@ export function preparePower(data:IPower, id:number) {
 export function prepareSerie(data:IInvSerie, id:number) {
     var params:Array<string|number> = [data.name, 
                                        data.description, 
-                                       data.manufactory, 
-                                       data.output_voltage, 
-                                       data.type_of_control, 
-                                       data.type_of_panel, 
-                                       data.type_of_overload, 
-                                       data.type_of_accuracy_freq, 
-                                       data.ambient_temperature,
-                                       data.level_IP,
+                                       data.manufactory_id, 
+                                       data.output_voltage_id, 
+                                       data.type_of_control_id, 
+                                       data.type_of_panel_id, 
+                                       data.type_of_overload_id, 
+                                       data.type_of_accuracy_freq_id, 
+                                       data.ambient_temperature_id,
+                                       data.level_IP_id,
                                        data.min_power,
                                        data.max_power,
                                        data.photo,
@@ -93,29 +93,29 @@ export function prepareSerie(data:IInvSerie, id:number) {
 }
 
 export function prepareInvOption(data:IInvOption, id:number) {
-    var params:Array<string|number> = [data.item, 
+    var params:Array<string|number> = [data.item_id, 
                                        data.name, 
                                        data.short_title, 
                                        data.full_title, 
                                        data.series, 
-                                       data.option]
+                                       data.option_id]
     id && params.push(id)
     return params
 }
 
 export function prepareItem(data:IItem, id:number) {
-    var params:Array<string|number> = [data.type, 
+    var params:Array<string|number> = [data.type_id, 
                                        data.name, 
                                        data.quantity, 
-                                       data.waiting_period]
+                                       data.waiting_period_id]
     id && params.push(id)
     return params
 }
 
 export function prepareUserInvConfig(data:IUserInvConfig, id:number) {
     var params:Array<string|number|boolean> =  [data.date, 
-                                                data.user,
-                                                data.invertor, 
+                                                data.user_id,
+                                                data.invertor_id, 
                                                 data.invertor_price,
                                                 data.invertor_discount,
                                                 data.options, 
@@ -143,8 +143,8 @@ export function prepareUser(data:IUser, id:number) {
 }
 
 export function prepareInvInputOuptput(data:IInvInputOuptput, id:number) {
-    var params:Array<string|number|boolean> =  [data.serie, 
-                                                data.signal,
+    var params:Array<string|number|boolean> =  [data.serie_id, 
+                                                data.signal_id,
                                                 data.info,
                                                 data.quantity]
     id && params.push(id)
@@ -152,8 +152,8 @@ export function prepareInvInputOuptput(data:IInvInputOuptput, id:number) {
 }
 
 export function prepareInvSignalInputOutput(data:IInvSignalInputOutput, id:number) {
-    var params:Array<string|number|boolean> =  [data.serie, 
-                                                data.signal,
+    var params:Array<string|number|boolean> =  [data.serie_id, 
+                                                data.signal_id,
                                                 data.quantity]
     id && params.push(id)
     return params
@@ -162,32 +162,32 @@ export function prepareInvSignalInputOutput(data:IInvSignalInputOutput, id:numbe
 // ------------------------------- Скидки ------------------------------- 
 
 export function prepareUserDisount(data:IUserDiscount, id:number) {
-    var params:Array<string|number|boolean> =  [data.group,
-                                                data.user]
+    var params:Array<string|number|boolean> =  [data.group_id,
+                                                data.user_id]
     id && params.push(id)
     return params
 }
 
 
 export function prepareInvSerieDisount(data:IInvSerieDisount, id:number) {
-    var params:Array<string|number|boolean> =  [data.group, 
-                                                data.serie,
+    var params:Array<string|number|boolean> =  [data.group_id, 
+                                                data.serie_id,
                                                 data.discount]
     id && params.push(id)
     return params
 }
 
 export function prepareInvOptionDisount(data:IInvOptionDisount, id:number) {
-    var params:Array<string|number|boolean> =  [data.group, 
-                                                data.option,
+    var params:Array<string|number|boolean> =  [data.group_id, 
+                                                data.option_id,
                                                 data.discount]
     id && params.push(id)
     return params
 }
 
 export function prepareCompanyUsers(data:ICompanyUsers, id:number) {
-    var params:Array<string|number|boolean> =  [data.company, 
-                                                data.user]
+    var params:Array<string|number|boolean> =  [data.company_id, 
+                                                data.user_id]
     id && params.push(id)
     return params
 }
@@ -196,10 +196,19 @@ export function prepareCompanyUsers(data:ICompanyUsers, id:number) {
 
 export function prepareLog(data:ILog, id:number) {
     var params:Array<string|number|boolean> =  [data.date, 
-                                                data.action,
-                                                data.user,
+                                                data.action_id,
+                                                data.user_id,
                                                 data.params]
     id && params.push(id)
     return params
 }
 
+export function prepareJSON(document:any, id: number):any {
+    if (document.hasOwnProperty('id')) {
+        return document
+    } else {
+        const pair = {id:id}
+        const document2 = {...document, ...pair}
+        return document2
+    }
+}

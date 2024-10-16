@@ -35,8 +35,8 @@
         data.value       = await useFetch(`/data/Inv_spec_of_in_out/${props.id}`);
         signals.value    = await useFetch('/data/Inv_type_of_signals');
         series.value     = await useFetch('/data/Inv_series_dict');
-        serie.value      = data.value.data[0].serie
-        signal.value     = data.value.data[0].signal
+        serie.value      = data.value.data[0].serie_id
+        signal.value     = data.value.data[0].signal_id
         loading.value    = false
     }
     

@@ -16,7 +16,6 @@ export const useUnreadInvConfigs = defineStore('unreadInvConfigs', () => {
       console.log(e);
     } 
     unreadInvConfigs.value = data.value.count
-    console.log(unreadInvConfigs.value)
   }  
   return { unreadInvConfigs, count }
 })

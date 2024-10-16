@@ -103,8 +103,8 @@ export const useUserStore = defineStore('user', () => {
         const date = moment().format('YYYY-MM-DD HH:mm:ss')
 
         const logData : ILog = {date: date,
-                                action: action, 
-                                user: userId.value, 
+                                action_id: action, 
+                                user_id: userId.value, 
                                 params: params}
         const config = { headers: { 'content-type': 'application/json', }, };
         const url = `${baseUrl.baseUrl}/data/log` // `${baseUrl.baseUrl}/logs/Logs/` 

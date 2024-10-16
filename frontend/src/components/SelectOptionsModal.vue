@@ -19,6 +19,7 @@
     import { useBaseUrl } from '@/stores/baseUrl';
     import { useUserStore } from '@/stores/user';
     import { useLoginStore } from '@/stores/login';
+    import { useWebSocketStore } from '@/stores/ws'
     import { useFetch } from '@/api/useFetch';
     import AxiosInstance from '@/api/axiosInstance';
 
@@ -34,6 +35,7 @@
     const loginModal    = useLoginStore()
     const toast         = useToast()
     const router        = useRouter()
+    const ws            = useWebSocketStore()
 
     const props         = defineProps(['invertor','discontGroupId'])
     const dialogOpened  = defineModel<boolean>('dialogOpened')
@@ -85,13 +87,13 @@
         formData.append("info",'')
         formData.append("staff_opened",0)
 
-        console.log('отправляем запрос')
-        
         const res = await AxiosInstance.post(url, formData, config)
                                        .then(function(response) {
-                                            console.log('response',response)
                                             saveLog(4, String(response.data.id))
                                             toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
+                                            ws.sendMessage({username: user.getUser().userId.value.toString(),
+                                                            message: response.data.id.toString(),
+                                                            timestamp:1}) // отправка сообщения о новой конфигурации
                                             router.push('inv_config/?id=' + response.data.id)
                                           })
                                         .catch(function(error) {

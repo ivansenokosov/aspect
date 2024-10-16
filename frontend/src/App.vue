@@ -5,15 +5,7 @@
   document.title = 'Аспект';
 
   const user = useUserStore()
-
-  user.checkIsAuth()
-  .then((id:number) => {
-    console.log('Пользователь авторизован', id)
-  })
-  .catch((id:number) => {
-    console.log('Пользователь не авторизован', id)
-  })
-   // проверка был ли пользователь уже авторизован
+  user.checkIsAuth() // проверка был ли пользователь уже авторизован
 </script>
 
 <template>

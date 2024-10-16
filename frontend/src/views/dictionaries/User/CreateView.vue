@@ -14,7 +14,7 @@
 
     const router = useRouter()
     const user   = useUserStore()
-    const data   = ref<IUser>({username:'', password:'', first_name:'', last_name:'', email:'', is_active:true, is_staff:false, is_superuser: false, date_joined:''})
+    const data   = ref<IUser>({id:0, username:'', password:'', first_name:'', last_name:'', email:'', is_active:true, is_staff:false, is_superuser: false, date_joined:''})
     const saving = ref<boolean>(false)
 
     const submission = () => {

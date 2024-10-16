@@ -14,8 +14,8 @@ export async function saveLog(action: number, params: string) {
         const date = moment().format('YYYY-MM-DD HH:mm:ss')
         
         const logData : ILog = {date: date, 
-                                user: user.userId, 
-                                action: action, 
+                                user_id: user.userId, 
+                                action_id: action, 
                                 params: params}
         const config = { headers: { 'content-type': 'application/json', }, };
 
