@@ -47,7 +47,7 @@
     }
 
     const search = (event: any) => {
-        itemsDisplay.value = event.query ? items.value.data.filter((item) => item.id.toString().includes(event.query.toString())) : items.value.data;
+        itemsDisplay.value = event.query ? items.value.data.filter((item) => item.id && item.id.toString().includes(event.query.toString())) : items.value.data;
     }    
 
     async function loadData() {

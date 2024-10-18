@@ -74,43 +74,43 @@
         <Column field="description" header="Описание" style="width: 10%"></Column>
         <Column header="Производитель" width="10">
           <template #body="{ data }">
-            <span>{{ getValueFromDictionary(manufacoryData.data , data.manufactory) }}</span>
+            <span>{{ getValueFromDictionary(manufacoryData.data , data.manufactory_id) }}</span>
           </template>          
         </Column>
         <Column header="Выходное напряжение" width="5%">
           <template #body="{ data }">
-            <span>{{ getValueFromDictionary(outputVoltageData.data , data.output_voltage) }}</span>
+            <span>{{ getValueFromDictionary(outputVoltageData.data , data.output_voltage_id) }}</span>
           </template>          
         </Column>
         <Column header="Управление" width="5%">
           <template #body="{ data }">
-            <span>{{ getValueFromDictionary(typeOfControlData.data, data.type_of_control) }}</span>
+            <span>{{ getValueFromDictionary(typeOfControlData.data, data.type_of_control_id) }}</span>
           </template>          
         </Column>
         <Column header="Панель" width="5%">
           <template #body="{ data }">
-            <span>{{ getValueFromDictionary(typeOfPanelData.data, data.type_of_panel) }}</span>
+            <span>{{ getValueFromDictionary(typeOfPanelData.data, data.type_of_panel_id) }}</span>
           </template>          
         </Column>
         <Column header="Перегрузка" width="10%">
           <template #body="{ data }">
-            <div class="mt-1" style="width: 100%"><Tag value="Режим G" severity="info" /> {{ getValueFromDictionary(typeOfOverloadData.data, data.type_of_overload, 'g_mode') }} </div>
-            <div class="mt-1" style="width: 100%"><Tag value="Режим P" severity="info" /> {{ getValueFromDictionary(typeOfOverloadData.data, data.type_of_overload, 'p_mode') }} </div>
+            <div class="mt-1" style="width: 100%"><Tag value="Режим G" severity="info" /> {{ getValueFromDictionary(typeOfOverloadData.data, data.type_of_overload_id, 'g_mode') }} </div>
+            <div class="mt-1" style="width: 100%"><Tag value="Режим P" severity="info" /> {{ getValueFromDictionary(typeOfOverloadData.data, data.type_of_overload_id, 'p_mode') }} </div>
           </template>          
         </Column>
         <Column header="Точность регулирования частоты" width="5%">
           <template #body="{ data }">
-            <span>{{ getValueFromDictionary(typeOfAccuracyFreqData.data, data.type_of_accuracy_freq) }}</span>
+            <span>{{ getValueFromDictionary(typeOfAccuracyFreqData.data, data.type_of_accuracy_freq_id) }}</span>
           </template>          
         </Column>
         <Column header="Уровнь защиты" width="5%">
           <template #body="{ data }">
-            <span>{{ getValueFromDictionary(levelIPData.data, data.level_IP) }}</span>
+            <span>{{ getValueFromDictionary(levelIPData.data, data.level_IP_id) }}</span>
           </template>          
         </Column>
         <Column header="Допустимые температуры окружающей среды" width="5%">
           <template #body="{ data }">
-            <span>{{ getValueFromDictionary(ambientTemperatureData.data, data.ambient_temperature) }}</span>
+            <span>{{ getValueFromDictionary(ambientTemperatureData.data, data.ambient_temperature_id) }}</span>
           </template>          
         </Column>
 

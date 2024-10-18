@@ -533,20 +533,20 @@ exports.data = [
         table: 'auth_user',
         cached: false,
         expire: null,
-        prepare: prepare_1.prepareUser
+        prepare: prepareUser
     },
     {
         url: '/Prices', //---
         redis_prefix: '',
         sql_get_all: 'select * from d_prices',
         sql_get_one: 'select * from d_prices where id = ?',
-        sql_update: '',
-        sql_insert: '',
+        sql_update: 'insert into d_prices (item_id, price, currency_id, date, id) values (?,?,?,?,?)',
+        sql_insert: 'update d_prices set item_id = ?, price = ?, currency_id = ?, date = ? where id = ?',
         sql_delete: 'delete from d_prices where id = ?',
         table: 'd_prices',
         cached: false,
         expire: null,
-        prepare: () => { }
+        prepare: preparePrice
     },
     {
         url: '/InvDisountGroup',

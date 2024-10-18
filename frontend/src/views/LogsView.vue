@@ -105,7 +105,7 @@
 
         actions.value.data.map(action => {
             actionLabels.value.push(action.name)        // Создаём список действий
-            const actionCount = logs.value.data.filter(log => log.action === action.id)
+            const actionCount = logs.value.data.filter((log:ILog) => log.action_id === action.id)
             actionValues.value.push(actionCount.length) // Считаем количесто действий
         }) 
 
@@ -132,9 +132,9 @@
                 date += 1000 * 60 * 60 * 24
                 let count : number = 0
                 logs.value.data.map( log => {
-                    if (((selectedUser.value && log.user == selectedUser.value.id) || !selectedUser.value) && 
+                    if (((selectedUser.value && log.user_id == selectedUser.value.id) || !selectedUser.value) && 
                         moment(log.date).format('DD.MM.YYYY') == moment(date).format('DD.MM.YYYY') && 
-                        log.action == action.id) 
+                        log.action_id == action.id) 
                     {
                         count++
                     }
@@ -173,17 +173,17 @@
                         <Column header="id" sortable field="id"></Column>
                         <Column header="Действие">
                             <template #body="{ data }" >
-                                {{ getValueFromDictionary(actions.data, data.action) }}
+                                {{ getValueFromDictionary(actions.data, data.action_id) }}
                             </template>                
                         </Column>
                         <Column header="login" field="user">
                             <template #body="{ data }" >
-                                {{ getLoginByUserId(users.data, data.user) }}
+                                {{ getLoginByUserId(users.data, data.user_id) }}
                             </template>                
                         </Column>
                         <Column header="Организация" field="user">
                             <template #body="{ data }" >
-                                {{ getCompanyNameByUserId(companies.data, companyUsers.data, data.user) }}
+                                {{ getCompanyNameByUserId(companies.data, companyUsers.data, data.user_id) }}
                             </template>                
                         </Column>
                         <Column header="Дата" field="date">

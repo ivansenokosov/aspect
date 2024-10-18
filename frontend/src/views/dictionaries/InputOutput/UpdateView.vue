@@ -26,8 +26,10 @@
     const submission = async () => {
         saving.value = true
 
-        const payload: IInvInputOuptput = {serie_id: serie.value, 
+        const payload: IInvInputOuptput = {id: 0,
+                                           serie_id: serie.value, 
                                            signal_id: signal.value, 
+                                           info: '',
                                            quantity: data.value.data[0].quantity}
 
         updateData(`/data/Inv_spec_of_in_out/${props.id}`, payload)

@@ -35,7 +35,7 @@
   const serieDiscounts         = ref<IDocument<IInvSerieDisount>>({data:[], error: null, loading: true}) // скидка для серий
 
   //------- модал выбора опций {
-  const product               = ref<IInvertor>({id: 0, item: 0, serie: 0, input_voltage: 0, size: 0, type_of_break_module: 0, type_of_dc_drossel: 0, type_of_emc_drossel: 0, name: '', p_heavy_g: '', p_pumps_p: '', current_g: '', current_p: '', type_of_control: ''});
+  const product               = ref<IInvertor>({id: 0, item_id: 0, serie_id: 0, input_voltage_id: 0, size_id: 0, type_of_break_module_id: 0, type_of_dc_drossel_id: 0, type_of_emc_drossel_id: 0, name: '', p_heavy_g: '', p_pumps_p: '', current_g: '', current_p: ''});
   const productDialog         = ref<boolean>(false);
 
   const openProduct = async (prod:IInvertor) => {
@@ -47,7 +47,7 @@
   async function loadDiscounts() {
     if (user.isUser()) {
       userInvDisount.value = await useFetch('/data/UserInvDisount?column=user_id&operator=equal&value=' + user.getUser().userId.value); 
-      discontGroupId.value = userInvDisount.value.data[0].group
+      discontGroupId.value = userInvDisount.value.data[0].group_id
     }
   }
 
@@ -135,13 +135,13 @@
             <span v-if = "data.price == 0" ><Tag value="По запросу" severity="danger" /></span>
             <span v-else>
               <div v-if="user.isUser()">
-                <OverlayBadge :value="`- ${getDiscountSerie(data.serie, serieDiscounts.data)} %`" severity="warn" v-if="!serieDiscounts.loading && !userInvDisount.loading">
+                <OverlayBadge :value="`- ${getDiscountSerie(data.serie_id, serieDiscounts.data)} %`" severity="warn" v-if="!serieDiscounts.loading && !userInvDisount.loading">
                   <div class="surface-700 text-white font-bold text-xl line-through border-round m-2 flex align-items-center justify-content-center" style="min-width: 80px; min-height: 40px">
                     {{ priceFormat(data.price) }} &#8381;
                   </div>
                 </OverlayBadge>
                 <div class="bg-primary font-bold text-xl border-round m-2 flex align-items-center justify-content-center" style="min-width: 80px; min-height: 40px" v-if="!serieDiscounts.loading && !userInvDisount.loading">
-                  {{ priceFormat(getInvPrice(data.price, data.serie, serieDiscounts.data)) }} &#8381;
+                  {{ priceFormat(getInvPrice(data.price, data.serie_id, serieDiscounts.data)) }} &#8381;
                 </div>
               </div>
               <div v-else>

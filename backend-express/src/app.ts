@@ -1,7 +1,6 @@
 import express from 'express';
 import Redis from 'ioredis';
 import cors from 'cors';
-// import fileUpload from 'express-fileupload';
 import { Database } from 'sqlite3';
 import { getAllData, getData, updateData, deleteData, insertData, getCountUnread } from './appController'
 import { auth, logoutUser  } from './users';

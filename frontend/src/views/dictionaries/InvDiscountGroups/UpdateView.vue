@@ -112,7 +112,7 @@
                             :pt="{ table: { style: 'min-width: 50rem' }, column: { bodycell: ({ state }:any ) => ({ class: [{ 'pt-0 pb-0': state['d_editing'] }] }) } }">
                 <Column field="serie" header="Серия">
                   <template #body="{ data }">
-                    <span>{{ getValueFromDictionary(series.data, data.serie) }} </span>
+                    <span>{{ getValueFromDictionary(series.data, data.serie_id) }} </span>
                   </template>
                 </Column>
 
@@ -148,7 +148,7 @@
                             >
                 <Column field="option" header="option">
                   <template #body="{ data }">
-                    <span>{{ getValueFromDictionary(options.data, data.option) }} </span>
+                    <span>{{ getValueFromDictionary(options.data, data.option_id) }} </span>
                   </template>
                 </Column>
                 <Column field="discount" header="Скидка, %">

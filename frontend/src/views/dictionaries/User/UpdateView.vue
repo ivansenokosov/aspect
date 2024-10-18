@@ -22,7 +22,7 @@
     const companies        = ref<IDocument<ICompany>>({data:[], error: null, loading: true})
     const companyUsers     = ref<IDocument<ICompanyUsers>>({data:[], error: null, loading: true})
     const companyUser      = ref<ICompanyUsers>({user_id:0, company_id:0})
-    const filtered         = ref<ICompanyUsers[]>([])
+    const filtered         = ref<ICompanyUsers>({user_id:0, company_id:0})
     const groups           = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) 
     const group            = ref<ISimpleDictionary>()
     const userInvDiscounts = ref<IDocument<IUserDiscount>>({data:[], error: null, loading: true}) 
@@ -42,16 +42,20 @@
 
         // проверяем наличие записи в CompanyUsers для этого пользователя
         if (company.value) {
-            filtered.value = companyUsers.value.data.filter(item => item.user_id === Number(props.id))
-            companyUser.value = {company: company.value, user: props.id}
+            filtered.value = companyUsers.value.data.find((item : ICompanyUsers) => item.user_id === Number(props.id))!
 
-            filtered.value.length > 0 ? updateData(`/data/CompanyUsers/${filtered.value[0].id}`, companyUser.value) 
-                                      : insertData('/data/CompanyUsers', companyUser.value)
+            companyUser.value = {company_id: company.value, 
+                            user_id: Number(props.id)}
+
+            filtered.value ? updateData(`/data/CompanyUsers/${filtered.value.id!}`, companyUser.value) 
+                            : insertData('/data/CompanyUsers', companyUser.value)
+
         }
 
         //-------------------- Сохраняем группу скидок
         if (group.value) {
-            const formData = {"user": props.id, "group": group.value.id.toString()}      
+            const formData = {user_id: Number(props.id), 
+                              group_id: group.value.id}      
 
             userInvDiscounts.value.data.length>0 ? 
                 updateData(`${url2}/${userInvDiscounts.value.data[0].id}`, formData).then( () => {
@@ -70,7 +74,7 @@
         companyUsers.value    = await useFetch('/data/CompanyUsers');
 
         try {
-            const cu:CompanyUsers = companyUsers.value.data.find(item => item.user_id === Number(props.id))
+            const cu = companyUsers.value.data.find(item => item.user_id === Number(props.id))
             if (cu) company.value = cu.company_id
         } catch {
             company.value = 0
@@ -78,7 +82,7 @@
 
         // Загражаем то, что нужно для группы скидок
         groups.value            = await useFetch('/data/InvDisountGroup');
-        userInvDiscounts.value  = await useFetch('/data/UserInvDisount?column=user&operator=equal&value=' + props.id);
+        userInvDiscounts.value  = await useFetch('/data/UserInvDisount?column=user_id&operator=equal&value=' + props.id);
         if (userInvDiscounts.value.data) {
             try {
                 group.value = groups.value.data.find(item => item.id === userInvDiscounts.value.data[0].group_id)

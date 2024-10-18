@@ -14,26 +14,26 @@
     import { insertData } from '@/api/dataActions'
 
     const data            = ref<IInvertor>({id:0, 
-                                            item: 0, 
-                                            serie: 0, 
-                                            input_voltage: 0, 
-                                            size: 0, 
-                                            type_of_break_module: 0, 
-                                            type_of_dc_drossel: 0, 
-                                            type_of_emc_drossel: 0, 
+                                            item_id: 0, 
+                                            serie_id: 0, 
+                                            input_voltage_id: 0, 
+                                            size_id: 0, 
+                                            type_of_break_module_id: 0, 
+                                            type_of_dc_drossel_id: 0, 
+                                            type_of_emc_drossel_id: 0,
+                                            type_of_control_id: 0, 
                                             name: '', 
                                             p_heavy_g: '0',
                                             p_pumps_p: '0',
                                             current_g: '0',
-                                            current_p: '0',
-                                            type_of_control: 0})
-    const items           = ref<IDocument<IItem>>({data:[], error: null, loading: true})
-    const series          = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
-    const invInputVoltage = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
-    const sizes           = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
-    const invBreakModule  = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
-    const invDC           = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
-    const invEMC          = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+                                            current_p: '0'})
+    const items               = ref<IDocument<IItem>>({data:[], error: null, loading: true})
+    const series              = ref<IDocument<IInvSerie>>({data:[], error: null, loading: true})
+    const invInputVoltage     = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const sizes               = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invBreakModule      = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invDC               = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
+    const invEMC              = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true})
 
     const invDCdata           = ref<ISimpleDictionary>({name: '', id: 0})
     const invEMCdata          = ref<ISimpleDictionary>({name: '', id: 0})
@@ -41,7 +41,7 @@
     const invInputVoltageData = ref<ISimpleDictionary>({name: '', id: 0})
     const invSizeData         = ref<ISimpleDictionary>({name: '', id: 0})
     const invSerieData        = ref<ISimpleDictionary>({name: '', id: 0})
-    const item                = ref<IItem>({id:0, type: 0, name: '', quantity: 0, waiting_period: 0})
+    const item                = ref<IItem>({id:0, type_id: 0, name: '', quantity: 0, waiting_period_id: 0})
     const itemsDisplay        = ref<IItem[]>([]);
 
 
@@ -60,31 +60,37 @@
     const submission = async () => {
         saving.value = true
 
-        const payload:IInvertor =  {item: item.value.id,
-                                    name: data.value.name,
-                                    serie: invSerieData.value.id,
-                                    size: invSizeData.value.id,
-                                    type_of_emc_drossel: invEMCdata.value.id,
-                                    type_of_dc_drossel: invDCdata.value.id,
-                                    type_of_break_module: invBreakModuleData.value.id,
-                                    input_voltage: invInputVoltageData.value.id,
-                                    p_heavy_g: String(p_heavy_g.value),
-                                    p_pumps_p: String(p_pumps_p.value),
-                                    current_p: String(current_p.value),
-                                    current_g: String(current_g.value)}
+        if (item.value.id && data.value.name && invSerieData.value.id && invSizeData.value.id && invEMCdata.value.id && invDCdata.value.id && invBreakModuleData.value.id && invInputVoltageData.value.id) {
 
-        insertData('/data/Invertors', payload)
-          .then(function(response) {
-              console.log(response);
-              toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
-        }).catch(function(error) {
-              console.log(error);
-        })
+          const payload:IInvertor =  {id:0,
+                                      item_id: item.value.id,
+                                      name: data.value.name,
+                                      serie_id: invSerieData.value.id,
+                                      size_id: invSizeData.value.id,
+                                      type_of_emc_drossel_id: invEMCdata.value.id,
+                                      type_of_dc_drossel_id: invDCdata.value.id,
+                                      type_of_break_module_id: invBreakModuleData.value.id,
+                                      input_voltage_id: invInputVoltageData.value.id,
+                                      p_heavy_g: String(p_heavy_g.value),
+                                      p_pumps_p: String(p_pumps_p.value),
+                                      current_p: String(current_p.value),
+                                      current_g: String(current_g.value)}
+
+          insertData('/data/Invertors', payload)
+            .then(function(response) {
+                console.log(response);
+                toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
+          }).catch(function(error) {
+                console.log(error);
+          })
+        }
+
         saving.value = false
+      
     }
 
     const search = (event:any) => {
-        itemsDisplay.value = event.query ? items.value.data.filter((item) => item.id.toString().includes(event.query.toString())) : items.value.data;
+        itemsDisplay.value = event.query ? items.value.data.filter((item) => item.id && item.id.toString().includes(event.query.toString())) : items.value.data;
     }    
 
     async function loadData() {

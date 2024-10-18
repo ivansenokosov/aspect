@@ -79,7 +79,7 @@ export interface IInvertor {
     output_voltage_str    ?: string  
     min_power             ?: string  
     max_power             ?: string  
-    type_of_control_id     : number  
+    type_of_control_id    ?: number  
     type_of_control_str   ?: string  
     type_of_panel_id      ?: number  
     type_of_panel_str     ?: string  
@@ -137,7 +137,7 @@ export interface IInvOption {
 }
 
 export interface IItem {
-    id                : number
+    id               ?: number
     type_id           : number
     name              : string
     quantity          : number
@@ -234,4 +234,15 @@ export interface ILog {
     action_id : number
     user_id   : number
     params    : string
+}
+
+
+// ------------------------------
+
+export interface IPrice {
+    id         ?: number
+	price       : number
+	date        : string
+	currency_id : number
+	item_id     : number
 }

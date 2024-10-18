@@ -5,42 +5,42 @@ export function cutLastSymbol(inputString:string):string {
     return inputString.substring(0,inputString.length-1)
 }
 
-export function getDiscountSerie(serie: number, serieDiscounts : IInvSerieDisount []):string {
+export function getDiscountSerie(serie_id: number, serieDiscounts : IInvSerieDisount []):string {
     if (serieDiscounts) {
-        const serieDiscount = serieDiscounts.filter(item => item.serie === serie) 
+        const serieDiscount = serieDiscounts.find((item : IInvSerieDisount) => item.serie_id === serie_id) 
         let discount:number = 0
-        if (serieDiscount.length>0) {
-          discount = serieDiscount[0].discount
+        if (serieDiscount) {
+          discount = serieDiscount.discount
           return Number(discount).toFixed().toString()
         }
     }
     return ''
 }
 
-export function getDiscountOption(option: number, optionDiscounts : IInvOptionDisount[]):string {
+export function getDiscountOption(option_id: number, optionDiscounts : IInvOptionDisount[]):string {
     if (optionDiscounts) {
-    const optionDiscount = optionDiscounts.filter(item => item.option === option) 
+    const optionDiscount = optionDiscounts.find((item : IInvOptionDisount) => item.option_id === option_id) 
         let discount:number = 0
-        if (optionDiscount.length>0) {
-            discount = optionDiscount[0].discount
+        if (optionDiscount) {
+            discount = optionDiscount.discount
             return Number(discount).toFixed().toString()
         }
     } 
     return ''
 }
 
-export function getInvPrice(price: number, serie: number, serieDiscounts : IInvSerieDisount [] ):number {
+export function getInvPrice(price: number, serie_id: number, serieDiscounts : IInvSerieDisount [] ):number {
     if (serieDiscounts) {
-        const serieDiscount = serieDiscounts.filter(item => item.serie === serie)[0].discount 
+        const serieDiscount = serieDiscounts.find((item : IInvSerieDisount) => item.serie_id === serie_id)!.discount
         return price * (100-serieDiscount)/100
     } else {
         return 0
     }
 }
 
-export function getOptionPrice(price: number, option: number, optionDiscounts : IInvOptionDisount[] ):number {
+export function getOptionPrice(price: number, option_id: number, optionDiscounts : IInvOptionDisount[] ):number {
     if (optionDiscounts) {
-        const optionDiscount = optionDiscounts.filter(item => item.option === option)[0].discount 
+        const optionDiscount = optionDiscounts.find((item : IInvOptionDisount) => item.option_id === option_id)!.discount 
         return price * (100-optionDiscount)/100
     } else {
         return 0
@@ -48,11 +48,11 @@ export function getOptionPrice(price: number, option: number, optionDiscounts : 
 }
 
 export function getDiscountGroupNameByUserId(discountGroups: ISimpleDictionary[], IUserDiscountData: IUserDiscount[], userId: number) {
-    const discountGroup = IUserDiscountData.filter(item => item.user === userId)
-    if (discountGroup.length>0) {
-      const groupName = discountGroups.filter(item => item.id === discountGroup[0].group)
-      if (groupName.length>0) {
-        return groupName[0].name
+    const discountGroup = IUserDiscountData.find((item:IUserDiscount) => item.user_id === userId)
+    if (discountGroup) {
+      const groupName = discountGroups.find(item => item.id === discountGroup.group_id)
+      if (groupName) {
+        return groupName.name
       }
     }
 
@@ -60,7 +60,7 @@ export function getDiscountGroupNameByUserId(discountGroups: ISimpleDictionary[]
   }
 // ---------------------------------------------------------------------  Возвращает список серий через заяптую по набору id серий ---------------------------------------------------
 export function getSerieNames(series: IInvSerie[], seriesStr:string) {
-    let seriesNames:String = ''
+    let seriesNames:string = ''
     var temp = new Array();
     temp = seriesStr.split(",");
     for (let i=0; i<temp.length; i++) {
@@ -69,17 +69,16 @@ export function getSerieNames(series: IInvSerie[], seriesStr:string) {
     seriesNames = seriesNames.substring(0, seriesNames.length - 2)
     return seriesNames
   }
-
+// ---------------------------------------------------------------------  Возвращает название организации  ---------------------------------------------------
 export function getCompanyName(companyUsersList: ICompanyUsers[], 
                                companiesList: ICompany[], 
                                userId:number, 
                                extra: boolean = false) {
-    var  user     : ICompanyUsers[] 
-    var  company  : ICompany 
-    user = companyUsersList.filter(item => item.user === userId) // находим строку CompanyUser для этого пользователя
-    if (user.length > 0) { 
-        company = companiesList.filter((item:any) => item.id === user[0].company)[0]
-        return extra ? ('<a class="font-bold">' + company.name + '</a><p>' + company.phone + '</p>') : company.name
+    const user = companyUsersList.find((item:ICompanyUsers) => item.user_id === userId) // находим строку CompanyUser для этого пользователя
+    if (user) { 
+        const company = companiesList.find((item:ICompany) => item.id == user.company_id)
+        if (company)
+          return extra ? ('<a class="font-bold">' + company.name + '</a><p>' + company.phone + '</p>') : company.name
     } 
     return ''
   }

@@ -47,13 +47,13 @@
 
         <Column field="signal" header="Сигнал" sortable style="width: 15%">
           <template #body="{ data }">
-              {{ getValueFromDictionary(signal.data, data.signal) }}
+              {{ getValueFromDictionary(signal.data, data.signal_id) }}
           </template>
         </Column>
 
         <Column field="serie" header="Серия" sortable style="width: 15%">
           <template #body="{ data }">
-            {{ getValueFromDictionary(serie.data, data.serie) }}
+            {{ getValueFromDictionary(serie.data, data.serie_id) }}
           </template>
         </Column>
 

@@ -1,9 +1,9 @@
 import type { IUser, ICompany, ICompanyUsers } from "@/interfaces"
 
-export function getCompanyNameByUserId<String>(companies: ICompany[], companyUsers: ICompanyUsers[], userId: number):string {
-    const record = companyUsers.find(item => item.user === userId)
+export function getCompanyNameByUserId(companies: ICompany[], companyUsers: ICompanyUsers[], userId: number):string {
+    const record = companyUsers.find((item :ICompanyUsers) => item.user_id === userId)
     if (record) {
-      const company = companies.find(item => item.id === record.company)
+      const company = companies.find((item : ICompany) => item.id === record.company_id)
       if (company) {
         return company.name
       }
@@ -14,7 +14,7 @@ export function getCompanyNameByUserId<String>(companies: ICompany[], companyUse
 
 
 export function getLoginByUserId(users: IUser[], userId: number):string {
-  const user = users.find(item => item.id === userId)
+  const user = users.find((item : IUser) => item.id === userId)
   if (user && user.username) {
     return user.username
   }

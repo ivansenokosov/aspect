@@ -18,7 +18,7 @@
   import axios from "axios";
   import { getValueFromDictionary } from "@/api/getValueFromDictionary";
   import { useUserStore } from "@/stores/user";
-  import { useWebSocketStore } from "@/stores/user";
+  import { useWebSocketStore } from "@/stores/ws";
   import moment from 'moment'
   import OverlayBadge from "primevue/overlaybadge";
   import Textarea from "primevue/textarea";
@@ -33,6 +33,7 @@
   const baseUrl              = useBaseUrl()
   const user                 = useUserStore()
   const toast                = useToast()
+  const ws                   = useWebSocketStore()
 
   const id                   = ref<number>(0)
 
@@ -105,15 +106,15 @@
     saveLog(9, '')
 
     id.value                   = Number(route.query.id)
-    invConfig.value            = await useFetch('/data/UserInvConfg/' + id.value.toString() + '/')
-    invertor.value             = await useFetch('/data/Invertors/' + invConfig.value.data[0].invertor + '/')
-    serie.value                = await useFetch('/data/Inv_series/' + invertor.value.data[0].serie)
-    options.value              = await useFetch('/data/Inv_options/?serie=' + serie.value.data[0].id)
-    typeOfOptions.value        = await useFetch('/data/Type_of_options');
-    outputVoltage.value        = await useFetch('/data/Inv_output_voltage/'     + serie.value.data[0].output_voltage.toString() + '/');
-    breakModule.value          = await useFetch('/data/Inv_breake_module/'      + invertor.value.data[0].type_of_break_module.toString() + '/');
-    ambientTemperature.value   = await useFetch('/data/Ambient_temperatures/'   + serie.value.data[0].ambient_temperature.toString() + '/');
-    signals.value              = await useFetch('/data/Inv_spec_of_in_out?column=serie_id&operator=equal&value=' + invertor.value.data[0].serie.toString());
+    invConfig.value            = await useFetch(`data/UserInvConfg/${id.value}`)
+    invertor.value             = await useFetch(`/data/Invertors/${invConfig.value.data[0].invertor_id}`)
+    serie.value                = await useFetch(`/data/Inv_series/${invertor.value.data[0].serie_id}`)
+    options.value              = await useFetch(`/data/Inv_options?column=series&prefix=io&operator=like&value=${serie.value.data[0].id}`)
+    typeOfOptions.value        = await useFetch(`/data/Type_of_options`);
+    outputVoltage.value        = await useFetch(`/data/Inv_output_voltage/${serie.value.data[0].output_voltage_id}`);
+    breakModule.value          = await useFetch(`/data/Inv_breake_module/${invertor.value.data[0].type_of_break_module_id}`);
+    ambientTemperature.value   = await useFetch(`/data/Ambient_temperatures/${serie.value.data[0].ambient_temperature_id}`);
+    signals.value              = await useFetch(`/data/Inv_spec_of_in_out?column=serie_id&prefix=s&operator=equal&value=${invertor.value.data[0].serie_id}`);
     InvTypeOfControl.value     = await useFetch('/data/Inv_type_of_control');
     invVariantOfControl.value  = await useFetch('/data/Variants_of_control');
 
@@ -122,10 +123,10 @@
     discountsJSON.value = JSON.parse(invConfig.value.data[0].options_disccounts);
 
     // формирования способов управляния для серии
-    InvTypeOfControl.value.data = InvTypeOfControl.value.data.filter(item => item.serie === invertor.value.data[0].serie)
+    InvTypeOfControl.value.data = InvTypeOfControl.value.data.filter(item => item.serie_id === invertor.value.data[0].serie_id)
     InvTypeOfControl.value.data.map( item => {
       invVariantOfControl.value.data.map( variant => {
-        if (item.control === variant.id) {
+        if (item.control_id === variant.id) {
           invControl.value = invControl.value + variant.name + ', '
         }
       }) 
@@ -133,8 +134,8 @@
     invControl.value = invControl.value.substring(0, invControl.value.length-2)
 
     // доступные опции
-    const arrayUniqueByKey = [...new Map(options.value.data.map(item => [item['option_type'], item])).values()];
-    arrayUniqueByKey.map(item => availableOptions.value = availableOptions.value + item.option_type + ', ')
+    const arrayUniqueByKey = [...new Map(options.value.data.map(item => [item['option_type_str'], item])).values()];
+    arrayUniqueByKey.map(item => availableOptions.value = availableOptions.value + item.option_type_str + ', ')
     availableOptions.value = availableOptions.value.substring(0, availableOptions.value.length-2)
 
     let i = 0
@@ -158,10 +159,12 @@
 
     if (invConfig.value.data[0].staff_opened === false && user.isStaff()) { 
       await setRead()
-      ws.sendMessage({username: 'qqq',message:'mmm',timestamp:1}) // отправляем сообщение об изменении непрочитанных конфигураций
+      ws.sendMessage({username: invConfig.value.data[0].user_id.toString(),
+                      message: String(id.value),
+                      timestamp:1}) // отправляем сообщение об изменении непрочитанных конфигураций
     }
 
-    docNumber.value = invConfig.value.data[0].user.toString() + '/' +  invConfig.value.data[0].id.toString() + ' от ' + moment(invConfig.value.data[0].date).format('DD.MM.YYYY')
+    docNumber.value = invConfig.value.data[0].user_id.toString() + '/' +  invConfig.value.data[0].id.toString() + ' от ' + moment(invConfig.value.data[0].date).format('DD.MM.YYYY')
 
     loading.value = false
   }
@@ -375,14 +378,14 @@
         <Column field="short_title" header="Доп. описание" headerStyle="width: 10%"></Column>
         <Column header="Тип" headerStyle="width: 10%">
           <template #body="{ data }">
-            <span>{{ getValueFromDictionary(typeOfOptions.data, data.option) }} </span>
+            <span>{{ getValueFromDictionary(typeOfOptions.data, data.option_id) }} </span>
           </template>
         </Column>
         
         <Column header="Доступное количество" headerStyle="width: 10%">
           <template #body="{ data }">
             <div class="font-bold text-xl w-full">{{ data.quantity }}</div>
-            <div v-if="data.quantity<=0" class="font-bold text-xl w-full"><Tag :value="data.waiting_period" severity="warn" /></div>
+            <div v-if="data.quantity<=0" class="font-bold text-xl w-full"><Tag :value="data.waiting_period_str" severity="warn" /></div>
           </template>
         </Column>
         <Column header="Цена" headerStyle="width: 10%">

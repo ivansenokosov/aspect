@@ -15,7 +15,8 @@ import type { ICompany,
               IInvSerieDisount,
               IInvOptionDisount,
               ICompanyUsers,
-              ILog
+              ILog,
+              IPrice
             } from "./interfaces"
 
 export function prepareCompany(data:ICompany, id:number = 0) {
@@ -112,6 +113,16 @@ export function prepareItem(data:IItem, id:number) {
     return params
 }
 
+export function preparePrice(data:IPrice, id:number) {
+    var params:Array<string|number> = [data.item_id, 
+                                       data.price, 
+                                       data.currency_id, 
+                                       data.date]
+    id && params.push(id)
+    return params
+}
+
+
 export function prepareUserInvConfig(data:IUserInvConfig, id:number) {
     var params:Array<string|number|boolean> =  [data.date, 
                                                 data.user_id,
@@ -201,14 +212,4 @@ export function prepareLog(data:ILog, id:number) {
                                                 data.params]
     id && params.push(id)
     return params
-}
-
-export function prepareJSON(document:any, id: number):any {
-    if (document.hasOwnProperty('id')) {
-        return document
-    } else {
-        const pair = {id:id}
-        const document2 = {...document, ...pair}
-        return document2
-    }
 }

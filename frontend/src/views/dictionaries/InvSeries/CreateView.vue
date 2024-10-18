@@ -21,14 +21,14 @@
     const data                   = ref<IInvSerie>({id:0, 
                                                    name: '', 
                                                    description: '', 
-                                                   manufactory: 0, 
-                                                   output_voltage: 0, 
-                                                   type_of_control: 0, 
-                                                   type_of_panel: 0, 
-                                                   type_of_overload: 0, 
-                                                   type_of_accuracy_freq: 0, 
-                                                   ambient_temperature: 0,
-                                                   level_IP: 0,
+                                                   manufactory_id: 0, 
+                                                   output_voltage_id: 0, 
+                                                   type_of_control_id: 0, 
+                                                   type_of_panel_id: 0, 
+                                                   type_of_overload_id: 0, 
+                                                   type_of_accuracy_freq_id: 0, 
+                                                   ambient_temperature_id: 0,
+                                                   level_IP_id: 0,
                                                    min_power: '',
                                                    max_power: '',
                                                    photo: '',
@@ -60,16 +60,17 @@
     const submission = async () => {
         saving.value = true
 
-        const payload : IInvSerie = {name: data.value.name,
+        const payload : IInvSerie = {id:0,
+                                     name: data.value.name,
                                      description: data.value.description,
-                                     manufactory: manufactory.value.id,
-                                     output_voltage: outputVoltage.value.id,
-                                     type_of_control: typeOfControl.value.id,
-                                     type_of_panel: typeOfPanel.value.id,
-                                     type_of_overload: typeOfOverload.value.id,
-                                     type_of_accuracy_freq: typeOfAccuracyFreq.value.id,
-                                     ambient_temperature: ambientTemperature.value.id,
-                                     level_IP: levelIP.value.id,
+                                     manufactory_id: manufactory.value.id,
+                                     output_voltage_id: outputVoltage.value.id,
+                                     type_of_control_id: typeOfControl.value.id,
+                                     type_of_panel_id: typeOfPanel.value.id,
+                                     type_of_overload_id: typeOfOverload.value.id,
+                                     type_of_accuracy_freq_id: typeOfAccuracyFreq.value.id,
+                                     ambient_temperature_id: ambientTemperature.value.id,
+                                     level_IP_id: levelIP.value.id,
                                      min_power: String(min_power.value),
                                      max_power: String(max_power.value),
                                      photo:'',
@@ -79,7 +80,7 @@
         // schema.value && schema.value.file_blob && formData.append("schema", schema.value.file_blob, String(schema.value.file_name))
 
         insertData('/data/Inv_series', payload)
-          .then(function(response) {
+          .then((response:any) => {
             router.push(`/dictionaries/InvSeries/Update/${response.data.id}`)
         }).catch(function(error) {
             console.log(error);

@@ -61,14 +61,14 @@
         ambientTemperatureData.value   = await useFetch('/data/Ambient_temperatures');
         levelIPData.value              = await useFetch('/data/Level_IP');
 
-        manufactory.value              = manufactoryData.value.data.find(item => item.id === data.value.data[0].manufactory)
-        outputVoltage.value            = outputVoltageData.value.data.find(item => item.id === data.value.data[0].output_voltage)
-        typeOfControl.value            = typeOfControlData.value.data.find(item => item.id === data.value.data[0].type_of_control)
-        typeOfPanel.value              = typeOfPanelData.value.data.find(item => item.id === data.value.data[0].type_of_panel)
-        typeOfOverload.value           = typeOfOverloadData.value.data.find(item => item.id === data.value.data[0].type_of_overload)
-        typeOfAccuracyFreq.value       = typeOfAccuracyFreqData.value.data.find(item => item.id === data.value.data[0].type_of_accuracy_freq)
-        ambientTemperature.value       = ambientTemperatureData.value.data.find(item => item.id === data.value.data[0].ambient_temperature)
-        levelIP.value                  = levelIPData.value.data.find(item => item.id === data.value.data[0].level_IP)
+        manufactory.value              = manufactoryData.value.data.find(item => item.id === data.value.data[0].manufactory_id)
+        outputVoltage.value            = outputVoltageData.value.data.find(item => item.id === data.value.data[0].output_voltage_id)
+        typeOfControl.value            = typeOfControlData.value.data.find(item => item.id === data.value.data[0].type_of_control_id)
+        typeOfPanel.value              = typeOfPanelData.value.data.find(item => item.id === data.value.data[0].type_of_panel_id)
+        typeOfOverload.value           = typeOfOverloadData.value.data.find(item => item.id === data.value.data[0].type_of_overload_id)
+        typeOfAccuracyFreq.value       = typeOfAccuracyFreqData.value.data.find(item => item.id === data.value.data[0].type_of_accuracy_freq_id)
+        ambientTemperature.value       = ambientTemperatureData.value.data.find(item => item.id === data.value.data[0].ambient_temperature_id)
+        levelIP.value                  = levelIPData.value.data.find(item => item.id === data.value.data[0].level_IP_id)
 
         min_power.value = Number(data.value.data[0].min_power)
         max_power.value = Number(data.value.data[0].max_power)

@@ -50,7 +50,7 @@
 
 
     
-    async function onPhotoSelect(event) {
+    async function onPhotoSelect(event:any) {
         const formData = new FormData();
         formData.append("file", event.files[0]);
         await axios.post(`${baseUrl.baseUrl}/upload_inv_photo`, formData)
@@ -58,7 +58,7 @@
                     .catch((err:any) => console.log(err))
     }
 
-    async function onSchemaSelect(event) {
+    async function onSchemaSelect(event:any) {
         const formData = new FormData();
         formData.append("file", event.files[0]);
         await axios.post(`${baseUrl.baseUrl}/upload_inv_schema`, formData)
@@ -72,20 +72,23 @@
 
         const formData = new FormData() 
 
-        const payload: IInvSerie = {name: data.value.data[0].name,
+        const payload: IInvSerie = {id:0,
+                                    name: data.value.data[0].name,
                                     description: data.value.data[0].description,
-                                    manufactory: manufactory.value.id,
-                                    output_voltage: outputVoltage.value.id,
-                                    type_of_control: typeOfControl.value.id,
-                                    type_of_panel: typeOfPanel.value.id,
-                                    type_of_overload: typeOfOverload.value.id,
-                                    type_of_accuracy_freq: typeOfAccuracyFreq.value.id,
-                                    ambient_temperature: ambientTemperature.value.id,
-                                    level_IP: levelIP.value.id,
+                                    manufactory_id: manufactory.value.id,
+                                    output_voltage_id: outputVoltage.value.id,
+                                    type_of_control_id: typeOfControl.value.id,
+                                    type_of_panel_id: typeOfPanel.value.id,
+                                    type_of_overload_id: typeOfOverload.value.id,
+                                    type_of_accuracy_freq_id: typeOfAccuracyFreq.value.id,
+                                    ambient_temperature_id: ambientTemperature.value.id,
+                                    level_IP_id: levelIP.value.id,
                                     min_power: String(min_power.value),
                                     max_power: String(max_power.value),
                                     photo: photo_filename.value,
                                     schema: schema_filename.value}
+
+          console.log(payload)
 
         updateData(`/data/Inv_series/${props.id}`, payload)
             .then(function(response) {
@@ -115,15 +118,14 @@
         ambientTemperatureData.value   = await useFetch('/data/Ambient_temperatures');
         levelIPData.value              = await useFetch('/data/Level_IP');
 
-        manufactory.value              = manufactoryData.value.data.find(item => item.id === data.value.data[0].manufactory)!
-        outputVoltage.value            = outputVoltageData.value.data.find(item => item.id === data.value.data[0].output_voltage)!
-        typeOfControl.value            = typeOfControlData.value.data.find(item => item.id === data.value.data[0].type_of_control)!
-        typeOfPanel.value              = typeOfPanelData.value.data.find(item => item.id === data.value.data[0].type_of_panel)!
-        typeOfOverload.value           = typeOfOverloadData.value.data.find(item => item.id === data.value.data[0].type_of_overload)!
-
-        typeOfAccuracyFreq.value       = typeOfAccuracyFreqData.value.data.find(item => item.id === data.value.data[0].type_of_accuracy_freq)!
-        ambientTemperature.value       = ambientTemperatureData.value.data.find(item => item.id === data.value.data[0].ambient_temperature)!
-        levelIP.value                  = levelIPData.value.data.find(item => item.id === data.value.data[0].level_IP)!
+        manufactory.value              = manufactoryData.value.data.find(item => item.id === data.value.data[0].manufactory_id)!
+        outputVoltage.value            = outputVoltageData.value.data.find(item => item.id === data.value.data[0].output_voltage_id)!
+        typeOfControl.value            = typeOfControlData.value.data.find(item => item.id === data.value.data[0].type_of_control_id)!
+        typeOfPanel.value              = typeOfPanelData.value.data.find(item => item.id === data.value.data[0].type_of_panel_id)!
+        typeOfOverload.value           = typeOfOverloadData.value.data.find(item => item.id === data.value.data[0].type_of_overload_id)!
+        typeOfAccuracyFreq.value       = typeOfAccuracyFreqData.value.data.find(item => item.id === data.value.data[0].type_of_accuracy_freq_id)!
+        ambientTemperature.value       = ambientTemperatureData.value.data.find(item => item.id === data.value.data[0].ambient_temperature_id)!
+        levelIP.value                  = levelIPData.value.data.find(item => item.id === data.value.data[0].level_IP_id)!
 
         min_power.value = Number(data.value.data[0].min_power)
         max_power.value = Number(data.value.data[0].max_power)

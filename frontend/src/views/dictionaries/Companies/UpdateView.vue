@@ -40,14 +40,14 @@
     const submission = async () => {
         saving.value = true
 
-        const payload = {"name" : data.value.data[0].name,
-                          "inn" : data.value.data[0].inn,
-                          "address": data.value.data[0].address,
-                          "agreement": data.value.data[0].agreement,
-                          "email" : data.value.data[0].email,
-                          "info" : data.value.data[0].info,
-                          "logo": logo_filename.value,
-                          "phone": data.value.data[0].phone}
+        const payload = {name : data.value.data[0].name,
+                         inn : data.value.data[0].inn,
+                         address: data.value.data[0].address,
+                         agreement: data.value.data[0].agreement,
+                         email : data.value.data[0].email,
+                         info : data.value.data[0].info,
+                         logo: logo_filename.value,
+                         phone: data.value.data[0].phone}
 
         // logo.value.length>5 && logo.value.file_blob && formData.append("logo", logo.value.file_blob, String(logo.value.file_name))
 
@@ -67,10 +67,10 @@
     
     async function loadData() {
         data.value            = await useFetch(`/data/Companies/${props.id}`);
-        companyUsers.value    = await useFetch(`/data/CompanyUsers?column=company&operator=equal&value=${props.id}`)
+        companyUsers.value    = await useFetch(`/data/CompanyUsers?column=company_id&operator=equal&value=${props.id}`)
         usersAll.value        = await useFetch('/data/Users')
-        usersAll.value.data.map(user => {
-            companyUsers.value.data.map(cu => {
+        usersAll.value.data.map((user : IUser) => {
+            companyUsers.value.data.map((cu : ICompanyUsers) => {
                 if (user.id == cu.user_id) {
                     users.value.push(user)
                 }
@@ -101,7 +101,7 @@
 
                 <div class="field pt-5">
                     <div class="width:100%"><h3 class="font-semibold">Логотип</h3></div>
-                    <img v-if="data.data[0].logo.length>5" v-bind:src="String(logo.file_base64data!)" width="350">
+                    <img v-if="logo && data.data[0].logo && data.data[0].logo.length!>5" v-bind:src="String(logo.file_base64data!)" width="350">
                     <img v-else :src="`${baseUrl.baseUrl}/inv_series/no_photo.jpg`" width="350" height="262"/>
                     <FileUpload mode="basic" @select="onLogoSelect" @uploader="upload_logo" customUpload :auto="true" chooseLabel="Выбрать" severity="primary" />
 

@@ -68,7 +68,7 @@
 
         <Column field="type" header="Тип" sortable style="width: 15%">
           <template #body="{ data }">
-              {{ getValueFromDictionary(typeOfItems.data, data.type) }}
+              {{ getValueFromDictionary(typeOfItems.data, data.type_id) }}
           </template>
         </Column>
 
@@ -81,7 +81,7 @@
 
         <Column field="waiting_period" header="Срок ожидания" sortable style="width: 15%">
           <template #body="{ data }">
-              {{ getValueFromDictionary(waitingPeriod.data, data.waiting_period) }}
+              {{ getValueFromDictionary(waitingPeriod.data, data.waiting_period_id) }}
 
           </template>
         </Column>

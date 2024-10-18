@@ -32,12 +32,12 @@
         seriesForm.value.map(item => seriesStr += item.id + ',')
         seriesStr = seriesStr.substring(0, seriesStr.length - 1)
 
-        const formData = {item       : invOption.value.data[0].item,
+        const formData = {item_id    : invOption.value.data[0].item_id,
                           name       : invOption.value.data[0].name,
                           short_title: invOption.value.data[0].short_title,
                           full_title : invOption.value.data[0].full_title,
                           series     : seriesStr,
-                          option     : optionForm.value.id}
+                          option_id  : optionForm.value.id}
 
         updateData(url, formData).then(() => {
             toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
@@ -51,7 +51,7 @@
         typeOfOption.value         = await useFetch('/data/Type_of_options');
 
         seriesForm.value = series.value.data.filter(item => invOption.value.data[0].series.toString().includes(item.id.toString()))
-        optionForm.value = typeOfOption.value.data.filter(item => invOption.value.data[0].option === item.id)[0]
+        optionForm.value = typeOfOption.value.data.find(item => invOption.value.data[0].option_id === item.id)!
 
         loading.value = false
     }
@@ -76,7 +76,7 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="item" v-model="invOption.data[0].item" disabled class="w-full"/>
+                <InputText id="item" v-model="invOption.data[0].item_id" disabled class="w-full"/>
                 <label for="id">item</label>
             </FloatLabel>
         </div>

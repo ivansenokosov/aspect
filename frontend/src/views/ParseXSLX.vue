@@ -1,43 +1,30 @@
 <script setup lang="ts">
   import { ref, watch } from 'vue';
   import { FilterMatchMode } from '@primevue/core/api';
-  import { useFetch } from '@/api/useFetch';
   import type { IDocument, IItem } from '@/interfaces';
+  import type { ICSVRow, IParseResult } from '@/api/Parsing/interfaces'
 
-  import Papa from 'papaparse';
-  import Textarea from 'primevue/textarea';
-  import Button from 'primevue/button';
-  import DataTable from 'primevue/datatable';
+  import Papa        from 'papaparse';
+  import Textarea    from 'primevue/textarea';
+  import Button      from 'primevue/button';
+  import DataTable   from 'primevue/datatable';
   import ColumnGroup from 'primevue/columngroup';
-  import Column from 'primevue/column';
-  import Row from 'primevue/row';
-  import Select from 'primevue/select';
-  import Tag from 'primevue/tag';
-  import InputText from 'primevue/inputtext';  
+  import Column      from 'primevue/column';
+  import Row         from 'primevue/row';
+  import Select      from 'primevue/select';
+  import Tag         from 'primevue/tag';
+  import InputText   from 'primevue/inputtext';  
+  import Stepper     from 'primevue/stepper';
+  import StepList    from 'primevue/steplist';
+  import StepPanels  from 'primevue/steppanels';
+  import StepItem    from 'primevue/stepitem';
+  import Step        from 'primevue/step';
+  import StepPanel   from 'primevue/steppanel';
 
-  import Stepper from 'primevue/stepper';
-  import StepList from 'primevue/steplist';
-  import StepPanels from 'primevue/steppanels';
-  import StepItem from 'primevue/stepitem';
-  import Step from 'primevue/step';
-  import StepPanel from 'primevue/steppanel';
-
-  import AxiosInstance from '@/api/axiosInstance';
+  import { useFetch } from '@/api/useFetch'
   import { priceFormat } from '@/api/priceFormat';
-
-  interface ICSVRow {
-    data: string[]
-    id: number
-    action: string
-    uploaded: boolean
-    price_uploaded: number
-  }
-
-  interface IParseResult {
-    data: any  // array of parsed data
-    errors: any // array of errors
-    meta: any  // object with extra info
-  }
+  import { upload } from '@/api/Parsing/upload'
+  import { getSeverity, getItemId, setID } from '@/api/Parsing/utils'
 
   const text                = ref<string>('')
   const data                = ref<IParseResult>({data:null,errors:null, meta:null})
@@ -49,7 +36,7 @@
   const columnIdIndex       = ref<number>(0)
   const columnPriceIndex    = ref<number>(0)
   const columnQuantityIndex = ref<number>(0)
-  const CSVData = ref<ICSVRow[]>([{data:[], id:0, action: '', uploaded: false, price_uploaded: 0}])
+  const CSVData             = ref<ICSVRow[]>([{data:[], id:0, action: '', uploaded: false, price_uploaded: 0}])
 
   const filters = ref({
     global: { value: null, matchMode: FilterMatchMode.CONTAINS },    
@@ -57,7 +44,7 @@
   });  
 
   async function loadData() {
-    items.value = await useFetch('Items')
+    items.value = await useFetch('/data/Items')
   }
 
   function reset() {
@@ -69,111 +56,10 @@
     CSVData.value = []
   }
 
-
   function parse() {
     data.value = Papa.parse(text.value)
     csv_columns.value = data.value.data[0]
     data.value.data.map((item : any) => CSVData.value.push({data: item, id: 0, action: 'IGNORE', uploaded: false, price_uploaded: 0}) )
-  }
-
-  function setID() {
-    CSVData.value.map((item, index) => {
-      const id = getItemId(item.data[columnIdIndex.value])
-      CSVData.value[index].id = id
-      if (id>0) {
-        CSVData.value[index].action = 'UPDATE'
-      } else {
-        CSVData.value[index].action = 'IGNORE'
-      }
-    })
-  }
-
-  async function upload() {
-    const config = { headers: { 'content-type': 'application/json', }, };    
-    const date = new Date();
-    let day = date.getDate();
-    let month = date.getMonth() + 1;
-    let year = date.getFullYear();
-    let dateString = day + '.' + month + '.' + year
-
-    CSVData.value.map((item, index) => {
-      if (item.action == 'UPDATE') {
-
-        // --- формируем данные для UPDATE Items
-        const formData = new FormData();        
-        formData.append("quantity", item.data[columnQuantityIndex.value])
-        formData.append("name", '')
-        formData.append("type", '10')
-        formData.append("waiting_period", '1')
-
-        const res = AxiosInstance.put('Items/'+ item.id + '/', formData, config)
-          .then(function(response) {
-          // console.log(response);
-          CSVData.value[index].uploaded = true
-        }).catch(function(error) {
-          console.log(error);
-        })
-
-        // ------- чтобы не плодить сущности, проверяем есть ли в таблице Price за эту дату запись с такой же ценой
-        const itemPrice = item.data[columnPriceIndex.value].replace(' ','').replace(' ','').replace(' ','').replace('₽','')
-        const priceUrl = 'Prices?item=' + item.id 
-        const priceData = AxiosInstance.get(priceUrl)
-        .then(function(response) {
-          if (response.data.length > 0) { // Цена найдена
-            const itemPriceLoaded = Number(response.data[0].price).toFixed()
-            console.log(item.id, itemPrice, itemPriceLoaded)
-            if (Number(itemPrice) != Number(itemPriceLoaded)) { // не нашли такой цены или цена отличается от последней
-              const formPriceData = new FormData();        
-              formPriceData.append("item", String(item.id))
-              formPriceData.append("price", String(itemPrice))
-              formPriceData.append("currency", '1')
-
-              const res = AxiosInstance.post('Prices/', formPriceData, config)
-                .then(function(response) {
-                console.log(response);
-                CSVData.value[index].price_uploaded = 2
-              }).catch(function(error) {
-                console.log(error);
-              })
-            } else {
-              CSVData.value[index].price_uploaded = 1
-            }            
-          } else {
-            console.log(item.id, 'Цена не найдена')
-          }
-        }).catch(function(error) {
-          console.log(error);
-        })
-
-
-      }
-
-      // if (item.action == 'INSERT') {
-      //   console.log('insert', item)
-       
-      // }
-    })
-  }
-
-
-  function getItemId(csv_id:string) {
-    let result: any 
-    result = items.value.data.filter(item => Number(csv_id) === Number(item.id)) 
-    if (result.length>0) {
-      return result[0].id
-    } else {
-      return -1
-    }
-  }
-
-  function getSeverity(action:string) {
-    if (action == 'UPDATE') {
-      return 'info' 
-    } else if (action == 'INSERT') {
-      return 'success'
-    } else {
-      return 'danger'
-    }
   }
 
   watch(column_id, () => {  
@@ -271,7 +157,7 @@
               <div class="flex pt-6 justify-between">
                   <Button label="Назад" severity="secondary" icon="pi pi-arrow-left" @click="activateCallback('1')" />
                   <Button label="Вперёд" icon="pi pi-arrow-right" iconPos="right" @click="() => {
-                    setID()
+                    CSVData = setID(items.data, CSVData, columnIdIndex)
                     activateCallback('3')
                   }" v-if="column_id && column_price && column_quantity"/>
               </div>
@@ -332,8 +218,8 @@
 
               <div class="pt-6">
                   <Button label="Назад" severity="secondary" icon="pi pi-arrow-left" @click="activateCallback('2')" />
-                  <Button label="Загрузить" icon="pi pi-arrow-right" iconPos="right" @click="() => {
-                    upload()
+                  <Button label="Загрузить" icon="pi pi-arrow-right" iconPos="right" @click="async () => {
+                    CSVData = await upload(CSVData, columnQuantityIndex, columnPriceIndex)
                     activateCallback('4')
                   }"/>
 
@@ -411,22 +297,6 @@
 
       </StepPanels>
   </Stepper>
-
-
-
-
-
-  
-    <!-- <div class="mt-1">
-      <Button label="Разобрать" icon="pi pi-sparkles" @click="parse"/>
-      <Button label="Установить ID" icon="pi pi-link" class="ml-2" @click="setID"/>
-      <Button label="Загрузить данные" icon="pi pi-upload" severity="help" class="ml-2" @click="upload"/>
-    </div> -->
-
-
-
-      
-
 
   </div>
 </template>

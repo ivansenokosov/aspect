@@ -1,7 +1,6 @@
 <script setup lang="ts">
     import { ref } from 'vue'
     import { useFetch } from '@/api/useFetch';
-    import AxiosInstance from '@/api/axiosInstance';
     import type { IDocument, IInvAvalControl, ISimpleDictionary } from '@/interfaces';
     import Button from 'primevue/button';
     import InputNumber from 'primevue/inputnumber';
@@ -9,6 +8,7 @@
     import Toast from 'primevue/toast';
     import { useToast } from "primevue/usetoast";
     import MyAutocomplete from '@/components/MyAutocomplete.vue';
+    import { updateData } from '@/api/dataActions'
 
     const data      = ref<IDocument<IInvAvalControl>>({data:[], error: null, loading: true})
     const series    = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) 
@@ -24,12 +24,9 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  `/data/Inv_type_of_control/${props.id}`
-        const config = { headers: { 'content-type': 'application/json', }, };
 
-        const res = await AxiosInstance.put(url, {"serie": serie.value, "control": control.value}, config)
+        await updateData(`/data/Inv_type_of_control/${props.id}`, {serie_id: serie.value, control_id: control.value})
           .then(function(response) {
-//          console.log(response);
           toast.add({ severity: 'info', summary: 'Успешно', detail: 'Данные обновлены', life: 3000 });
         }).catch(function(error) {
           console.log(error);

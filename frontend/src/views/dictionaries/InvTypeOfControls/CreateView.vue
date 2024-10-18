@@ -6,6 +6,7 @@
     import MyAutocomplete from '@/components/MyAutocomplete.vue';
     import { useRouter } from 'vue-router';
     import { useFetch } from '@/api/useFetch';
+    import { insertData } from '@/api/dataActions'
 
     const router    = useRouter()
     const series    = ref<IDocument<ISimpleDictionary>>({data:[], error: null, loading: true}) 
@@ -18,10 +19,8 @@
 
     const submission = async () => {
         saving.value = true
-        const url:string =  '/data/Inv_type_of_control' 
-        const config = { headers: { 'content-type': 'application/json', }, };
 
-        const res = await AxiosInstance.post(url, {"control": control.value, "serie": serie.value}, config)
+        await insertData('/data/Inv_type_of_control', {control_id: control.value, serie_id: serie.value})
           .then(function(response) {
             router.push('/dictionaries/InvTypeOfControls/List')
         }).catch(function(error) {

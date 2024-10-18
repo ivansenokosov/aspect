@@ -37,8 +37,7 @@
     const props = defineProps(['id'])
 
     const submission = async () => {
-        const url:string =  `/data/Invertors/${props.id}`
-        deleteData(url)
+        await deleteData(`/data/Invertors/${props.id}`).then(() => router.push('/dictionaries/Invertors/List'))
     }
 
     async function loadData() {
@@ -50,12 +49,12 @@
         invDC.value           = await useFetch('/data/Inv_DC_drossel');
         invEMC.value          = await useFetch('/data/Inv_EMC_drossel');
 
-        invSerieData.value        = series.value.data.find(item => item.id === data.value.data[0].serie)!
-        invDCdata.value           = invDC.value.data.find(item => item.id === data.value.data[0].type_of_dc_drossel)!
-        invEMCdata.value          = invEMC.value.data.find(item => item.id === data.value.data[0].type_of_emc_drossel)!
-        invBreakModuleData.value  = invBreakModule.value.data.find(item => item.id === data.value.data[0].type_of_break_module)!
-        invInputVoltageData.value = invInputVoltage.value.data.find(item => item.id === data.value.data[0].input_voltage)!
-        invSizeData.value         = sizes.value.data.find(item => item.id === data.value.data[0].size)!
+        invSerieData.value        = series.value.data.find(item => item.id === data.value.data[0].serie_id)!
+        invDCdata.value           = invDC.value.data.find(item => item.id === data.value.data[0].type_of_dc_drossel_id)!
+        invEMCdata.value          = invEMC.value.data.find(item => item.id === data.value.data[0].type_of_emc_drossel_id)!
+        invBreakModuleData.value  = invBreakModule.value.data.find(item => item.id === data.value.data[0].type_of_break_module_id)!
+        invInputVoltageData.value = invInputVoltage.value.data.find(item => item.id === data.value.data[0].input_voltage_id)!
+        invSizeData.value         = sizes.value.data.find(item => item.id === data.value.data[0].size_id)!
 
         p_heavy_g.value = Number(data.value.data[0].p_heavy_g)
         p_pumps_p.value = Number(data.value.data[0].p_pumps_p)
@@ -84,7 +83,7 @@
 
         <div class="field pt-5">
             <FloatLabel>
-                <InputText id="item" v-model="data.data[0].item" disabled class="w-full"/>
+                <InputText id="item" v-model="data.data[0].item_id" disabled class="w-full"/>
                 <label for="id">item</label>
             </FloatLabel>
         </div>

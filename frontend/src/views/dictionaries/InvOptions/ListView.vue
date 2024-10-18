@@ -79,7 +79,7 @@
 
         <Column field="option_type" header="Тип опции" sortable style="width: 10%">
           <template #body="{ data }">
-            {{ data.option_type }}
+            {{ data.option_type_str }}
           </template>
           <template #filter="{ filterModel, filterCallback }">
               <Select v-model="filterModel.value" @change="filterCallback()" :options="optionTypeStr" placeholder="Серия" style="min-width: 12rem" :showClear="true"/>
@@ -101,8 +101,7 @@
 
         <Column field="series" header="Серии" width="">
           <template #body="{ data }">
-            {{ getSerieNames(series.data, data.series) }}
-              <!-- {{ data.series}} -->
+              {{ getSerieNames(series.data, data.series) }}
           </template>
         </Column>
 

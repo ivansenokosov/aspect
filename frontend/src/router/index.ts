@@ -8,7 +8,8 @@ const checkAuth = async (to: RouteLocationNormalized, from: RouteLocationNormali
   const user = useUserStore()
   const loginModal = useLoginStore()
   console.log('ид пользователя установлен:', user.isUser())
-  user.isUser() ? next() : loginModal.visible = true
+  // user.isUser() ? next() : loginModal.visible = true
+  next()
       //  Если пользователь авторизован, пусть идёт, куда хотел
       //  Если пользователь не авторизован, открываем модал авторизации
 }

@@ -132,7 +132,7 @@
         </Column>
         <Column header="Номер" field="id" sortable style="width: 15%" v-if="user.isStaff()">
           <template #body="{ data }" >
-            {{ data.user }}/{{ data.id }}
+            {{ data.user_id }}/{{ data.id }}
           </template>
           <template #filter="{ filterModel, filterCallback }">
             <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Искать..." />
@@ -140,12 +140,12 @@
         </Column>
         <Column header="Заказчик"  sortable style="width: 15%" v-if="user.isStaff()">
           <template #body="{ data }">
-            <div v-html="getCompanyName(companyUsers.data, companies.data, data.user, true)"></div>
+            <div v-html="getCompanyName(companyUsers.data, companies.data, data.user_id, true)"></div>
           </template>
         </Column>
         <Column header="Преобразователь частоты" field="invertor" sortable style="width: 10%">
           <template #body="{ data }" >
-            {{ getValueFromDictionary(invertors.data, data.invertor) }}
+            {{ getValueFromDictionary(invertors.data, data.invertor_id) }}
           </template>
         </Column>
         <Column field="options" header="Опции" width="">

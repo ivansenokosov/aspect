@@ -9,8 +9,8 @@ export async function createSeries(id : string, series: IInvSerie[], seriesDisco
     // создание новых скидок на серии
     for (let i in series){
       const payload = {        
-        serie: series[i].id,
-        group: id,
+        serie_id: series[i].id,
+        group_id: Number(id),
         discount: 0
       }
       await insertData('/data/InvSerieDisount', payload)
@@ -29,8 +29,8 @@ export async function createSeries(id : string, series: IInvSerie[], seriesDisco
     // создание новых скидок на опции
     for (let i in options){
       const payload = {
-        option: options[i].id,
-        group: id,
+        option_id: options[i].id,
+        group_id: Number(id),
         discount: 0
       }       
       await insertData('/data/InvOptionDisount', payload)

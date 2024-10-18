@@ -366,8 +366,8 @@ export const data:IData[] = [
     {
         url: '/Inv_spec_of_in_out',  // Протестировано
         redis_prefix: 'invSignalInputOutput',  
-        sql_get_all: 'select s.id, s.quantity, s.serie_id, s.signal_id "signal", s.info, t.name "signal_str" from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id', 
-        sql_get_one: 'select s.id, s.quantity, s.serie_id, s.signal_id "signal", s.info, t.name "signal_str" from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id and s.id = ?', 
+        sql_get_all: 'select s.id, s.quantity, s.serie_id, s.signal_id, s.info, t.name "signal_str" from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id', 
+        sql_get_one: 'select s.id, s.quantity, s.serie_id, s.signal_id, s.info, t.name "signal_str" from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id and s.id = ?', 
         sql_update:         'update s_inv_spec_of_in_out set serie_id=?, signal_id=?, quantity=? where id=?',
         sql_insert:    'insert into s_inv_spec_of_in_out (serie_id, signal_id, quantity, id) values (?,?,?,?)',
         sql_delete:    'delete from s_inv_spec_of_in_out where id = ?',
@@ -391,7 +391,7 @@ export const data:IData[] = [
         table:                     'd_items',
         cached: false, 
         expire: null,
-        prepare: prepareInvSignalInputOutput
+        prepare: prepareItem
     },
 
     {
@@ -433,7 +433,7 @@ export const data:IData[] = [
                              io.full_title, 
                              io.series, 
                              io.item_id, 
-                             option_id 
+                             io.option_id 
                         from d_inv_options io,
                              d_items i,
                              d_prices p,
@@ -446,14 +446,14 @@ export const data:IData[] = [
         sql_get_one: `select io.id, 
                              p.price, 
                              i.quantity, 
-                             t.name "waiting_period", 
-                             too.name "option_type", 
+                             t.name "waiting_period_str", 
+                             too.name "option_type_str", 
                              io.name, 
                              io.short_title, 
                              io.full_title, 
                              io.series, 
-                             io.item_id "item", 
-                             option_id "option" 
+                             io.item_id, 
+                             io.option_id 
                         from d_inv_options io,
                              d_items i,
                              d_prices p,
@@ -568,8 +568,8 @@ export const data:IData[] = [
         redis_prefix: '',  
         sql_get_all: 'select * from d_prices', 
         sql_get_one: 'select * from d_prices where id = ?', 
-        sql_update:  '',
-        sql_insert:  '',
+        sql_update:  'update d_prices set item_id = ?, price =?, currency_id = ?, date =? where id = ?',
+        sql_insert:  'insrert into d_prices (item_id, price, currency_id, date, id values (?,?,?,?,?)',
         sql_delete:  'delete from d_prices where id = ?',
         table:       'd_prices',
         cached: false, 
@@ -592,8 +592,8 @@ export const data:IData[] = [
     {
         url: '/UserInvDisount', 
         redis_prefix: '',  
-        sql_get_all: 'select id, group_id, user_id "user" from discounts_userinvdisount', 
-        sql_get_one: 'select id, group_id, user_id "user" from discounts_userinvdisount where id = ?', 
+        sql_get_all: 'select id, group_id, user_id from discounts_userinvdisount', 
+        sql_get_one: 'select id, group_id, user_id from discounts_userinvdisount where id = ?', 
         sql_update:  'update discounts_userinvdisount set group_id = ?, user_id=? where id = ?',
         sql_insert:  'insert into discounts_userinvdisount (group_id, user_id, id) values (?,?,?)',
         sql_delete:  'delete from discounts_userinvdisount where id = ?',

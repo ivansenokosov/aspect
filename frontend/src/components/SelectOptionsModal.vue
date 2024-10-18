@@ -1,7 +1,7 @@
 <script setup lang="ts">
     import { ref, watch } from 'vue'
     import { useRouter } from 'vue-router'
-    import type { IDocument, IInvOption, ISimpleDictionary, IInvSerie, IInvOptionDisount, IInvSerieDisount } from '@/interfaces';
+    import type { IDocument, IInvOption, ISimpleDictionary, IInvSerie, IInvOptionDisount, IInvSerieDisount, IUserInvConfig } from '@/interfaces';
 
     import Dialog from 'primevue/dialog';
     import Button from 'primevue/button';
@@ -21,7 +21,7 @@
     import { useLoginStore } from '@/stores/login';
     import { useWebSocketStore } from '@/stores/ws'
     import { useFetch } from '@/api/useFetch';
-    import AxiosInstance from '@/api/axiosInstance';
+    import { insertData } from '@/api/dataActions';
 
     import { getValueFromDictionary } from '@/api/getValueFromDictionary';
     import { priceFormat } from '@/api/priceFormat';
@@ -59,46 +59,44 @@
     async function addUserInvConfig() {
       if (user.isUser()) {
         saving.value = true
-        const url:string =  '/data/UserInvConfg'
-        const config = { headers: { 'content-type': 'application/json', }, };
         const selectedOptionsStr = ref<string[]>([])
         const selectedOptionsPricesStr = ref<string[]>([])
         const selectedOptionsDiscountStr = ref<string[]>([])
 
         if (selectedOptions.value) {
-          selectedOptions.value.map(a => { 
-            selectedOptionsStr.value.push(a.id.toString())
-            a.price && (selectedOptionsPricesStr.value.push(a.price.toString()))
-            selectedOptionsDiscountStr.value.push(getDiscountOption(a.option, optionDiscounts.value.data))
+          selectedOptions.value.map((item) => { 
+            selectedOptionsStr.value.push(item.id.toString())
+            item.price && (selectedOptionsPricesStr.value.push(item.price.toString()))
+            selectedOptionsDiscountStr.value.push(getDiscountOption(item.option_id, optionDiscounts.value.data))
           })
         }
-        const formData = new FormData();        
-
         const date = moment().format('YYYY-MM-DD')
 
-        formData.append("date",               date)
-        formData.append("user",               String(user.getUser().userId.value))
-        formData.append("invertor",           String(props.invertor.id))
-        formData.append("invertor_price",     String(props.invertor.price))
-        formData.append("invertor_discount",  getDiscountSerie(props.invertor.serie, serieDiscounts.value.data) )
-        formData.append("options",            JSON.stringify(selectedOptionsStr.value.map(item => item)))
-        formData.append("options_prices",     JSON.stringify(selectedOptionsPricesStr.value.map(item => item)))
-        formData.append("options_disccounts", JSON.stringify(selectedOptionsDiscountStr.value.map(item => item)))
-        formData.append("info",'')
-        formData.append("staff_opened",0)
+        const payload:IUserInvConfig =  {   id:0,
+                                            date:               date,
+                                            user_id:            user.getUser().userId.value,
+                                            invertor_id:        props.invertor.id,
+                                            invertor_price:     props.invertor.price,
+                                            invertor_discount:  getDiscountSerie(props.invertor.serie, serieDiscounts.value.data),
+                                            options:            JSON.stringify(selectedOptionsStr.value.map(item => item)),
+                                            options_prices:     JSON.stringify(selectedOptionsPricesStr.value.map(item => item)),
+                                            options_disccounts: JSON.stringify(selectedOptionsDiscountStr.value.map(item => item)),
+                                            info:               '',
+                                            staff_opened:       false
+                                         }
 
-        const res = await AxiosInstance.post(url, formData, config)
-                                       .then(function(response) {
-                                            saveLog(4, String(response.data.id))
-                                            toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
-                                            ws.sendMessage({username: user.getUser().userId.value.toString(),
-                                                            message: response.data.id.toString(),
-                                                            timestamp:1}) // отправка сообщения о новой конфигурации
-                                            router.push('inv_config/?id=' + response.data.id)
-                                          })
-                                        .catch(function(error) {
-                                          console.log(error);
-                                        })
+        insertData('/data/UserInvConfg', payload)
+            .then((response:any) => {
+                saveLog(4, String(response.data.id))
+                toast.add({ severity: 'info', summary: 'Успешно', detail: 'Запись создана', life: 3000 });
+                ws.sendMessage({username: user.getUser().userId.value.toString(),
+                                message: response.data.id.toString(),
+                                timestamp:1}) // отправка сообщения о новой конфигурации
+                router.push('inv_config/?id=' + response.data.id)
+                })
+            .catch(function(error) {
+                console.log(error);
+            })
         saving.value = false
       } else {
         loginModal.visible = true // если пользлватель не авторизован, открываем модал
@@ -125,8 +123,8 @@
 
         if (props.invertor.id) {
             typeOfOptions.value  = await useFetch('/data/Type_of_options');
-            serie.value          = await useFetch('/data/Inv_series/' + String(props.invertor.serie))
-            options.value        = await useFetch('/data/Inv_options/?column=series&operator=like&value=' + String(props.invertor.serie))  // django url /Inv_options/?serie=' + String(props.invertor.serie)
+            serie.value          = await useFetch('/data/Inv_series/' + String(props.invertor.serie_id))
+            options.value        = await useFetch('/data/Inv_options/?column=series&operator=like&value=' + String(props.invertor.serie_id))  // django url /Inv_options/?serie=' + String(props.invertor.serie)
 
             await loadOptionDiscounts()
             optionsDisplay.value = {...options.value}
@@ -144,7 +142,7 @@
         selectedOptions.value.map(item => optionsPrice.value = optionsPrice.value + Number(item.price))
 
         if (user.isUser()) {
-            selectedOptions.value.map( item => optionsPriceDiscount.value += Number(getOptionPrice(Number(item.price), item.option, optionDiscounts.value.data)) )
+            selectedOptions.value.map( item => optionsPriceDiscount.value += Number(getOptionPrice(Number(item.price), item.option_id, optionDiscounts.value.data)) )
         }
     })
 </script>
@@ -222,7 +220,7 @@
             <Column header="Количество" headerStyle="width: 10%">
                 <template #body="{ data }">
                     <div class="font-bold text-xl w-full">{{ data.quantity }}</div>
-                    <div v-if="data.quantity<=0" class="font-bold text-xl w-full"><Tag :value="data.waiting_period" severity="warn" /></div>
+                    <div v-if="data.quantity<=0" class="font-bold text-xl w-full"><Tag :value="data.waiting_period_str" severity="warn" /></div>
                 </template>
             </Column>
             <Column header="Цена" headerStyle="width: 10%">
@@ -230,13 +228,13 @@
                     <span v-if = "data.price == 0" ><Tag value="По запросу" severity="danger" /></span>
                     <span v-else>
                         <div v-if="user.isUser()">
-                            <OverlayBadge :value="`- ${getDiscountOption(data.option, optionDiscounts.data)} %`" severity="warn" v-if="!loading && !optionDiscounts.loading" class="mr-4">
+                            <OverlayBadge :value="`- ${getDiscountOption(data.option_id, optionDiscounts.data)} %`" severity="warn" v-if="!loading && !optionDiscounts.loading" class="mr-4">
                             <div class="surface-700 text-white font-bold text-xl line-through border-round m-2 flex align-items-center justify-content-center" style="min-width: 80px; min-height: 40px">
                                 {{ priceFormat(data.price) }} &#8381;
                             </div>
                             </OverlayBadge>
                             <div class="bg-primary font-bold text-xl border-round m-2 flex align-items-center justify-content-center mr-5" style="min-width: 80px; min-height: 40px" v-if="!loading && !optionDiscounts.loading">
-                            {{ priceFormat(getOptionPrice(data.price, data.option, optionDiscounts.data)) }} &#8381;
+                            {{ priceFormat(getOptionPrice(data.price, data.option_id, optionDiscounts.data)) }} &#8381;
                             </div>
                         </div>
                         <div v-else>
@@ -257,7 +255,7 @@
                 {{ priceFormat(invertor.price) }} &#8381;
                 </a>
                 <a class="bg-primary font-bold text-xl border-round p-2 " style="min-width: 80px; min-height: 40px" v-if="!loading && !serieDiscounts.loading">
-                {{ priceFormat(getInvPrice(Number(invertor.price), invertor.serie, serieDiscounts.data)) }} &#8381;
+                {{ priceFormat(getInvPrice(Number(invertor.price), invertor.serie_id, serieDiscounts.data)) }} &#8381;
                 </a>
             </span>
         </p>
@@ -284,7 +282,7 @@
                 {{ priceFormat(Number(optionsPrice) + Number(invertor.price)) }} &#8381;
                 </a>
             <a class="bg-primary font-bold text-xl border-round p-2" style="min-width: 80px; min-height: 40px" v-if="!loading && !serieDiscounts.loading">
-                {{ priceFormat(getInvPrice(Number(invertor.price), invertor.serie, serieDiscounts.data) + Number(optionsPriceDiscount)) }} &#8381;
+                {{ priceFormat(getInvPrice(Number(invertor.price), invertor.serie_id, serieDiscounts.data) + Number(optionsPriceDiscount)) }} &#8381;
             </a>
             </span>
         </p>

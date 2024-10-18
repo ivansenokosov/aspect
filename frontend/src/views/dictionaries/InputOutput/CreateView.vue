@@ -29,11 +29,12 @@
         const payload:IInvInputOuptput =  {serie_id: serie.value, 
                                            signal_id: signal.value, 
                                            quantity: data.value.quantity, 
+                                           info: '',
                                            id:0}
 
         insertData('/data/Inv_spec_of_in_out', payload)
-          .then(function(response) {
-          router.push('/dictionaries/InputOutput/List')
+          .then(function(response:any) {
+          router.push(`/dictionaries/InputOutput/Update/${response.data.id}`)
         }).catch(function(error) {
           console.log(error);
         })

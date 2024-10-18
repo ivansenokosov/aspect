@@ -94,17 +94,17 @@
         <Column field="size_str" header="Размер" width=""></Column>
         <Column header="DC дроссель" width="">
           <template #body="{ data }">
-            <span>{{ getValueFromDictionary(invDC.data, data.type_of_dc_drossel) }}</span>
+            <span>{{ getValueFromDictionary(invDC.data, data.type_of_dc_drossel_id) }}</span>
           </template>          
         </Column>
         <Column header="EMC дроссель" width="">
           <template #body="{ data }">
-            <span>{{ getValueFromDictionary(invEMC.data , data.type_of_emc_drossel) }}</span>
+            <span>{{ getValueFromDictionary(invEMC.data , data.type_of_emc_drossel_id) }}</span>
           </template>          
         </Column>
         <Column header="Тормозной модуль" width="">
           <template #body="{ data }">
-            <span>{{ getValueFromDictionary(invBreak.data, data.type_of_break_module) }}</span>
+            <span>{{ getValueFromDictionary(invBreak.data, data.type_of_break_module_id) }}</span>
           </template>          
         </Column> 
 

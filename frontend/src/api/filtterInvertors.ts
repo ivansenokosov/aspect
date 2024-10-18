@@ -38,7 +38,7 @@ export function filterInvertors(data               : IInvertor[],
 
     dataDisplay.value = data.filter((item) => (((Number(item.p_heavy_g.toString().replace(',','.')) >= minPower && Number(item.p_heavy_g.toString().replace(',','.')) <= maxPower) || (Number(item.p_pumps_p.toString().replace(',','.')) >= minPower && Number(item.p_pumps_p.toString().replace(',','.')) <= maxPower))
                                                       && invInputVolageStr.value.includes(item.input_voltage_id.toString()) 
-                                                      && invTypeOfControlStr.value.includes(item.type_of_control_id.toString())
+                                                      && invTypeOfControlStr.value.includes(item.type_of_control_id!.toString())
                                                       && invEMCStr.value.includes(item.type_of_emc_drossel_id.toString())
                                                       && invDCStr.value.includes(item.type_of_dc_drossel_id.toString())
                                                       && invBreakStr.value.includes(item.type_of_break_module_id.toString())

@@ -48,18 +48,19 @@ export async function generatePDF(invertor: IInvertor,
     getMeta(photo,  (err:any, img:any) => { photoRatio = img.naturalWidth / img.naturalHeight });
     getMeta(schema, (err:any, img:any) => { schemaRatio = img.naturalWidth / img.naturalHeight });
 
-    breakModule.value          = await useFetch('/data/Inv_breake_module/'      + invertor.type_of_break_module.toString() + '/');
-    ambientTemperature.value   = await useFetch('/data/Ambient_temperatures/'   + serie.ambient_temperature.toString() + '/');
-    outputVoltage.value        = await useFetch('/data/Inv_output_voltage/'     + serie.output_voltage.toString() + '/');
+    breakModule.value          = await useFetch(`/data/Inv_breake_module/${invertor.type_of_break_module_id}`);
+    ambientTemperature.value   = await useFetch(`/data/Ambient_temperatures/${serie.ambient_temperature_id}`);
+    outputVoltage.value        = await useFetch(`/data/Inv_output_voltage/${serie.output_voltage_id}`);
     typeOfOptions.value        = await useFetch('/data/Type_of_options');
 
     const signals_table_header = ['Сигнал','Количество']
     var   signals_table_body:Array<[string, string]>=[['','']]
 
-    const options_table_header = ['Наименование','Описание','Доп.описание','Тип']
-        if (print_price) options_table_header.push('Цена')
+    const options_table_header_w_price  = ['Наименование','Описание','Доп.описание','Тип','Цена']
+    const options_table_header_wo_price = ['Наименование','Описание','Доп.описание','Тип']
 
-    var   options_table_body:Array<[string, string, string, string, string?]>=[['','','','','']]
+    var   options_table_body_w_price  :Array<[string, string, string, string, string]>=[['','','','','']]
+    var   options_table_body_wo_price :Array<[string, string, string, string,]>=[['','','','']]
 
     const invertor_table_header = ['Параметр','Значение']
     var   invertor_table_body:Array<[string, string]>=[]
@@ -83,7 +84,7 @@ invertor_table_body.push(['Перегрузочная способность', '
         invertor_table_body.push(['Диапазон напряжений на выходе', outputVoltage.value.data[0].name])
         invertor_table_body.push(['Метод управления', invertor.type_of_control_str || ''])
         invertor_table_body.push(['Способ управления', invControl])
-        invertor_table_body.push(['Точность регулирования частоты', invertor.type_of_accuracy_freq || ''])
+        invertor_table_body.push(['Точность регулирования частоты', invertor.type_of_accuracy_freq_str || ''])
         invertor_table_body.push(['Тип панели', invertor.type_of_panel_str || ''])
         invertor_table_body.push(['EMC дроссель', invertor.type_of_emc_drossel_str || ''])
         invertor_table_body.push(['DC дроссель', invertor.type_of_dc_drossel_str || ''])
@@ -120,7 +121,11 @@ invertor_table_body.push(['Перегрузочная способность', '
       });
 
 // ------------------------------------------------- Входы/Выходы
-    signals.forEach((item:IInvSignalInputOutput, index:number) => signals_table_body[index]= [item.signal_str,item.quantity.toString()]) 
+    console.log(signals)
+    // signals.forEach((item:IInvSignalInputOutput, index:number) => 
+    //    signals_table_body[index]= [item.signal_str, item.quantity.toString()]
+    // console.log(item.signal_str, item.quantity)
+    // ) 
 
     pdf.addPage()
     pdf.text("Входы/выходы управления", 50, 50)
@@ -135,23 +140,23 @@ invertor_table_body.push(['Перегрузочная способность', '
 // ------------------------------------------------- Выбранные опции
 optionsSelected.forEach((item:IInvOption, index:number) => {
     if (print_price)
-        options_table_body[index]= [item.name, // Наименование
-                                    item.full_title, // Описание
-                                    item.short_title, // Доп.описание
-                                    getValueFromDictionary(typeOfOptions.value.data, item.option), // Тип
-                                    calcPrice(Number(item.price), Number(item.discount)).toString()] // Цена
+        options_table_body_w_price[index]= [item.name, // Наименование
+                                            item.full_title, // Описание
+                                            item.short_title, // Доп.описание
+                                            getValueFromDictionary(typeOfOptions.value.data, item.option_id), // Тип
+                                            calcPrice(Number(item.price), Number(item.discount)).toString()] // Цена
     else 
-        options_table_body[index]= [item.name, // Наименование
-        item.full_title, // Описание
-        item.short_title, // Доп.описание
-        getValueFromDictionary(typeOfOptions.value.data, item.option)] // Тип
+        options_table_body_wo_price[index]= [item.name, // Наименование
+                                             item.full_title, // Описание
+                                             item.short_title, // Доп.описание
+                                             getValueFromDictionary(typeOfOptions.value.data, item.option_id)] // Тип
 }) 
 
     pdf.addPage()
     pdf.text("Выбранные опции", 50, 50)
     autoTable(pdf, {
-        head: [options_table_header],
-        body: options_table_body,
+        head: [print_price ? options_table_header_w_price : options_table_header_wo_price],
+        body: print_price ? options_table_body_w_price : options_table_body_wo_price,
         startY: 80, 
         styles: { font: 'DejaVuSans' },
       });

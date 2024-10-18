@@ -222,3 +222,12 @@ export interface ILog {
     user_id   : number
     params    : string
 }
+
+
+export interface IPrice {
+    id         ?: number
+	price       : number
+	date        : string
+	currency_id : number
+	item_id     : number
+}

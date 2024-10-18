@@ -49,12 +49,12 @@
 
         <Column field="serie" sortable header="Серия">
           <template #body="{ data }">
-              {{ getValueFromDictionary(series.data, data.serie) }}
+              {{ getValueFromDictionary(series.data, data.serie_id) }}
           </template>
         </Column>
         <Column field="control" sortable header="Способ управления">
           <template #body="{ data }">
-              {{ getValueFromDictionary(controls.data, data.control) }}
+              {{ getValueFromDictionary(controls.data, data.control_id) }}
           </template>
         </Column>
 

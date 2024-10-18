@@ -13,7 +13,7 @@
   const invEMC              = ref<ISimpleDictionary[]>([])
   const invDC               = ref<ISimpleDictionary[]>([])
   const invBreak            = ref<ISimpleDictionary[]>([])
-  const invPower            = ref<IPower>({power: '0', error: 10})
+  const invPower            = ref<IPower>({id:0, power: '0', error: 10})
 
   saveLog(7, '')
 </script>

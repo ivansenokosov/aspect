@@ -222,7 +222,7 @@ const menuItems = ref<IMenuItem[]>([
                         route: '/dictionaries/InvAccurancyFrenq/List'
                     },
                     {
-                        label: 'Размеры (переделать)',
+                        label: 'Размеры',
                         icon: 'pi pi-book',
                         show: computed((): boolean => user.isSuperadmin()),
                         route: '/dictionaries/InvSizes/List'
