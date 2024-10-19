@@ -55,10 +55,17 @@ const getAllData = (req, res, next) => {
     if (d.sql_get_all.includes('where'))
         sql_prefix = ' and ';
     if (req.query) { // Если в запросе есть параметры
+        var prefix = String(req.query.prefix);
+        console.log('prefix', prefix);
+        if (prefix && prefix != 'undefined')
+            prefix = prefix + '.';
+        else
+            prefix = '';
         if (req.query.operator === 'equal')
-            sql += sql_prefix + req.query.column + ' = ' + req.query.value;
+            sql += sql_prefix + prefix + req.query.column + ' = ' + req.query.value;
+        console.log(sql);
         if (req.query.operator === 'like')
-            sql += sql_prefix + req.query.column + ' like "%' + req.query.value + '%"';
+            sql += sql_prefix + prefix + req.query.column + ' like "%' + req.query.value + '%"';
     }
     redis.keys(d.redis_prefix + ':*', (err, keys) => {
         if (err) {
@@ -165,11 +172,19 @@ const updateData = (req, res, next) => {
     if (!d) {
         return res.json({ status: 400, message: 'неверные настройки пути и приложения' });
     }
-    d.cached && redis.set(d.redis_prefix + ':' + id, JSON.stringify(req.body)); // Если объект кэшируемый, то изменяем его в кэше
     const params = d.prepare(req.body, id); // Преобразовали JSON объекта в параметры для функции вставки
     console.log(d.sql_update, params);
     (0, sql_1.sql_run)(d.sql_update, params)
         .then((result) => {
+        if (d.cached) { // Обновление записи в кэше
+            console.log('Запрашиваю запись из БД');
+            (0, sql_1.sql_get)(d.sql_get_one, [id]).then((document) => {
+                console.log('получена новая запись из БД для кэша', document);
+                redis.set(d.redis_prefix + ':' + id, JSON.stringify(document)); // Если объект кэшируемый, то изменяем его и в кэше
+                console.log('запись в кэше обновлена', document);
+            })
+                .catch(() => console.log('Запись из БД не получена'));
+        }
         console.log('result', result);
         res.status(200).json({ message: 'Запись изменена', reslult: result });
     })
@@ -191,15 +206,23 @@ const insertData = (req, res, next) => {
     console.log('Добавление новой записи', url);
     (0, sql_1.getNextId)(d.table)
         .then((id) => {
-        d.cached && redis.set(d.redis_prefix + ':' + id, JSON.stringify(req.body)); // Если объект кэшируемый, то добавляем его в кэш
         const params = d.prepare(req.body, id); // Преобразовали JSON объекта в параметры для функции вставки
-        console.log('we are here', d.sql_insert, params);
+        console.log('Выполняею запрос', d.sql_insert, params);
         d.sql_insert && (0, sql_1.sql_run)(d.sql_insert, params)
             .then((reslut) => {
-            console.log(d.sql_insert, params);
-            console.log('Запись добавлена', reslut);
+            console.log('Запись добавлена успешно', reslut);
+            if (d.cached) {
+                console.log('Запрашиваю запись из БД');
+                (0, sql_1.sql_get)(d.sql_get_one, [id]).then((document) => {
+                    console.log('получена новая запись из БД для кэша', document);
+                    redis.set(d.redis_prefix + ':' + id, JSON.stringify(document)); // Если объект кэшируемый, то изменяем его и в кэше
+                    console.log('запись в кэше обновлена', document);
+                })
+                    .catch(() => console.log('Запись из БД не получена'));
+            }
             res.status(200).json({ message: 'Запись добавлена', id: id });
         })
+            .then()
             .catch((error) => {
             console.log('error', error);
             res.status(400).json({ message: 'что-то пошло не так', error });

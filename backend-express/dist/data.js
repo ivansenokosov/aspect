@@ -7,8 +7,8 @@ exports.data = [
     {
         url: '/CompanyUsers', // Работает
         redis_prefix: 'companyuser',
-        sql_get_all: 'select id, company_id "company", user_id "user" from d_companyusers',
-        sql_get_one: 'select id, company_id "company", user_id "user" from d_companyusers where id = ?',
+        sql_get_all: 'select id, company_id, user_id from d_companyusers',
+        sql_get_one: 'select id, company_id, user_id from d_companyusers where id = ?',
         sql_update: 'update d_companyusers set company_id=?, user_id=? where id=?',
         sql_insert: 'insert into d_companyusers (company_id, user_id, id) values (?,?,?)',
         sql_delete: 'delete from d_companyusers where id = ?',
@@ -260,14 +260,14 @@ exports.data = [
                              name, 
                              description, 
                              photo, 
-                             ambient_temperature_id "ambient_temperature", 
-                             output_voltage_id "output_voltage", 
-                             type_of_accuracy_freq_id "type_of_accuracy_freq",
-                             type_of_overload_id "type_of_overload",
-                             type_of_panel_id "type_of_panel",
-                             level_IP_id "level_IP",
-                             manufactory_id "manufactory",
-                             type_of_control_id "type_of_control",
+                             ambient_temperature_id, 
+                             output_voltage_id, 
+                             type_of_accuracy_freq_id,
+                             type_of_overload_id,
+                             type_of_panel_id,
+                             level_IP_id,
+                             manufactory_id,
+                             type_of_control_id,
                              schema
                         from s_inv_series`,
         sql_get_one: `select id, 
@@ -276,14 +276,14 @@ exports.data = [
                              name, 
                              description, 
                              photo, 
-                             ambient_temperature_id "ambient_temperature", 
-                             output_voltage_id "output_voltage", 
-                             type_of_accuracy_freq_id "type_of_accuracy_freq",
-                             type_of_overload_id "type_of_overload",
-                             type_of_panel_id "type_of_panel",
-                             level_IP_id "level_IP",
-                             manufactory_id "manufactory",
-                             type_of_control_id "type_of_control",
+                             ambient_temperature_id, 
+                             output_voltage_id, 
+                             type_of_accuracy_freq_id,
+                             type_of_overload_id,
+                             type_of_panel_id,
+                             level_IP_id,
+                             manufactory_id,
+                             type_of_control_id,
                              schema
                         from s_inv_series
                         where id = ?`,
@@ -326,8 +326,8 @@ exports.data = [
     {
         url: '/Inv_type_of_control',
         redis_prefix: 'invTypeOfControl',
-        sql_get_all: 'select tosc.id, tosc.control_id "control", voc.name "control_str", tosc.serie_id "serie"  from s_type_of_serie_controls tosc, s_variant_of_control voc where tosc.control_id = voc.id',
-        sql_get_one: 'select tosc.id, tosc.control_id "control", voc.name "control_str", tosc.serie_id "serie"  from s_type_of_serie_controls tosc, s_variant_of_control voc where tosc.control_id = voc.id where id = ?',
+        sql_get_all: 'select tosc.id, tosc.control_id, voc.name "control_str", tosc.serie_id from s_type_of_serie_controls tosc, s_variant_of_control voc where tosc.control_id = voc.id',
+        sql_get_one: 'select tosc.id, tosc.control_id, voc.name "control_str", tosc.serie_id from s_type_of_serie_controls tosc, s_variant_of_control voc where tosc.control_id = voc.id where id = ?',
         sql_update: 'update s_type_of_serie_controls set control_id=?, serie_id=? where id=?',
         sql_insert: 'insert into s_type_of_serie_controls (control_id, serie_id, id) values (?,?,?)',
         sql_delete: 'delete from s_type_of_serie_controls where id = ?',
@@ -339,8 +339,8 @@ exports.data = [
     {
         url: '/Inv_spec_of_in_out', // Протестировано
         redis_prefix: 'invSignalInputOutput',
-        sql_get_all: 'select s.id, s.quantity, s.serie_id "serie", s.signal_id "signal", s.info, t.name "signal_str" from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id',
-        sql_get_one: 'select s.id, quantity, serie_id "serie", signal_id "signal", info from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id and s.id = ?',
+        sql_get_all: 'select s.id, s.quantity, s.serie_id, s.signal_id, s.info, t.name "signal_str" from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id',
+        sql_get_one: 'select s.id, s.quantity, s.serie_id, s.signal_id, s.info, t.name "signal_str" from s_inv_spec_of_in_out s, s_inv_type_of_signals t where s.signal_id=t.id and s.id = ?',
         sql_update: 'update s_inv_spec_of_in_out set serie_id=?, signal_id=?, quantity=? where id=?',
         sql_insert: 'insert into s_inv_spec_of_in_out (serie_id, signal_id, quantity, id) values (?,?,?,?)',
         sql_delete: 'delete from s_inv_spec_of_in_out where id = ?',
@@ -352,8 +352,8 @@ exports.data = [
     {
         url: '/Items',
         redis_prefix: 'item',
-        sql_get_all: 'select id, name, quantity, type_id "type", waiting_period_id "waiting_period" from d_items',
-        sql_get_one: 'select id, name, quantity, type_id "type", waiting_period_id "waiting_period" from d_items where id = ?',
+        sql_get_all: 'select id, name, quantity, type_id, waiting_period_id from d_items',
+        sql_get_one: 'select id, name, quantity, type_id, waiting_period_id from d_items where id = ?',
         sql_update: `update d_items set type_id=?,
                                                 name=?,
                                                 quantity=?, 
@@ -364,7 +364,7 @@ exports.data = [
         table: 'd_items',
         cached: false,
         expire: null,
-        prepare: prepare_1.prepareInvSignalInputOutput
+        prepare: prepare_1.prepareItem
     },
     {
         url: '/companies', // Протетировано
@@ -398,14 +398,14 @@ exports.data = [
         sql_get_all: `select io.id, 
                              p.price, 
                              i.quantity, 
-                             t.name "waiting_period", 
-                             too.name "option_type", 
+                             t.name "waiting_period_str", 
+                             too.name "option_type_str", 
                              io.name, 
                              io.short_title, 
                              io.full_title, 
                              io.series, 
-                             io.item_id "item", 
-                             option_id "option" 
+                             io.item_id, 
+                             io.option_id 
                         from d_inv_options io,
                              d_items i,
                              d_prices p,
@@ -418,14 +418,14 @@ exports.data = [
         sql_get_one: `select io.id, 
                              p.price, 
                              i.quantity, 
-                             t.name "waiting_period", 
-                             too.name "option_type", 
+                             t.name "waiting_period_str", 
+                             too.name "option_type_str", 
                              io.name, 
                              io.short_title, 
                              io.full_title, 
                              io.series, 
-                             io.item_id "item", 
-                             option_id "option" 
+                             io.item_id, 
+                             io.option_id 
                         from d_inv_options io,
                              d_items i,
                              d_prices p,
@@ -533,20 +533,20 @@ exports.data = [
         table: 'auth_user',
         cached: false,
         expire: null,
-        prepare: prepareUser
+        prepare: prepare_1.prepareUser
     },
     {
         url: '/Prices', //---
         redis_prefix: '',
         sql_get_all: 'select * from d_prices',
         sql_get_one: 'select * from d_prices where id = ?',
-        sql_update: 'insert into d_prices (item_id, price, currency_id, date, id) values (?,?,?,?,?)',
-        sql_insert: 'update d_prices set item_id = ?, price = ?, currency_id = ?, date = ? where id = ?',
+        sql_update: 'update d_prices set item_id = ?, price =?, currency_id = ?, date =? where id = ?',
+        sql_insert: 'insrert into d_prices (item_id, price, currency_id, date, id values (?,?,?,?,?)',
         sql_delete: 'delete from d_prices where id = ?',
         table: 'd_prices',
         cached: false,
         expire: null,
-        prepare: preparePrice
+        prepare: () => { }
     },
     {
         url: '/InvDisountGroup',
@@ -564,8 +564,8 @@ exports.data = [
     {
         url: '/UserInvDisount',
         redis_prefix: '',
-        sql_get_all: 'select id, group_id "group", user_id "user" from discounts_userinvdisount',
-        sql_get_one: 'select id, group_id "group", user_id "user" from discounts_userinvdisount where id = ?',
+        sql_get_all: 'select id, group_id, user_id from discounts_userinvdisount',
+        sql_get_one: 'select id, group_id, user_id from discounts_userinvdisount where id = ?',
         sql_update: 'update discounts_userinvdisount set group_id = ?, user_id=? where id = ?',
         sql_insert: 'insert into discounts_userinvdisount (group_id, user_id, id) values (?,?,?)',
         sql_delete: 'delete from discounts_userinvdisount where id = ?',
@@ -578,7 +578,7 @@ exports.data = [
         url: '/invertors', // 
         redis_prefix: 'invertor',
         sql_get_all: sqls_1.invertorSQL,
-        sql_get_one: sqls_1.invertorSQL + ' and id = ?',
+        sql_get_one: sqls_1.invertorSQL + ' and inv.id = ?',
         sql_update: `update d_invertors set   item_id=?, 
                                               serie_id=?, 
                                               input_voltage_id=?, 
@@ -615,8 +615,8 @@ exports.data = [
     {
         url: '/log',
         redis_prefix: '',
-        sql_get_all: 'select id, action_id "action", user_id "user", date, params from d_logs',
-        sql_get_one: 'select id, action_id "action", user_id "user", date, params from d_logs where id = ?',
+        sql_get_all: 'select id, action_id, user_id, date, params from d_logs',
+        sql_get_one: 'select id, action_id, user_id, date, params from d_logs where id = ?',
         sql_update: 'update d_logs set date = ?, action_id = ?, user_id = ?, params =? where id = ?',
         sql_insert: 'insert into d_logs (date, action_id, user_id, params, id) values (?,?,?,?,?)',
         sql_delete: 'delete from d_logs where id = ?',
@@ -628,8 +628,8 @@ exports.data = [
     {
         url: '/InvSerieDisount',
         redis_prefix: '',
-        sql_get_all: 'select id, discount, group_id "group", serie_id "serie" from discounts_invseriedisount',
-        sql_get_one: 'select id, discount, group_id "group", serie_id "serie" from discounts_invseriedisount where id = ?',
+        sql_get_all: 'select id, discount, group_id, serie_id from discounts_invseriedisount',
+        sql_get_one: 'select id, discount, group_id, serie_id from discounts_invseriedisount where id = ?',
         sql_update: 'update discounts_invseriedisount set group_id = ?, serie_id = ?, discount = ? where id = ?',
         sql_insert: 'insert into discounts_invseriedisount (group_id, serie_id, discount, id) values (?,?,?,?)',
         sql_delete: '  delete from discounts_invseriedisount where id = ?',
@@ -641,8 +641,8 @@ exports.data = [
     {
         url: '/InvOptionDisount',
         redis_prefix: '',
-        sql_get_all: 'select id, discount, group_id "group", option_id "option" from discounts_invoptiondisount',
-        sql_get_one: 'select id, discount, group_id "group", option_id "option" from discounts_invoptiondisount where id = ?',
+        sql_get_all: 'select id, discount, group_id, option_id from discounts_invoptiondisount',
+        sql_get_one: 'select id, discount, group_id, option_id from discounts_invoptiondisount where id = ?',
         sql_update: 'update discounts_invoptiondisount set group_id = ?, option_id = ?, discount = ? where id = ?',
         sql_insert: 'insert into discounts_invoptiondisount (group_id, option_id, discount, id) values (?,?,?,?)',
         sql_delete: '  delete from discounts_invoptiondisount where id = ?',
@@ -654,8 +654,8 @@ exports.data = [
     {
         url: '/UserInvConfg', // протестировано
         redis_prefix: '',
-        sql_get_all: 'select id, date, options, invertor_id "invertor", user_id "user", staff_opened, invertor_discount, invertor_price, options_disccounts, options_prices, info from d_user_inv_config',
-        sql_get_one: 'select id, date, options, invertor_id "invertor", user_id "user", staff_opened, invertor_discount, invertor_price, options_disccounts, options_prices, info from d_user_inv_config where id = ?',
+        sql_get_all: 'select id, date, options, invertor_id, user_id, staff_opened, invertor_discount, invertor_price, options_disccounts, options_prices, info from d_user_inv_config',
+        sql_get_one: 'select id, date, options, invertor_id, user_id, staff_opened, invertor_discount, invertor_price, options_disccounts, options_prices, info from d_user_inv_config where id = ?',
         sql_update: 'update d_user_inv_config set date=?, user_id=?, invertor_id=?, invertor_price=?, invertor_discount=?, options=?, options_prices=?, options_disccounts=?, info=?, staff_opened=? where id = ?',
         sql_insert: 'insert into d_user_inv_config (date, user_id, invertor_id, invertor_price, invertor_discount, options, options_prices, options_disccounts, info, staff_opened, id) values (?,?,?,?,?,?,?,?,?,?,?)',
         sql_delete: '  delete from d_user_inv_config where id = ?',

@@ -24,8 +24,6 @@ services:
       - ./notif-server/:/notif-server/
     ports:
       - 4000:4000
-    depends_on:
-      - redis
   frontend:
     container_name: frontend
     build: ./frontend

@@ -6,7 +6,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = __importDefault(require("express"));
 const ioredis_1 = __importDefault(require("ioredis"));
 const cors_1 = __importDefault(require("cors"));
-// import fileUpload from 'express-fileupload';
 const sqlite3_1 = require("sqlite3");
 const appController_1 = require("./appController");
 const users_1 = require("./users");

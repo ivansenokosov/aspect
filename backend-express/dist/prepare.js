@@ -9,6 +9,7 @@ exports.preparePower = preparePower;
 exports.prepareSerie = prepareSerie;
 exports.prepareInvOption = prepareInvOption;
 exports.prepareItem = prepareItem;
+exports.preparePrice = preparePrice;
 exports.prepareUserInvConfig = prepareUserInvConfig;
 exports.prepareUser = prepareUser;
 exports.prepareInvInputOuptput = prepareInvInputOuptput;
@@ -35,7 +36,7 @@ function prepareSimpleDictionary(data, id) {
     return params;
 }
 function prepareInvAvalControl(data, id) {
-    var params = [data.serie, data.control];
+    var params = [data.serie_id, data.control_id];
     id && params.push(id);
     return params;
 }
@@ -45,13 +46,13 @@ function prepareInvOverload(data, id) {
     return params;
 }
 function prepareInvertor(data, id) {
-    var params = [data.item,
-        data.serie,
-        data.input_voltage,
-        data.size,
-        data.type_of_break_module,
-        data.type_of_dc_drossel,
-        data.type_of_emc_drossel,
+    var params = [data.item_id,
+        data.serie_id,
+        data.input_voltage_id,
+        data.size_id,
+        data.type_of_break_module_id,
+        data.type_of_dc_drossel_id,
+        data.type_of_emc_drossel_id,
         data.name,
         data.p_heavy_g,
         data.p_pumps_p,
@@ -69,14 +70,14 @@ function preparePower(data, id) {
 function prepareSerie(data, id) {
     var params = [data.name,
         data.description,
-        data.manufactory,
-        data.output_voltage,
-        data.type_of_control,
-        data.type_of_panel,
-        data.type_of_overload,
-        data.type_of_accuracy_freq,
-        data.ambient_temperature,
-        data.level_IP,
+        data.manufactory_id,
+        data.output_voltage_id,
+        data.type_of_control_id,
+        data.type_of_panel_id,
+        data.type_of_overload_id,
+        data.type_of_accuracy_freq_id,
+        data.ambient_temperature_id,
+        data.level_IP_id,
         data.min_power,
         data.max_power,
         data.photo,
@@ -85,27 +86,35 @@ function prepareSerie(data, id) {
     return params;
 }
 function prepareInvOption(data, id) {
-    var params = [data.item,
+    var params = [data.item_id,
         data.name,
         data.short_title,
         data.full_title,
         data.series,
-        data.option];
+        data.option_id];
     id && params.push(id);
     return params;
 }
 function prepareItem(data, id) {
-    var params = [data.type,
+    var params = [data.type_id,
         data.name,
         data.quantity,
-        data.waiting_period];
+        data.waiting_period_id];
+    id && params.push(id);
+    return params;
+}
+function preparePrice(data, id) {
+    var params = [data.item_id,
+        data.price,
+        data.currency_id,
+        data.date];
     id && params.push(id);
     return params;
 }
 function prepareUserInvConfig(data, id) {
     var params = [data.date,
-        data.user,
-        data.invertor,
+        data.user_id,
+        data.invertor_id,
         data.invertor_price,
         data.invertor_discount,
         data.options,
@@ -130,52 +139,52 @@ function prepareUser(data, id) {
     return params;
 }
 function prepareInvInputOuptput(data, id) {
-    var params = [data.serie,
-        data.signal,
+    var params = [data.serie_id,
+        data.signal_id,
         data.info,
         data.quantity];
     id && params.push(id);
     return params;
 }
 function prepareInvSignalInputOutput(data, id) {
-    var params = [data.serie,
-        data.signal,
+    var params = [data.serie_id,
+        data.signal_id,
         data.quantity];
     id && params.push(id);
     return params;
 }
 // ------------------------------- Скидки ------------------------------- 
 function prepareUserDisount(data, id) {
-    var params = [data.group,
-        data.user];
+    var params = [data.group_id,
+        data.user_id];
     id && params.push(id);
     return params;
 }
 function prepareInvSerieDisount(data, id) {
-    var params = [data.group,
-        data.serie,
+    var params = [data.group_id,
+        data.serie_id,
         data.discount];
     id && params.push(id);
     return params;
 }
 function prepareInvOptionDisount(data, id) {
-    var params = [data.group,
-        data.option,
+    var params = [data.group_id,
+        data.option_id,
         data.discount];
     id && params.push(id);
     return params;
 }
 function prepareCompanyUsers(data, id) {
-    var params = [data.company,
-        data.user];
+    var params = [data.company_id,
+        data.user_id];
     id && params.push(id);
     return params;
 }
 // ------------------------------- Журналироание ------------------------------- 
 function prepareLog(data, id) {
     var params = [data.date,
-        data.action,
-        data.user,
+        data.action_id,
+        data.user_id,
         data.params];
     id && params.push(id);
     return params;

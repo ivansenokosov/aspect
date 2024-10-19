@@ -13,6 +13,7 @@ export const invertorSQL = `with prices as (
       and i.id = inv.item_id 
       and p.currency_id = c.id 
       and i.waiting_period_id = w.id
+      and p.id = (select max(id) from d_prices where item_id = p.item_id)
   )
   
   select inv.id,
